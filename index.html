@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Jour Zéro</title>
+</head>
+<style>
+    body {
+        background-color: #F1EDE1;
+        color: #23261E;
+        font-family: Georgia, serif;
+        text-align: center;
+        padding-top: 60px;
+    }
+
+    #compteur {
+        color: #8A6A24;
+        font-size: 48px;
+        font-weight: bold;
+    }
+</style>
+<body>
+    <h1>Jour Zéro</h1>
+<p>Jours sans consommation : <span id="compteur">0</span></p>
+<div>
+    <label for="dateArretInput">Ma date d'arrêt :</label>
+    <input type="date" id="dateArretInput">
+    <button id="btnValider">Valider</button>
+</div>
+<script>
+    function afficherJours(date) {
+        const aujourdhui = new Date();
+        const differenceMs = aujourdhui - date;
+        const jours = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+        document.getElementById("compteur").textContent = jours;
+    }
+
+    const dateSauvegardee = localStorage.getItem("dateArret");
+
+    if (dateSauvegardee) {
+        afficherJours(new Date(dateSauvegardee));
+    }
+
+    document.getElementById("btnValider").addEventListener("click", function () {
+        const valeurInput = document.getElementById("dateArretInput").value;
+        const nouvelleDate = new Date(valeurInput);
+
+        localStorage.setItem("dateArret", valeurInput);
+        afficherJours(nouvelleDate);
+    });
+</script>
+</body>
+</html>
