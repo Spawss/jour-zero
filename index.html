@@ -27,12 +27,29 @@
     <input type="date" id="dateArretInput">
     <button id="btnValider">Valider</button>
 </div>
+<div>
+    <label for="depenseInput">Dépense habituelle par semaine (CHF) :</label>
+    <input type="number" id="depenseInput" min="0" step="0.5">
+    <button id="btnDepense">Enregistrer</button>
+</div>
+
+<p>Argent économisé : <span id="argentEconomise">0</span> CHF</p>
 <script>
+    function afficherArgent(jours) {
+        const depenseParSemaine = parseFloat(localStorage.getItem("depenseParSemaine")) || 0;
+        const depenseParJour = depenseParSemaine / 7;
+        const argent = jours * depenseParJour;
+
+        document.getElementById("argentEconomise").textContent = argent.toFixed(2);
+    }
+
     function afficherJours(date) {
         const aujourdhui = new Date();
         const differenceMs = aujourdhui - date;
         const jours = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
+
         document.getElementById("compteur").textContent = jours;
+        afficherArgent(jours);
     }
 
     const dateSauvegardee = localStorage.getItem("dateArret");
@@ -42,18 +59,28 @@
     }
 
     document.getElementById("btnValider").addEventListener("click", function () {
-    const valeurInput = document.getElementById("dateArretInput").value;
-    const nouvelleDate = new Date(valeurInput);
-    const aujourdhui = new Date();
+        const valeurInput = document.getElementById("dateArretInput").value;
+        const nouvelleDate = new Date(valeurInput);
+        const aujourdhui = new Date();
 
-    if (nouvelleDate > aujourdhui) {
-        alert("La date d'arrêt ne peut pas être dans le futur.");
-        return;
-    }
+        if (nouvelleDate > aujourdhui) {
+            alert("La date d'arrêt ne peut pas être dans le futur.");
+            return;
+        }
 
-    localStorage.setItem("dateArret", valeurInput);
-    afficherJours(nouvelleDate);
-});
+        localStorage.setItem("dateArret", valeurInput);
+        afficherJours(nouvelleDate);
+    });
+
+    document.getElementById("btnDepense").addEventListener("click", function () {
+        const valeurDepense = document.getElementById("depenseInput").value;
+        localStorage.setItem("depenseParSemaine", valeurDepense);
+
+        const dateSauvegardee = localStorage.getItem("dateArret");
+        if (dateSauvegardee) {
+            afficherJours(new Date(dateSauvegardee));
+        }
+    });
 </script>
 </body>
 </html>
