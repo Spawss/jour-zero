@@ -42,12 +42,18 @@
     }
 
     document.getElementById("btnValider").addEventListener("click", function () {
-        const valeurInput = document.getElementById("dateArretInput").value;
-        const nouvelleDate = new Date(valeurInput);
+    const valeurInput = document.getElementById("dateArretInput").value;
+    const nouvelleDate = new Date(valeurInput);
+    const aujourdhui = new Date();
 
-        localStorage.setItem("dateArret", valeurInput);
-        afficherJours(nouvelleDate);
-    });
+    if (nouvelleDate > aujourdhui) {
+        alert("La date d'arrêt ne peut pas être dans le futur.");
+        return;
+    }
+
+    localStorage.setItem("dateArret", valeurInput);
+    afficherJours(nouvelleDate);
+});
 </script>
 </body>
 </html>
