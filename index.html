@@ -18,6 +18,14 @@
         font-size: 48px;
         font-weight: bold;
     }
+
+    .jour-case {
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    margin: 2px;
+    border-radius: 3px;
+}
 </style>
 <body>
     <h1>Jour Zéro</h1>
@@ -38,12 +46,45 @@
 <p>Nombre d'écarts déclarés : <span id="compteurEcarts">0</span></p>
 <button id="btnEnvie">Envie résistée</button>
 <p>Envies résistées : <span id="compteurEnvies">0</span></p>
+<h2>Carnet de suivi</h2>
+<div id="carnet"></div>
 <script>
 
     function afficherEnvies() {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
     document.getElementById("compteurEnvies").textContent = historiqueEnvies.length;
     } 
+
+    function afficherCarnet() {
+    const conteneur = document.getElementById("carnet");
+    conteneur.innerHTML = "";
+
+    const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+    const joursEcarts = historiqueEcarts.map(function (date) {
+        return date.split("T")[0];
+    });
+
+    const nombreDeJours = 30;
+    const aujourdhui = new Date();
+
+    for (let i = nombreDeJours - 1; i >= 0; i--) {
+        const jour = new Date(aujourdhui);
+        jour.setDate(jour.getDate() - i);
+        const jourTexte = jour.toISOString().split("T")[0];
+
+        const carre = document.createElement("div");
+        carre.classList.add("jour-case");
+        carre.title = jourTexte;
+
+        if (joursEcarts.includes(jourTexte)) {
+            carre.style.backgroundColor = "#7C3A31";
+        } else {
+            carre.style.backgroundColor = "#2E4B3A";
+        }
+
+        conteneur.appendChild(carre);
+    }
+    }
  
     function afficherArgent(jours) {
         const depenseParSemaine = parseFloat(localStorage.getItem("depenseParSemaine")) || 0;
@@ -74,6 +115,7 @@
     }
 
     afficherEcarts();
+    afficherCarnet();
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
@@ -124,6 +166,7 @@
 
         afficherJours(aujourdhui);
         afficherEcarts();
+        afficherCarnet();
     });
 </script>
 </body>
