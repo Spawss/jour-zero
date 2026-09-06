@@ -25,7 +25,50 @@
     display: inline-block;
     margin: 2px;
     border-radius: 3px;
+}#accueilOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
+
+#accueilBoite {
+    background-color: #FBF9F2;
+    padding: 30px;
+    border-radius: 8px;
+    max-width: 400px;
+    text-align: left;
+}
+
+#accueilBoite label {
+    display: block;
+    margin-top: 15px;
+}
+
+#accueilBoite select,
+#accueilBoite input {
+    width: 100%;
+    margin-top: 5px;
+    padding: 5px;
+}
+
+#accueilBoite input[type="checkbox"] {
+    width: auto;
+    margin-top: 0;
+    margin-right: 8px;
+}
+
+#accueilBoite label.checkboxLabel {
+    display: flex;
+    align-items: center;
+    font-weight: normal;
+}
+
 </style>
 <body>
     <h1>Jour Zéro</h1>
@@ -48,7 +91,56 @@
 <p>Envies résistées : <span id="compteurEnvies">0</span></p>
 <h2>Carnet de suivi</h2>
 <div id="carnet"></div>
+<div id="accueilOverlay">
+    <div id="accueilBoite">
+        <h2>Bienvenue sur Jour Zéro</h2>
+        <p>Quelques questions pour personnaliser ton suivi.</p>
+
+        <label for="prenomInput">Ton prénom (facultatif) :</label>
+        <input type="text" id="prenomInput" placeholder="Comment on t'appelle ?">
+
+        <label for="motivationInput">Ta motivation principale :</label>
+        <select id="motivationInput">
+            <option value="permis">Récupérer mon permis</option>
+            <option value="sante">Ma santé</option>
+            <option value="argent">L'argent</option>
+            <option value="sommeil">Mieux dormir</option>
+            <option value="autre">Autre raison</option>
+        </select>
+
+        <label class="checkboxLabel">
+            <input type="checkbox" id="pasDObjectifInput">
+            J'arrête complètement, pas de date de fin
+        </label>
+
+        <div id="objectifBloc">
+            <label for="objectifInput">Mon objectif :</label>
+            <input type="number" id="objectifInput" min="1" value="30">
+            <select id="objectifUniteInput">
+                <option value="jours">jour(s)</option>
+                <option value="semaines">semaine(s)</option>
+                <option value="mois">mois</option>
+                <option value="annees">année(s)</option>
+            </select>
+        </div>
+
+        <button id="btnCreerCompte">Créer mon compte</button>
+    </div>
+</div>
 <script>
+
+    function afficherAccueilSiBesoin() {
+    const compteCree = localStorage.getItem("compteCree");
+    const overlay = document.getElementById("accueilOverlay");
+
+    if (compteCree) {
+        overlay.style.display = "none";
+    } else {
+        overlay.style.display = "flex";
+    }
+    }
+
+afficherAccueilSiBesoin();
 
     function afficherEnvies() {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
@@ -136,6 +228,44 @@
 
         localStorage.setItem("dateArret", valeurInput);
         afficherJours(nouvelleDate);
+    });
+    
+    document.getElementById("pasDObjectifInput").addEventListener("change", function () {
+        const blocObjectif = document.getElementById("objectifBloc");
+
+        if (this.checked) {
+            blocObjectif.style.display = "none";
+        } else {
+            blocObjectif.style.display = "block";
+        }
+    });
+
+    document.getElementById("btnCreerCompte").addEventListener("click", function () {
+    const prenom = document.getElementById("prenomInput").value;
+    const motivation = document.getElementById("motivationInput").value;
+    const pasDObjectif = document.getElementById("pasDObjectifInput").checked;
+
+    localStorage.setItem("prenom", prenom);
+    localStorage.setItem("motivation", motivation);
+    localStorage.setItem("pasDObjectif", pasDObjectif);
+
+    if (!pasDObjectif) {
+        const nombre = parseFloat(document.getElementById("objectifInput").value) || 1;
+        const unite = document.getElementById("objectifUniteInput").value;
+
+        let jours = nombre;
+        if (unite === "semaines") jours = nombre * 7;
+        if (unite === "mois") jours = nombre * 30;
+        if (unite === "annees") jours = nombre * 365;
+
+        localStorage.setItem("objectifJours", jours);
+    } else {
+        localStorage.removeItem("objectifJours");
+    }
+
+    localStorage.setItem("compteCree", "oui");
+
+    document.getElementById("accueilOverlay").style.display = "none";
     });
 
     document.getElementById("btnDepense").addEventListener("click", function () {
