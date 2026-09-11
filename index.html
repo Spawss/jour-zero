@@ -2,127 +2,491 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Jour Zéro</title>
-         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Spectral:wght@500;600&display=swap">
+    <meta name="theme-color" content="#0D1310">
+    <link rel="icon" href="jour-zero-mark.svg">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Space+Mono:wght@400;700&display=swap">
 </head>
-<style>   
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
     body {
         background-color: #0D1310;
         color: #FFFFFF;
-        font-family: 'Manrope', system-ui, sans-serif;
-        text-align: center;
-        padding: 30px 20px 60px;
+        font-family: 'Space Mono', monospace;
+        font-size: 14px;
+        line-height: 1.6;
+        margin: 0;
+        padding: 28px 18px 60px;
     }
 
-        h1, h2 {
-        font-family: 'Spectral', Georgia, serif;
-        font-weight: 600;
+    /* Le conteneur qui empeche la page de s'etaler sur grand ecran */
+    #page {
+        max-width: 440px;
+        margin: 0 auto;
+    }
+
+    h1, h2 {
+        font-family: 'Anton', Impact, sans-serif;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    /* ---------- En-tete ---------- */
+
+    #entete {
+        text-align: center;
+        margin-bottom: 26px;
+    }
+
+    #logoMark {
+        width: 190px;
+        max-width: 100%;
+        display: block;
+        margin: 0 auto 14px;
+    }
+
+    #logo {
+        font-family: 'Permanent Marker', cursive;
+        font-size: 30px;
+        font-weight: 400;
+        text-transform: none;
+        letter-spacing: 0.5px;
+        color: #FFFFFF;
+        margin: 0 0 2px;
+    }
+
+    #logoPoint {
+        color: #F0883E;
+    }
+
+    #tagline {
+        font-size: 12px;
+        color: #8FA396;
+        margin: 0;
+    }
+
+    /* ---------- La carte du compteur ---------- */
+
+    #heroCompteur {
+        background: linear-gradient(160deg, #2F7D52 0%, #14432C 55%, #0F1E16 100%);
+        border-radius: 24px;
+        padding: 34px 24px 28px;
+        text-align: center;
+        margin-bottom: 12px;
     }
 
     #compteur {
-        font-family: 'Spectral', Georgia, serif;
+        display: block;
+        font-size: 64px;
+        font-weight: 700;
+        line-height: 1;
         color: #FFFFFF;
-        font-size: 56px;
-        font-weight: 600;
+    }
+
+    #heroLabel {
+        font-size: 12px;
+        letter-spacing: 0.5px;
+        color: #D9EBDF;
+        margin: 10px 0 0;
+    }
+
+    /* ---------- Les trois chiffres ---------- */
+
+    #stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 24px;
+    }
+
+    .stat {
+        background-color: #152019;
+        border-radius: 16px;
+        padding: 16px 8px;
+        text-align: center;
+    }
+
+    .statValeur {
+        display: block;
+        font-size: 19px;
+        font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1.2;
+    }
+
+    .statLabel {
+        display: block;
+        font-size: 10.5px;
+        line-height: 1.4;
+        color: #8FA396;
+        margin-top: 8px;
+    }
+
+    /* ---------- Les deux boutons du quotidien ---------- */
+
+    #actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 26px;
+    }
+
+    button {
+        background-color: transparent;
+        color: #C9D6CD;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 16px;
+        padding: 15px;
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        font-weight: 700;
+        cursor: pointer;
+    }
+
+    #actions button {
+        width: 100%;
+    }
+
+    #btnEnvie {
+        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
+        color: #FFFFFF;
+        border: none;
+    }
+
+    /* Le brique des cases "ecart" du carnet : meme couleur, meme sens. */
+    #btnEcart {
+        border-color: rgba(168, 90, 59, 0.55);
+        color: #C2795A;
+    }
+
+    #astuceDuMoment,
+    #messageEcart {
+        font-size: 12.5px;
+        line-height: 1.6;
+        margin: 2px 0 0;
+        text-align: center;
+    }
+
+    #astuceDuMoment {
+        color: #F0883E;
+    }
+
+    #messageEcart {
+        color: #C2795A;
+    }
+
+    /* ---------- Les blocs du bas ---------- */
+
+    .carte {
+        background-color: #152019;
+        border-radius: 20px;
+        padding: 22px 20px;
+        margin-bottom: 14px;
+    }
+
+    .carte h2 {
+        font-size: 15px;
+        color: #FFFFFF;
+        margin: 0 0 16px;
+    }
+
+    .legende {
+        font-size: 11px;
+        color: #5E6B62;
+        margin: 14px 0 0;
+    }
+
+    /* Le carnet : trois rangees de dix, plutot qu'une longue ligne */
+    #carnet {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 7px;
     }
 
     .jour-case {
-    width: 16px;
-    height: 16px;
-    display: inline-block;
-    margin: 2px;
-    border-radius: 3px;
+        display: block;
+        width: auto;
+        height: auto;
+        aspect-ratio: 1;
+        margin: 0;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-}
+    .jour-case.choisi {
+        outline: 2px solid #F0883E;
+        outline-offset: 2px;
+    }
 
-#accueilOverlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.6);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+    #detailJour {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #C9D6CD;
+        margin: 16px 0 0;
+        min-height: 20px;
+    }
 
-#accueilBoite {
-    background-color: #152019;
-    color: #FFFFFF;
-    padding: 30px;
-    border-radius: 8px;
-    max-width: 400px;
-    text-align: left;
-}
+    /* ---------- Reglages ---------- */
 
-#accueilBoite label {
-    display: block;
-    margin-top: 15px;
-}
+    #reglages label {
+        display: block;
+        font-size: 12px;
+        color: #8FA396;
+        margin-bottom: 6px;
+    }
 
-#accueilBoite select,
-#accueilBoite input {
-    width: 100%;
-    margin-top: 5px;
-    padding: 5px;
-}
+    #reglages .champ {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 18px;
+    }
 
-#accueilBoite input[type="checkbox"] {
-    width: auto;
-    margin-top: 0;
-    margin-right: 8px;
-}
+    #reglages .champ:last-child {
+        margin-bottom: 0;
+    }
 
-#accueilBoite label.checkboxLabel {
-    display: flex;
-    align-items: center;
-    font-weight: normal;
-}
+    #reglages input {
+        flex-grow: 1;
+        min-width: 0;
+    }
 
-#logo {
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-}
+    input,
+    select {
+        font-family: 'Space Mono', monospace;
+        font-size: 13px;
+        background-color: #0D1310;
+        color: #FFFFFF;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+        padding: 10px;
+    }
 
-#logoJour {
-    color: #FFFFFF;
-}
+    /* ---------- Astuces ---------- */
 
-#logoZero {
-    color: #F0883E;
-}
+    #btnAstuces {
+        width: 100%;
+    }
 
-#tagline {
-    font-size: 13px;
-    color: #8FA396;
-    margin-top: 0;
-    margin-bottom: 30px;
-}
+    #astucesBloc {
+        display: none;
+        text-align: left;
+        margin-top: 6px;
+    }
+
+    #astucesBloc h3 {
+        font-family: 'Anton', Impact, sans-serif;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 14px;
+        color: #FFFFFF;
+        margin: 26px 0 12px;
+    }
+
+    #astucesBloc ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    #astucesBloc li {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #C9D6CD;
+        margin-bottom: 14px;
+    }
+
+    #astucesBloc li::before {
+        content: "";
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 2px;
+        background-color: #2F7D52;
+        margin-right: 10px;
+        vertical-align: middle;
+    }
+
+    #astucesSource {
+        font-size: 11px;
+        color: #5E6B62;
+        margin-top: 26px;
+    }
+
+    /* ---------- Ecran d'accueil ---------- */
+
+    #accueilOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 18px;
+    }
+
+    #accueilBoite {
+        background-color: #152019;
+        color: #FFFFFF;
+        padding: 28px 24px;
+        border-radius: 20px;
+        max-width: 400px;
+        width: 100%;
+        text-align: left;
+    }
+
+    #accueilBoite h2 {
+        font-size: 16px;
+        margin: 0 0 6px;
+    }
+
+    #accueilBoite label {
+        display: block;
+        margin-top: 16px;
+        font-size: 12px;
+        color: #8FA396;
+    }
+
+    #accueilBoite select,
+    #accueilBoite input {
+        width: 100%;
+        margin-top: 6px;
+    }
+
+    #accueilBoite input[type="checkbox"] {
+        width: auto;
+        margin-top: 0;
+        margin-right: 8px;
+    }
+
+    #accueilBoite label.checkboxLabel {
+        display: flex;
+        align-items: center;
+        font-weight: normal;
+        color: #C9D6CD;
+    }
+
+    #btnCreerCompte {
+        width: 100%;
+        margin-top: 22px;
+    }
 
 </style>
 <body>
-    <h1 id="logo"><span id="logoJour">Jour</span> <span id="logoZero">Zéro</span></h1>
-<p id="tagline">Ton suivi, jour après jour.</p>
-<p>Jours sans consommation : <span id="compteur">0</span></p>
-<div>
-    <label for="dateArretInput">Ma date d'arrêt :</label>
-    <input type="date" id="dateArretInput">
-    <button id="btnValider">Valider</button>
-</div>
-<div>
-    <label for="depenseInput">Dépense habituelle par semaine (CHF) :</label>
-    <input type="number" id="depenseInput" min="0" step="0.5">
-    <button id="btnDepense">Enregistrer</button>
+<div id="page">
+
+    <header id="entete">
+        <img id="logoMark" src="jour-zero-banniere.svg" alt="">
+        <h1 id="logo">Jour Zéro<span id="logoPoint">.</span></h1>
+        <p id="tagline">Ton suivi, jour après jour.</p>
+    </header>
+
+    <section id="heroCompteur">
+        <span id="compteur">0</span>
+        <p id="heroLabel">jours sans consommation</p>
+    </section>
+
+    <section id="stats">
+        <div class="stat">
+            <span class="statValeur"><span id="argentEconomise">0</span></span>
+            <span class="statLabel">CHF économisés</span>
+        </div>
+        <div class="stat">
+            <span class="statValeur"><span id="compteurEnvies">0</span></span>
+            <span class="statLabel">envies résistées</span>
+        </div>
+        <div class="stat">
+            <span class="statValeur"><span id="compteurEcarts">0</span></span>
+            <span class="statLabel">fois craqué</span>
+        </div>
+    </section>
+
+    <section id="actions">
+        <button id="btnEnvie">Résister à l'envie</button>
+        <p id="astuceDuMoment"></p>
+        <button id="btnEcart">J'ai craqué</button>
+        <p id="messageEcart"></p>
+    </section>
+
+    <section class="carte">
+        <h2>Carnet de suivi</h2>
+        <div id="carnet"></div>
+        <p id="detailJour"></p>
+        <p class="legende">Les 30 derniers jours. Touche un carré pour voir la journée.</p>
+    </section>
+
+    <section class="carte">
+        <button id="btnAstuces">Voir les astuces</button>
+
+        <div id="astucesBloc">
+
+            <h3>Quand l'envie monte</h3>
+            <ul>
+                <li>Une envie dure rarement plus d'un quart d'heure. Tiens une heure, pas toute ta vie.</li>
+                <li>Change de pièce, change de rue. L'envie est souvent accrochée à un endroit.</li>
+                <li>Occupe tes mains. Ça marche mieux que d'essayer de ne pas y penser.</li>
+                <li>Avoir envie n'est pas avoir craqué. La ressentir ne veut pas dire que t'as échoué.</li>
+            </ul>
+
+            <h3>Avec les potes qui fument</h3>
+            <ul>
+                <li>Décide avant d'y aller. Sur place, c'est trop tard pour réfléchir.</li>
+                <li>Les premières semaines, évite si tu peux. C'est pas de la faiblesse, c'est de la stratégie.</li>
+                <li>Dis-le à un seul pote du groupe. T'as un allié au lieu d'être seul contre l'ambiance.</li>
+                <li>L'alcool fait tomber tes défenses avant le cannabis. Surveille-le en premier.</li>
+            </ul>
+
+            <h3>Les premiers jours</h3>
+            <ul>
+                <li>Le plus dur tombe vers le 4e-6e jour, puis ça redescend. C'est de la chimie, pas de la volonté.</li>
+                <li>Sommeil pourri, irritabilité, rêves bizarres : c'est le sevrage, pas toi qui changes de personnalité.</li>
+                <li>Un jour à la fois. Ne compte pas ceux qui restent.</li>
+            </ul>
+
+            <h3>Au quotidien</h3>
+            <ul>
+                <li>Bouge. La fatigue physique remplace celle que t'allais chercher dans le joint.</li>
+                <li>Vide la maison. Ce qui traîne finit toujours par servir.</li>
+                <li>Regarde ce que t'économises. Le chiffre fait plus d'effet que les bonnes intentions.</li>
+                <li>Si tu remplaces par la cigarette, tu changes juste de dépendance.</li>
+            </ul>
+
+            <h3>Quand ça suffit pas</h3>
+            <ul>
+                <li>Demander de l'aide n'est pas un échec. En Suisse, Stop-Cannabis.ch et ton médecin sont gratuits et confidentiels.</li>
+            </ul>
+
+            <p id="astucesSource">Conseils adaptés de Stop-Cannabis.ch et de Drogues Info Service.</p>
+
+        </div>
+    </section>
+
+    <section class="carte" id="reglages">
+        <h2>Réglages</h2>
+
+        <label for="dateArretInput">Ma date d'arrêt</label>
+        <div class="champ">
+            <input type="date" id="dateArretInput">
+            <button id="btnValider">Valider</button>
+        </div>
+
+        <label for="depenseInput">Dépense habituelle par semaine (CHF)</label>
+        <div class="champ">
+            <input type="number" id="depenseInput" min="0" step="0.5">
+            <button id="btnDepense">Enregistrer</button>
+        </div>
+    </section>
+
 </div>
 
-<p>Argent économisé : <span id="argentEconomise">0</span> CHF</p>
-<button id="btnEcart">J'ai craqué</button>
-<p>Nombre de fois où j'ai craqué : <span id="compteurEcarts">0</span></p>
-<button id="btnEnvie">Résister à l'envie</button>
-<p>Envies résistées : <span id="compteurEnvies">0</span></p>
-<h2>Carnet de suivi</h2>
-<div id="carnet"></div>
 <div id="accueilOverlay">
     <div id="accueilBoite">
         <h2>Bienvenue sur Jour Zéro</h2>
@@ -139,6 +503,12 @@
             <option value="sommeil">Mieux dormir</option>
             <option value="autre">Autre raison</option>
         </select>
+
+        <label for="dateArretAccueil">Depuis quand t'as arrêté ?</label>
+        <input type="date" id="dateArretAccueil">
+
+        <label for="depenseAccueil">Ce que tu dépensais par semaine (CHF) :</label>
+        <input type="number" id="depenseAccueil" min="0" step="0.5" placeholder="0">
 
         <label class="checkboxLabel">
             <input type="checkbox" id="pasDObjectifInput">
@@ -161,6 +531,25 @@
 </div>
 <script>
 
+    const messagesEcart = [
+        "Un écart n'efface pas ce que t'as tenu avant.",
+        "Ça arrive. Ce qui compte, c'est l'heure qui vient.",
+        "Note ce qui s'est passé juste avant. C'est là qu'est l'info utile.",
+        "Demain matin t'es déjà à un jour.",
+        "T'as pas tout perdu. T'as juste un jour à refaire."
+    ];
+
+    const astucesEnvie = [
+        "Une envie dure rarement plus d'un quart d'heure. Tiens une heure, pas toute ta vie.",
+        "Change de pièce, change de rue. L'envie est souvent accrochée à un endroit.",
+        "Occupe tes mains. Ça marche mieux que d'essayer de ne pas y penser.",
+        "Avoir envie n'est pas avoir craqué.",
+        "Bois un grand verre d'eau et respire lentement. Ça passe.",
+        "Un jour à la fois. Ne compte pas ceux qui restent.",
+        "Sors marcher dix minutes. L'envie tiendra rarement le trajet.",
+        "Regarde ton compteur. C'est ça que tu protèges là, maintenant."
+    ];
+
     function afficherAccueilSiBesoin() {
     const compteCree = localStorage.getItem("compteCree");
     const overlay = document.getElementById("accueilOverlay");
@@ -174,40 +563,108 @@
 
 afficherAccueilSiBesoin();
 
+    function remplirReglages() {
+        const date = localStorage.getItem("dateArret");
+        const depense = localStorage.getItem("depenseParSemaine");
+
+        if (date) {
+            document.getElementById("dateArretInput").value = date;
+        }
+        if (depense) {
+            document.getElementById("depenseInput").value = depense;
+        }
+    }
+
     function afficherEnvies() {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
     document.getElementById("compteurEnvies").textContent = historiqueEnvies.length;
     } 
 
-    function afficherCarnet() {
-    const conteneur = document.getElementById("carnet");
-    conteneur.innerHTML = "";
-
-    const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
-    const joursEcarts = historiqueEcarts.map(function (date) {
-        return date.split("T")[0];
-    });
-
-    const nombreDeJours = 30;
-    const aujourdhui = new Date();
-
-    for (let i = nombreDeJours - 1; i >= 0; i--) {
-        const jour = new Date(aujourdhui);
-        jour.setDate(jour.getDate() - i);
-        const jourTexte = jour.toISOString().split("T")[0];
-
-        const carre = document.createElement("div");
-        carre.classList.add("jour-case");
-        carre.title = jourTexte;
-
-        if (joursEcarts.includes(jourTexte)) {
-    carre.style.backgroundColor = "#A85A3B";
-} else {
-    carre.style.backgroundColor = "#2F7D52";
-}
-
-        conteneur.appendChild(carre);
+    // Transforme "2026-09-11" en "vendredi 11 septembre"
+    function jourEnTexte(jourTexte) {
+        const date = new Date(jourTexte + "T12:00:00");
+        return date.toLocaleDateString("fr-CH", {
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+        });
     }
+
+    // Ce qui s'est passe un jour donne
+    function afficherDetailJour(jourTexte) {
+        const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+        const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+        const dateArret = localStorage.getItem("dateArret");
+
+        const aEcart = historiqueEcarts.some(function (date) {
+            return date.split("T")[0] === jourTexte;
+        });
+
+        const nombreEnvies = historiqueEnvies.filter(function (date) {
+            return date.split("T")[0] === jourTexte;
+        }).length;
+
+        let texte = jourEnTexte(jourTexte) + " — ";
+
+        if (dateArret && jourTexte < dateArret) {
+            texte += "avant ton arrêt.";
+        } else if (aEcart) {
+            texte += "tu as craqué ce jour-là.";
+        } else {
+            texte += "journée tenue.";
+        }
+
+        if (nombreEnvies === 1) {
+            texte += " 1 envie résistée.";
+        } else if (nombreEnvies > 1) {
+            texte += " " + nombreEnvies + " envies résistées.";
+        }
+
+        document.getElementById("detailJour").textContent = texte;
+    }
+
+    function afficherCarnet() {
+        const conteneur = document.getElementById("carnet");
+        conteneur.innerHTML = "";
+
+        const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+        const joursEcarts = historiqueEcarts.map(function (date) {
+            return date.split("T")[0];
+        });
+
+        const dateArret = localStorage.getItem("dateArret");
+        const nombreDeJours = 28;
+        const aujourdhui = new Date();
+
+        for (let i = nombreDeJours - 1; i >= 0; i--) {
+            const jour = new Date(aujourdhui);
+            jour.setDate(jour.getDate() - i);
+            const jourTexte = jour.toISOString().split("T")[0];
+
+            const carre = document.createElement("div");
+            carre.classList.add("jour-case");
+            carre.title = jourEnTexte(jourTexte);
+
+            if (dateArret && jourTexte < dateArret) {
+                // Avant l'arret : ces jours-la ne comptent pas comme tenus.
+                carre.style.backgroundColor = "#18231D";
+            } else if (joursEcarts.includes(jourTexte)) {
+                carre.style.backgroundColor = "#A85A3B";
+            } else {
+                carre.style.backgroundColor = "#2F7D52";
+            }
+
+            carre.addEventListener("click", function () {
+                const ancienChoix = document.querySelector(".jour-case.choisi");
+                if (ancienChoix) {
+                    ancienChoix.classList.remove("choisi");
+                }
+                carre.classList.add("choisi");
+                afficherDetailJour(jourTexte);
+            });
+
+            conteneur.appendChild(carre);
+        }
     }
  
     function afficherArgent(jours) {
@@ -240,11 +697,18 @@ afficherAccueilSiBesoin();
 
     afficherEcarts();
     afficherCarnet();
+    afficherEnvies();
+    remplirReglages();
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
     historiqueEnvies.push(new Date().toISOString());
     localStorage.setItem("historiqueEnvies", JSON.stringify(historiqueEnvies));
+
+    const numero = Math.floor(Math.random() * astucesEnvie.length);
+    document.getElementById("astuceDuMoment").textContent = astucesEnvie[numero];
+    document.getElementById("messageEcart").textContent = "";
+
     afficherEnvies();
     });
 
@@ -295,6 +759,20 @@ afficherAccueilSiBesoin();
         localStorage.removeItem("objectifJours");
     }
 
+    const depenseAccueil = document.getElementById("depenseAccueil").value;
+    if (depenseAccueil) {
+        localStorage.setItem("depenseParSemaine", depenseAccueil);
+    }
+
+    const dateAccueil = document.getElementById("dateArretAccueil").value;
+    if (dateAccueil) {
+        localStorage.setItem("dateArret", dateAccueil);
+        afficherJours(new Date(dateAccueil));
+    }
+
+    remplirReglages();
+    afficherCarnet();
+
     localStorage.setItem("compteCree", "oui");
 
     document.getElementById("accueilOverlay").style.display = "none";
@@ -326,9 +804,27 @@ afficherAccueilSiBesoin();
         const nouvelleDateArret = aujourdhui.toISOString().split("T")[0];
         localStorage.setItem("dateArret", nouvelleDateArret);
 
+        const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
+        document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
+        document.getElementById("astuceDuMoment").textContent = "";
+
         afficherJours(aujourdhui);
         afficherEcarts();
         afficherCarnet();
+        afficherEnvies();
+        remplirReglages();
+    });
+
+    document.getElementById("btnAstuces").addEventListener("click", function () {
+        const bloc = document.getElementById("astucesBloc");
+
+        if (bloc.style.display === "block") {
+            bloc.style.display = "none";
+            this.textContent = "Voir les astuces";
+        } else {
+            bloc.style.display = "block";
+            this.textContent = "Masquer les astuces";
+        }
     });
 </script>
 </body>
