@@ -91,6 +91,33 @@
         color: #FFFFFF;
     }
 
+    #objectifZone {
+        display: none;
+        margin-top: 20px;
+    }
+
+    #objectifBarre {
+        height: 6px;
+        border-radius: 3px;
+        background-color: rgba(255, 255, 255, 0.18);
+        overflow: hidden;
+    }
+
+    #objectifJauge {
+        height: 100%;
+        width: 0;
+        border-radius: 3px;
+        background-color: #F0883E;
+        transition: width 0.7s cubic-bezier(.16, 1, .3, 1);
+    }
+
+    #objectifLigne {
+        font-size: 11.5px;
+        color: #D9EBDF;
+        margin: 9px 0 0;
+        letter-spacing: 0.3px;
+    }
+
     #heroLabel {
         font-size: 12px;
         letter-spacing: 0.5px;
@@ -258,6 +285,27 @@
         min-width: 0;
     }
 
+    #reglages textarea {
+        width: 100%;
+        font-family: 'Space Mono', monospace;
+        font-size: 11px;
+        line-height: 1.5;
+        background-color: #0D1310;
+        color: #8FA396;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 10px;
+        padding: 10px;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+
+    #messageSauvegarde {
+        font-size: 12px;
+        color: #F0883E;
+        margin: 4px 0 0;
+        min-height: 18px;
+    }
+
     input,
     select {
         font-family: 'Space Mono', monospace;
@@ -395,6 +443,10 @@
     <section id="heroCompteur">
         <span id="compteur">0</span>
         <p id="heroLabel">jours sans consommation</p>
+        <div id="objectifZone">
+            <div id="objectifBarre"><div id="objectifJauge"></div></div>
+            <p id="objectifLigne"></p>
+        </div>
     </section>
 
     <section id="stats">
@@ -486,6 +538,14 @@
             <input type="number" id="depenseInput" min="0" step="0.5">
             <button id="btnDepense">Enregistrer</button>
         </div>
+
+        <label for="zoneSauvegarde">Sauvegarde et transfert</label>
+        <textarea id="zoneSauvegarde" rows="3" placeholder="Ton code de sauvegarde apparaîtra ici"></textarea>
+        <div class="champ">
+            <button id="btnExporter">Exporter</button>
+            <button id="btnImporter">Importer</button>
+        </div>
+        <p id="messageSauvegarde"></p>
     </section>
 
 </div>
@@ -513,11 +573,6 @@
         <label for="depenseAccueil">Ce que tu dépensais par semaine (CHF) :</label>
         <input type="number" id="depenseAccueil" min="0" step="0.5" placeholder="0">
 
-        <label class="checkboxLabel">
-            <input type="checkbox" id="pasDObjectifInput">
-            J'arrête complètement, pas de date de fin
-        </label>
-
         <div id="objectifBloc">
             <label for="objectifInput">Mon objectif :</label>
             <input type="number" id="objectifInput" min="1" value="30">
@@ -528,6 +583,11 @@
                 <option value="annees">année(s)</option>
             </select>
         </div>
+
+        <label class="checkboxLabel">
+            <input type="checkbox" id="pasDObjectifInput">
+            J'arrête complètement, pas de date de fin
+        </label>
 
         <button id="btnCreerCompte">Créer mon compte</button>
     </div>
@@ -670,6 +730,34 @@ afficherAccueilSiBesoin();
         }
     }
  
+    // Le compte a rebours vers l'objectif, s'il y en a un.
+    function afficherObjectif(jours) {
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        const zone = document.getElementById("objectifZone");
+
+        if (!objectif) {
+            zone.style.display = "none";
+            return;
+        }
+
+        const restants = Math.max(objectif - jours, 0);
+        const avance = Math.min(jours / objectif, 1);
+
+        zone.style.display = "block";
+        document.getElementById("objectifJauge").style.width = (avance * 100) + "%";
+
+        let texte;
+        if (restants === 0) {
+            texte = "Objectif atteint : " + objectif + " jours.";
+        } else if (restants === 1) {
+            texte = "Plus qu'un jour sur " + objectif + ".";
+        } else {
+            texte = "Plus que " + restants + " jours sur " + objectif + ".";
+        }
+
+        document.getElementById("objectifLigne").textContent = texte;
+    }
+
     function afficherArgent(jours) {
         const depenseParSemaine = parseFloat(localStorage.getItem("depenseParSemaine")) || 0;
         const depenseParJour = depenseParSemaine / 7;
@@ -690,6 +778,7 @@ afficherAccueilSiBesoin();
 
         document.getElementById("compteur").textContent = jours;
         afficherArgent(jours);
+        afficherObjectif(jours);
     }
 
     const dateSauvegardee = localStorage.getItem("dateArret");
@@ -702,6 +791,10 @@ afficherAccueilSiBesoin();
     afficherCarnet();
     afficherEnvies();
     remplirReglages();
+
+    if (!dateSauvegardee) {
+        afficherObjectif(0);
+    }
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
@@ -776,6 +869,10 @@ afficherAccueilSiBesoin();
     remplirReglages();
     afficherCarnet();
 
+    if (!dateAccueil) {
+        afficherObjectif(0);
+    }
+
     localStorage.setItem("compteCree", "oui");
 
     document.getElementById("accueilOverlay").style.display = "none";
@@ -816,6 +913,65 @@ afficherAccueilSiBesoin();
         afficherCarnet();
         afficherEnvies();
         remplirReglages();
+    });
+
+    // Toutes les cles qu'on emporte d'un appareil a l'autre.
+    const CLES_SAUVEGARDE = [
+        "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
+        "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree"
+    ];
+
+    document.getElementById("btnExporter").addEventListener("click", function () {
+        const donnees = {};
+
+        CLES_SAUVEGARDE.forEach(function (cle) {
+            const valeur = localStorage.getItem(cle);
+            if (valeur !== null) {
+                donnees[cle] = valeur;
+            }
+        });
+
+        const zone = document.getElementById("zoneSauvegarde");
+        zone.value = JSON.stringify(donnees);
+        zone.focus();
+        zone.select();
+
+        document.getElementById("messageSauvegarde").textContent =
+            "Copie ce code et envoie-le-toi, par message ou par mail.";
+    });
+
+    document.getElementById("btnImporter").addEventListener("click", function () {
+        const zone = document.getElementById("zoneSauvegarde");
+        const message = document.getElementById("messageSauvegarde");
+
+        if (!zone.value.trim()) {
+            message.textContent = "Colle d'abord ton code de sauvegarde dans le cadre.";
+            return;
+        }
+
+        let donnees;
+
+        try {
+            donnees = JSON.parse(zone.value);
+        } catch (erreur) {
+            message.textContent = "Ce code n'est pas lisible. Vérifie que tu l'as copié en entier.";
+            return;
+        }
+
+        const confirmation = confirm("Remplacer les données de cet appareil par celles du code ?");
+
+        if (!confirmation) {
+            return;
+        }
+
+        CLES_SAUVEGARDE.forEach(function (cle) {
+            if (donnees[cle] !== undefined) {
+                localStorage.setItem(cle, donnees[cle]);
+            }
+        });
+
+        message.textContent = "Données importées. La page se recharge.";
+        setTimeout(function () { location.reload(); }, 900);
     });
 
     document.getElementById("btnAstuces").addEventListener("click", function () {
