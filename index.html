@@ -539,6 +539,12 @@
             <button id="btnDepense">Enregistrer</button>
         </div>
 
+        <label for="objectifReglageInput">Mon objectif (en jours) — laisse vide si tu n'en veux pas</label>
+        <div class="champ">
+            <input type="number" id="objectifReglageInput" min="1" placeholder="Aucun objectif">
+            <button id="btnObjectif">Enregistrer</button>
+        </div>
+
         <label for="zoneSauvegarde">Sauvegarde et transfert</label>
         <textarea id="zoneSauvegarde" rows="3" placeholder="Ton code de sauvegarde apparaîtra ici"></textarea>
         <div class="champ">
@@ -635,6 +641,11 @@ afficherAccueilSiBesoin();
         }
         if (depense) {
             document.getElementById("depenseInput").value = depense;
+        }
+
+        const objectif = localStorage.getItem("objectifJours");
+        if (objectif) {
+            document.getElementById("objectifReglageInput").value = objectif;
         }
     }
 
@@ -876,6 +887,25 @@ afficherAccueilSiBesoin();
     localStorage.setItem("compteCree", "oui");
 
     document.getElementById("accueilOverlay").style.display = "none";
+    });
+
+    document.getElementById("btnObjectif").addEventListener("click", function () {
+        const valeur = document.getElementById("objectifReglageInput").value.trim();
+
+        if (valeur === "") {
+            localStorage.removeItem("objectifJours");
+            localStorage.setItem("pasDObjectif", "true");
+        } else {
+            localStorage.setItem("objectifJours", parseInt(valeur, 10));
+            localStorage.setItem("pasDObjectif", "false");
+        }
+
+        const dateArret = localStorage.getItem("dateArret");
+        if (dateArret) {
+            afficherJours(new Date(dateArret));
+        } else {
+            afficherObjectif(0);
+        }
     });
 
     document.getElementById("btnDepense").addEventListener("click", function () {
