@@ -3,20 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <title>Jour Zéro</title>
+         <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;600;700&family=Spectral:wght@500;600&display=swap">
 </head>
-<style>
+<style>   
     body {
-        background-color: #F1EDE1;
-        color: #23261E;
-        font-family: Georgia, serif;
+        background-color: #0D1310;
+        color: #FFFFFF;
+        font-family: 'Manrope', system-ui, sans-serif;
         text-align: center;
-        padding-top: 60px;
+        padding: 30px 20px 60px;
+    }
+
+        h1, h2 {
+        font-family: 'Spectral', Georgia, serif;
+        font-weight: 600;
     }
 
     #compteur {
-        color: #8A6A24;
-        font-size: 48px;
-        font-weight: bold;
+        font-family: 'Spectral', Georgia, serif;
+        color: #FFFFFF;
+        font-size: 56px;
+        font-weight: 600;
     }
 
     .jour-case {
@@ -25,7 +32,10 @@
     display: inline-block;
     margin: 2px;
     border-radius: 3px;
-}#accueilOverlay {
+
+}
+
+#accueilOverlay {
     position: fixed;
     top: 0;
     left: 0;
@@ -38,7 +48,8 @@
 }
 
 #accueilBoite {
-    background-color: #FBF9F2;
+    background-color: #152019;
+    color: #FFFFFF;
     padding: 30px;
     border-radius: 8px;
     max-width: 400px;
@@ -69,9 +80,30 @@
     font-weight: normal;
 }
 
+#logo {
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+}
+
+#logoJour {
+    color: #FFFFFF;
+}
+
+#logoZero {
+    color: #F0883E;
+}
+
+#tagline {
+    font-size: 13px;
+    color: #8FA396;
+    margin-top: 0;
+    margin-bottom: 30px;
+}
+
 </style>
 <body>
-    <h1>Jour Zéro</h1>
+    <h1 id="logo"><span id="logoJour">Jour</span> <span id="logoZero">Zéro</span></h1>
+<p id="tagline">Ton suivi, jour après jour.</p>
 <p>Jours sans consommation : <span id="compteur">0</span></p>
 <div>
     <label for="dateArretInput">Ma date d'arrêt :</label>
@@ -85,9 +117,9 @@
 </div>
 
 <p>Argent économisé : <span id="argentEconomise">0</span> CHF</p>
-<button id="btnEcart">Consommation déclarée</button>
-<p>Nombre d'écarts déclarés : <span id="compteurEcarts">0</span></p>
-<button id="btnEnvie">Envie résistée</button>
+<button id="btnEcart">J'ai craqué</button>
+<p>Nombre de fois où j'ai craqué : <span id="compteurEcarts">0</span></p>
+<button id="btnEnvie">Résister à l'envie</button>
 <p>Envies résistées : <span id="compteurEnvies">0</span></p>
 <h2>Carnet de suivi</h2>
 <div id="carnet"></div>
@@ -169,10 +201,10 @@ afficherAccueilSiBesoin();
         carre.title = jourTexte;
 
         if (joursEcarts.includes(jourTexte)) {
-            carre.style.backgroundColor = "#7C3A31";
-        } else {
-            carre.style.backgroundColor = "#2E4B3A";
-        }
+    carre.style.backgroundColor = "#A85A3B";
+} else {
+    carre.style.backgroundColor = "#2F7D52";
+}
 
         conteneur.appendChild(carre);
     }
