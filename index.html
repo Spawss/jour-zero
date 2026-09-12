@@ -73,6 +73,7 @@
         margin: 0;
     }
 
+
     /* ---------- La carte du compteur ---------- */
 
     #heroCompteur {
@@ -115,6 +116,14 @@
         font-size: 11.5px;
         color: #D9EBDF;
         margin: 9px 0 0;
+        letter-spacing: 0.3px;
+    }
+
+    #motivationLigne {
+        display: none;
+        font-size: 11.5px;
+        color: #A8CDB6;
+        margin: 14px 0 0;
         letter-spacing: 0.3px;
     }
 
@@ -199,9 +208,34 @@
     /* ---------- Le bilan de la journee ---------- */
 
     #bilanQuestion {
-        font-size: 12.5px;
-        color: #C9D6CD;
-        margin: 0 0 12px;
+        font-size: 13.5px;
+        color: #FFFFFF;
+        margin: 0 0 14px;
+    }
+
+    #momentsDuJour {
+        list-style: none;
+        margin: 0 0 14px;
+        padding: 0;
+    }
+
+    #momentsDuJour li {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #A8CDB6;
+        padding: 7px 0 7px 12px;
+        border-left: 2px solid rgba(255, 255, 255, 0.12);
+    }
+
+    #momentsDuJour .momentHeure {
+        color: #FFFFFF;
+        font-weight: 700;
+    }
+
+    #momentsDuJour .momentNote {
+        display: block;
+        color: #8FA396;
+        font-style: italic;
     }
 
     #bilanNiveaux {
@@ -301,8 +335,13 @@
         cursor: pointer;
     }
 
-    #actions button {
+    #actions button,
+    #zoneEcart button {
         width: 100%;
+    }
+
+    #zoneEcart {
+        margin-bottom: 26px;
     }
 
     #btnEnvie {
@@ -376,6 +415,21 @@
         outline-offset: 2px;
     }
 
+    #bilanPeriode {
+        display: none;
+        font-size: 12px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        background-color: rgba(47, 125, 82, 0.16);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: 16px 0 0;
+    }
+
+    #bilanPeriode strong {
+        color: #F0883E;
+    }
+
     #detailJour {
         white-space: pre-line;
         font-size: 12.5px;
@@ -385,7 +439,99 @@
         min-height: 20px;
     }
 
+    /* ---------- Le palier franchi ---------- */
+
+    #fete {
+        display: none;
+        background: linear-gradient(120deg, #F0883E 0%, #C25F23 100%);
+        border-radius: 20px;
+        padding: 22px 20px;
+        margin-bottom: 12px;
+        text-align: center;
+    }
+
+    #feteTitre {
+        font-family: 'Anton', Impact, sans-serif;
+        font-size: 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        color: #FFFFFF;
+        margin: 0 0 6px;
+    }
+
+    #feteTexte {
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: #2A1405;
+        margin: 0 0 16px;
+    }
+
+    #btnFeteFermer {
+        background-color: rgba(0, 0, 0, 0.28);
+        border: none;
+        color: #FFFFFF;
+        padding: 11px 26px;
+    }
+
+    /* ---------- La note d'ecart ---------- */
+
+    #ecartZone {
+        display: none;
+        margin-top: 4px;
+    }
+
+    #ecartZone label {
+        display: block;
+        font-size: 12px;
+        color: #C2795A;
+        margin-bottom: 8px;
+    }
+
+    #ecartNote {
+        width: 100%;
+        background-color: #0D1310;
+        color: #E6F0E9;
+        border: 1px solid rgba(168, 90, 59, 0.45);
+        border-radius: 12px;
+        padding: 11px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+        margin-bottom: 10px;
+    }
+
     /* ---------- Reglages ---------- */
+
+    #reglages summary {
+        font-family: 'Anton', Impact, sans-serif;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 15px;
+        color: #FFFFFF;
+        cursor: pointer;
+        list-style: none;
+    }
+
+    /* La fleche par defaut de Safari, remplacee par la notre. */
+    #reglages summary::-webkit-details-marker {
+        display: none;
+    }
+
+    #reglages summary::after {
+        content: " +";
+        color: #F0883E;
+    }
+
+    #reglages[open] summary {
+        margin-bottom: 16px;
+    }
+
+    #reglages[open] summary::after {
+        content: " \2013";
+    }
+
 
     #reglages label {
         display: block;
@@ -504,11 +650,15 @@
         background-color: rgba(0, 0, 0, 0.6);
         display: flex;
         justify-content: center;
-        align-items: center;
+        /* flex-start + margin auto sur la boite : centre quand c'est court,
+           et ca defile quand c'est plus haut que l'ecran. */
+        align-items: flex-start;
+        overflow-y: auto;
         padding: 18px;
     }
 
     #accueilBoite {
+        margin: auto;
         background-color: #152019;
         color: #FFFFFF;
         padding: 28px 24px;
@@ -516,6 +666,86 @@
         max-width: 400px;
         width: 100%;
         text-align: left;
+    }
+
+    #accueilFormulaire {
+        display: none;
+    }
+
+    /* Le bandeau du premier ecran : meme degrade que la carte du compteur,
+       deborde jusqu'aux bords de la boite grace aux marges negatives. */
+    #introTete {
+        background: linear-gradient(160deg, #2F7D52 0%, #14432C 55%, #0F1E16 100%);
+        margin: -28px -24px 22px;
+        padding: 30px 24px 26px;
+        border-radius: 20px 20px 0 0;
+        text-align: center;
+    }
+
+    #introLogo {
+        width: 88px;
+        display: block;
+        margin: 0 auto 14px;
+    }
+
+    #introTitre {
+        font-family: 'Permanent Marker', cursive;
+        font-size: 30px;
+        line-height: 1.1;
+        color: #FFFFFF;
+        margin: 0 0 8px;
+    }
+
+    #introPoint {
+        color: #F0883E;
+    }
+
+    #introAccroche {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        margin: 0;
+    }
+
+    #introListe {
+        list-style: none;
+        margin: 0 0 18px;
+        padding: 0;
+    }
+
+    #introListe li {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        padding-left: 16px;
+        margin-bottom: 12px;
+        border-left: 2px solid rgba(47, 125, 82, 0.6);
+    }
+
+    #introListe strong {
+        color: #FFFFFF;
+        font-weight: 700;
+    }
+
+    #introConfidentialite {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        background-color: rgba(47, 125, 82, 0.16);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: 0 0 12px;
+    }
+
+    #introReserve {
+        font-size: 11px;
+        line-height: 1.55;
+        color: #8FA396;
+        margin: 0 0 18px;
+    }
+
+    #btnCommencer {
+        width: 100%;
     }
 
     #accueilBoite h2 {
@@ -564,6 +794,12 @@
         <p id="tagline">Ton suivi, jour après jour.</p>
     </header>
 
+    <section id="fete">
+        <p id="feteTitre"></p>
+        <p id="feteTexte"></p>
+        <button id="btnFeteFermer">Continuer</button>
+    </section>
+
     <section id="heroCompteur">
         <span id="compteur">0</span>
         <p id="heroLabel">jours sans consommation</p>
@@ -571,6 +807,7 @@
             <div id="objectifBarre"><div id="objectifJauge"></div></div>
             <p id="objectifLigne"></p>
         </div>
+        <p id="motivationLigne"></p>
     </section>
 
     <section id="stats">
@@ -588,24 +825,34 @@
         </div>
     </section>
 
+    <section id="actions">
+        <button id="btnEnvie">Résister à l'envie</button>
+        <p id="astuceDuMoment"></p>
+    </section>
+
     <section class="carte" id="bilanCarte">
-        <h2>Ta journée</h2>
-        <p id="bilanQuestion">Comment ça s'est passé aujourd'hui ?</p>
+        <h2>Aujourd'hui</h2>
+        <p id="bilanQuestion">Comment s'est passée ta journée ?</p>
+        <ul id="momentsDuJour"></ul>
         <div id="bilanNiveaux">
             <button class="niveau" data-niveau="facile">Facile</button>
             <button class="niveau" data-niveau="moyen">Moyen</button>
             <button class="niveau" data-niveau="difficile">Difficile</button>
         </div>
         <textarea id="bilanNote" rows="2" placeholder="Un mot sur ta journée, si tu veux."></textarea>
-        <button id="btnBilan">Valider ma journée</button>
+        <button id="btnBilan">Noter ce moment</button>
         <p id="bilanMessage"></p>
     </section>
 
-    <section id="actions">
-        <button id="btnEnvie">Résister à l'envie</button>
-        <p id="astuceDuMoment"></p>
+    <section id="zoneEcart">
         <button id="btnEcart">J'ai craqué</button>
         <p id="messageEcart"></p>
+
+        <div id="ecartZone">
+            <label for="ecartNote">Qu'est-ce qui s'est passé juste avant ?</label>
+            <textarea id="ecartNote" rows="2" placeholder="Où tu étais, avec qui, ce qui a déclenché."></textarea>
+            <button id="btnEcartNote">Enregistrer</button>
+        </div>
     </section>
 
     <section class="carte" id="planCarte">
@@ -618,7 +865,8 @@
         <h2>Carnet de suivi</h2>
         <div id="carnet"></div>
         <p id="detailJour"></p>
-        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. Vert clair : journée facile. Vert foncé : journée difficile.</p>
+        <p id="bilanPeriode"></p>
+        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. La teinte suit le moment le plus dur de la journée : vert clair si tout a été facile, vert foncé s'il y a eu un moment difficile.</p>
     </section>
 
     <section class="carte">
@@ -667,8 +915,8 @@
         </div>
     </section>
 
-    <section class="carte" id="reglages">
-        <h2>Réglages</h2>
+    <details class="carte" id="reglages">
+        <summary>Réglages</summary>
 
         <label for="dateArretInput">Ma date d'arrêt</label>
         <div class="champ">
@@ -695,13 +943,37 @@
             <button id="btnImporter">Importer</button>
         </div>
         <p id="messageSauvegarde"></p>
-    </section>
+    </details>
 
 </div>
 
 <div id="accueilOverlay">
     <div id="accueilBoite">
-        <h2>Bienvenue sur Jour Zéro</h2>
+
+        <div id="accueilIntro">
+
+            <div id="introTete">
+                <img id="introLogo" src="jour-zero-mark.svg" alt="">
+                <p id="introTitre">Jour Zéro<span id="introPoint">.</span></p>
+                <p id="introAccroche">Un compteur, un carnet, des repères.<br>Rien d'autre.</p>
+            </div>
+
+            <ul id="introListe">
+                <li><strong>Ça compte tes jours</strong> depuis ta date d'arrêt, et ce que tu économises au passage.</li>
+                <li><strong>Tu notes ta journée</strong> en un geste : facile, moyenne ou difficile. Au bout de quelques semaines, tu vois quels jours sont durs.</li>
+                <li><strong>Quand l'envie monte</strong>, un bouton te donne quelque chose à faire tout de suite.</li>
+                <li><strong>Si tu craques</strong>, tu le notes et le compteur repart. C'est une information, pas une sanction.</li>
+            </ul>
+
+            <p id="introConfidentialite">Pas de compte, pas de mot de passe, aucun serveur. Tout reste sur cet appareil, et personne d'autre ne peut le lire.</p>
+
+            <p id="introReserve">Jour Zéro ne remplace pas un soignant. Pour en parler à quelqu'un : Stop-Cannabis.ch, ou un service d'addiction près de chez toi.</p>
+
+            <button id="btnCommencer">Commencer</button>
+        </div>
+
+        <div id="accueilFormulaire">
+        <h2>On te connaît un peu ?</h2>
         <p>Quelques questions pour personnaliser ton suivi.</p>
 
         <label for="prenomInput">Ton prénom (facultatif) :</label>
@@ -739,6 +1011,8 @@
         </label>
 
         <button id="btnCreerCompte">Créer mon compte</button>
+        </div>
+
     </div>
 </div>
 <script>
@@ -807,9 +1081,106 @@ afficherAccueilSiBesoin();
         });
     }
 
+    const RAISONS = {
+        permis: "Pour récupérer ton permis.",
+        sante: "Pour ta santé.",
+        argent: "Pour l'argent.",
+        sommeil: "Pour mieux dormir."
+    };
+
+    // Reprend le prenom et la motivation donnes a l'inscription.
+    function personnaliser() {
+        const prenom = (localStorage.getItem("prenom") || "").trim();
+        const motivation = localStorage.getItem("motivation");
+
+        // Le bonjour vit dans la carte du jour, pas sous le logo. Et la question
+        // suit l'heure : a 9h du matin, demander comment la journee s'est
+        // passee n'a pas de sens.
+        const heure = new Date().getHours();
+        let salut = "Salut";
+        let question = "comment ça se passe jusqu'ici ?";
+
+        if (heure < 12) {
+            salut = "Bonjour";
+            question = "la journée s'annonce comment ?";
+        } else if (heure >= 18) {
+            salut = "Bonsoir";
+            question = "comment s'est passée ta journée ?";
+        }
+
+        if (prenom) {
+            document.getElementById("bilanQuestion").textContent =
+                salut + " " + prenom + ", " + question;
+        } else {
+            document.getElementById("bilanQuestion").textContent =
+                question.charAt(0).toUpperCase() + question.slice(1);
+        }
+
+        const ligne = document.getElementById("motivationLigne");
+
+        if (motivation && RAISONS[motivation]) {
+            ligne.textContent = RAISONS[motivation];
+            ligne.style.display = "block";
+        } else {
+            ligne.style.display = "none";
+        }
+    }
+
     // Le bilan quotidien : un niveau et une note facultative, par date.
+    // Un jour contient plusieurs moments. Les anciennes sauvegardes n'en
+    // avaient qu'un seul, range sans liste et SANS heure : on rattrape les
+    // deux ici, et on jette ce qui n'a pas de niveau reconnu.
     function lireJournal() {
-        return JSON.parse(localStorage.getItem("journal")) || {};
+        const journal = JSON.parse(localStorage.getItem("journal")) || {};
+
+        for (const jour in journal) {
+            if (!Array.isArray(journal[jour])) {
+                journal[jour] = [journal[jour]];
+            }
+
+            journal[jour] = journal[jour].filter(function (moment) {
+                return moment && NIVEAUX[moment.niveau];
+            });
+
+            for (let i = 0; i < journal[jour].length; i++) {
+                if (!journal[jour][i].heure) {
+                    journal[jour][i].heure = "";
+                }
+            }
+        }
+
+        return journal;
+    }
+
+    // Un moment d'avant les heures n'en a pas : il valait pour la journee.
+    function quand(moment) {
+        return moment.heure || "sur la journée";
+    }
+
+    function heureCourante() {
+        return new Date().toLocaleTimeString("fr-CH", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+    // "08:40" et "14:10" se comparent comme du texte : l'ordre alphabetique
+    // est aussi l'ordre chronologique tant que l'heure est sur deux chiffres.
+    function parHeure(a, b) {
+        return a.heure < b.heure ? -1 : 1;
+    }
+
+    // Une journée vaut son moment le plus dur : c'est celui dont on se souvient.
+    function momentLePlusDur(moments) {
+        let pire = moments[0];
+
+        for (let i = 1; i < moments.length; i++) {
+            if (NIVEAUX[moments[i].niveau].poids > NIVEAUX[pire.niveau].poids) {
+                pire = moments[i];
+            }
+        }
+
+        return pire;
     }
 
     // toISOString() donne l'heure de Londres. En Suisse l'ete on a deux heures
@@ -824,9 +1195,9 @@ afficherAccueilSiBesoin();
     }
 
     const NIVEAUX = {
-        facile: { mot: "facile", couleur: "#46B377" },
-        moyen: { mot: "moyenne", couleur: "#2F7D52" },
-        difficile: { mot: "difficile", couleur: "#1D5335" }
+        facile: { mot: "facile", court: "facile", couleur: "#46B377", poids: 1 },
+        moyen: { mot: "moyenne", court: "moyen", couleur: "#2F7D52", poids: 2 },
+        difficile: { mot: "difficile", court: "difficile", couleur: "#1D5335", poids: 3 }
     };
 
     let niveauChoisi = null;
@@ -845,62 +1216,237 @@ afficherAccueilSiBesoin();
     }
 
     // Au chargement : si la journee est deja renseignee, on la reaffiche.
+    // La liste des moments deja notes aujourd'hui.
     function afficherBilan() {
-        const journal = lireJournal();
-        const entree = journal[dateDuJour()];
+        const moments = (lireJournal()[dateDuJour()] || []).slice().sort(parHeure);
+        const liste = document.getElementById("momentsDuJour");
 
-        if (!entree) {
-            return;
+        liste.innerHTML = "";
+
+        for (let i = 0; i < moments.length; i++) {
+            const element = document.createElement("li");
+
+            const heure = document.createElement("span");
+            heure.className = "momentHeure";
+            heure.textContent = quand(moments[i]);
+
+            element.appendChild(heure);
+            element.appendChild(
+                document.createTextNode(" · " + NIVEAUX[moments[i].niveau].court)
+            );
+
+            if (moments[i].note) {
+                const note = document.createElement("span");
+                note.className = "momentNote";
+                note.textContent = "\u00AB " + moments[i].note + " \u00BB";
+                element.appendChild(note);
+            }
+
+            liste.appendChild(element);
         }
-
-        marquerNiveau(entree.niveau);
-        document.getElementById("bilanNote").value = entree.note || "";
-        document.getElementById("btnBilan").textContent = "Mettre à jour ma journée";
-        document.getElementById("bilanMessage").textContent =
-            "Journée déjà notée comme " + NIVEAUX[entree.niveau].mot + ".";
     }
 
     // Ce qui s'est passe un jour donne
+    function heureDe(horodatage) {
+        return new Date(horodatage).toLocaleTimeString("fr-CH", {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
     function afficherDetailJour(jourTexte) {
         const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
         const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+        const notesEcarts = JSON.parse(localStorage.getItem("notesEcarts")) || {};
         const dateArret = localStorage.getItem("dateArret");
+        const moments = lireJournal()[jourTexte] || [];
 
-        const aEcart = historiqueEcarts.some(function (date) {
-            return dateLocale(new Date(date)) === jourTexte;
-        });
+        function duJour(horodatage) {
+            return dateLocale(new Date(horodatage)) === jourTexte;
+        }
 
-        const nombreEnvies = historiqueEnvies.filter(function (date) {
-            return dateLocale(new Date(date)) === jourTexte;
-        }).length;
+        const ecarts = historiqueEcarts.filter(duJour);
+        const envies = historiqueEnvies.filter(duJour);
 
-        let texte = jourEnTexte(jourTexte) + " — ";
+        let texte = jourEnTexte(jourTexte) + " \u2014 ";
 
-        if (dateArret && jourTexte < dateArret) {
-            texte += "avant ton arrêt.";
-        } else if (aEcart) {
+        // Un jour ou une consommation est notee le dit, meme s'il precede la
+        // date d'arret en cours : c'est justement lui qui l'a fait repartir.
+        if (ecarts.length > 0) {
             texte += "tu as craqué ce jour-là.";
+        } else if (dateArret && jourTexte < dateArret) {
+            texte += "avant ton arrêt.";
         } else {
             texte += "journée tenue.";
         }
 
-        if (nombreEnvies === 1) {
-            texte += " 1 envie résistée.";
-        } else if (nombreEnvies > 1) {
-            texte += " " + nombreEnvies + " envies résistées.";
+        if (moments.length > 0) {
+            texte += " Journée " + NIVEAUX[momentLePlusDur(moments).niveau].mot + ".";
         }
 
-        const entree = lireJournal()[jourTexte];
+        // Tout ce qui s'est passe ce jour-la, remis dans l'ordre de l'horloge.
+        const evenements = [];
 
-        if (entree) {
-            texte += " Journée " + NIVEAUX[entree.niveau].mot + ".";
+        for (let i = 0; i < moments.length; i++) {
+            let ligne = NIVEAUX[moments[i].niveau].court;
 
-            if (entree.note) {
-                texte += "\n\u00AB " + entree.note + " \u00BB";
+            if (moments[i].note) {
+                ligne += " \u2014 \u00AB " + moments[i].note + " \u00BB";
             }
+
+            evenements.push({ heure: moments[i].heure, texte: ligne });
+        }
+
+        for (let i = 0; i < envies.length; i++) {
+            evenements.push({ heure: heureDe(envies[i]), texte: "envie résistée" });
+        }
+
+        for (let i = 0; i < ecarts.length; i++) {
+            let ligne = "consommation";
+
+            if (notesEcarts[jourTexte]) {
+                ligne += " \u2014 \u00AB " + notesEcarts[jourTexte] + " \u00BB";
+            }
+
+            evenements.push({ heure: heureDe(ecarts[i]), texte: ligne });
+        }
+
+        evenements.sort(parHeure);
+
+        for (let i = 0; i < evenements.length; i++) {
+            texte += "\n" + (evenements[i].heure || "sur la journée") +
+                " \u00B7 " + evenements[i].texte;
         }
 
         document.getElementById("detailJour").textContent = texte;
+    }
+
+
+    // Matin, apres-midi, soir : ce decoupage ne sert pas a etiqueter chaque
+    // ligne (l'heure exacte en dit plus), mais a repondre a LA question :
+    // a quel moment de la journee est-ce que ca coince ?
+    function momentDeLaJournee(heure) {
+        if (!heure) {
+            return null;
+        }
+
+        const h = parseInt(heure.split(":")[0], 10);
+
+        if (h < 12) {
+            return "le matin";
+        }
+        if (h < 18) {
+            return "l'après-midi";
+        }
+        return "le soir";
+    }
+
+    // Nomme un creneau seulement s'il pese au moins la moitie des cas, et
+    // seulement a partir de trois : sinon on conclut sur du bruit.
+    function creneauDominant(compteur, total) {
+        if (total < 3) {
+            return null;
+        }
+
+        let gagnant = null;
+
+        for (const creneau in compteur) {
+            if (!gagnant || compteur[creneau] > compteur[gagnant]) {
+                gagnant = creneau;
+            }
+        }
+
+        if (gagnant && compteur[gagnant] >= total / 2) {
+            return gagnant;
+        }
+
+        return null;
+    }
+
+    function afficherBilanPeriode() {
+        const journal = lireJournal();
+        const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+        const ligne = document.getElementById("bilanPeriode");
+        const aujourdhui = new Date();
+
+        // La fenetre des 28 jours, sous forme de dates.
+        const fenetre = [];
+
+        for (let i = 0; i < 28; i++) {
+            const jour = new Date(aujourdhui);
+            jour.setDate(jour.getDate() - i);
+            fenetre.push(dateLocale(jour));
+        }
+
+        let total = 0;
+        let durs = 0;
+        const creneauxDurs = {};
+
+        for (let i = 0; i < fenetre.length; i++) {
+            const moments = journal[fenetre[i]] || [];
+
+            for (let j = 0; j < moments.length; j++) {
+                total++;
+
+                if (moments[j].niveau !== "difficile") {
+                    continue;
+                }
+
+                durs++;
+                const creneau = momentDeLaJournee(moments[j].heure);
+
+                if (creneau) {
+                    creneauxDurs[creneau] = (creneauxDurs[creneau] || 0) + 1;
+                }
+            }
+        }
+
+        let envies = 0;
+        const creneauxEnvies = {};
+
+        for (let i = 0; i < historiqueEnvies.length; i++) {
+            const date = new Date(historiqueEnvies[i]);
+
+            if (fenetre.indexOf(dateLocale(date)) === -1) {
+                continue;
+            }
+
+            envies++;
+            const creneau = momentDeLaJournee(heureDe(historiqueEnvies[i]));
+
+            if (creneau) {
+                creneauxEnvies[creneau] = (creneauxEnvies[creneau] || 0) + 1;
+            }
+        }
+
+        if (total < 5 && envies < 5) {
+            ligne.innerHTML = "Note tes moments quelques jours : je te dirai " +
+                "<strong>à quelle heure</strong> c'est le plus dur pour toi.";
+            ligne.style.display = "block";
+            return;
+        }
+
+        const phrases = [];
+
+        if (total > 0) {
+            let phrase = total + " moments notés, dont " + durs;
+            phrase += durs > 1 ? " difficiles" : " difficile";
+
+            const creneau = creneauDominant(creneauxDurs, durs);
+            phrase += creneau ? ", la plupart <strong>" + creneau + "</strong>." : ".";
+            phrases.push(phrase);
+        }
+
+        if (envies > 0) {
+            let phrase = envies + (envies > 1 ? " envies résistées" : " envie résistée");
+
+            const creneau = creneauDominant(creneauxEnvies, envies);
+            phrase += creneau ? ", surtout <strong>" + creneau + "</strong>." : ".";
+            phrases.push(phrase);
+        }
+
+        ligne.innerHTML = "Sur 4 semaines : " + phrases.join("<br>");
+        ligne.style.display = "block";
     }
 
     function afficherCarnet() {
@@ -932,10 +1478,11 @@ afficherAccueilSiBesoin();
             } else if (joursEcarts.includes(jourTexte)) {
                 carre.style.backgroundColor = "#A85A3B";
             } else {
-                const entree = journal[jourTexte];
+                const moments = journal[jourTexte];
 
-                if (entree) {
-                    carre.style.backgroundColor = NIVEAUX[entree.niveau].couleur;
+                if (moments && moments.length > 0) {
+                    carre.style.backgroundColor =
+                        NIVEAUX[momentLePlusDur(moments).niveau].couleur;
                 } else {
                     carre.style.backgroundColor = "#2F7D52";
                 }
@@ -1024,6 +1571,54 @@ afficherAccueilSiBesoin();
         }
     }
 
+    const CELEBRATIONS = {
+        7:   { titre: "Une semaine",   texte: "Sept jours. Le plus dur du sevrage est derrière toi." },
+        14:  { titre: "Deux semaines", texte: "Le sommeil et l'humeur reviennent en général maintenant." },
+        30:  { titre: "Un mois",       texte: "Un mois complet. Ce n'est plus un essai, c'est une habitude." },
+        60:  { titre: "Deux mois",     texte: "Soixante jours. Regarde ton carnet : tu as traversé des journées difficiles." },
+        90:  { titre: "Trois mois",    texte: "Trois mois. À ce stade, c'est ta nouvelle normale." },
+        180: { titre: "Six mois",      texte: "Six mois. Il n'y a plus grand-chose à ajouter." },
+        365: { titre: "Un an",         texte: "Un an. Jour zéro, c'était il y a trois cent soixante-cinq jours." }
+    };
+
+    function feter(jours) {
+        const fetes = JSON.parse(localStorage.getItem("paliersFetes")) || [];
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+
+        // Tous les paliers atteints, objectif compris.
+        const atteints = Object.keys(CELEBRATIONS)
+            .map(Number)
+            .filter(function (palier) {
+                return palier <= jours;
+            });
+
+        if (objectif && objectif <= jours) {
+            atteints.push(objectif);
+        }
+
+        const nouveaux = atteints.filter(function (palier) {
+            return fetes.indexOf(palier) === -1;
+        });
+
+        if (nouveaux.length === 0) {
+            return;
+        }
+
+        // On ne fete que le plus haut, mais on marque tous les autres comme vus :
+        // quelqu'un qui revient apres trois semaines n'a pas besoin de trois pancartes.
+        const palier = Math.max.apply(null, nouveaux);
+        const fete = CELEBRATIONS[palier] || {
+            titre: "Objectif atteint",
+            texte: "Tu t'étais donné " + palier + " jours. Tu y es."
+        };
+
+        document.getElementById("feteTitre").textContent = fete.titre;
+        document.getElementById("feteTexte").textContent = fete.texte;
+        document.getElementById("fete").style.display = "block";
+
+        localStorage.setItem("paliersFetes", JSON.stringify(fetes.concat(nouveaux)));
+    }
+
     // Le compte a rebours vers l'objectif, s'il y en a un.
     function afficherObjectif(jours) {
         const objectif = parseFloat(localStorage.getItem("objectifJours"));
@@ -1074,6 +1669,13 @@ afficherAccueilSiBesoin();
         afficherArgent(jours);
         afficherObjectif(jours);
         afficherPlan(jours);
+        feter(jours);
+    }
+
+    // Demande au navigateur de ne pas effacer nos donnees s'il fait du menage.
+    // Il accepte plus volontiers quand l'app est installee sur l'ecran d'accueil.
+    if (navigator.storage && navigator.storage.persist) {
+        navigator.storage.persist();
     }
 
     const dateSauvegardee = localStorage.getItem("dateArret");
@@ -1085,7 +1687,9 @@ afficherAccueilSiBesoin();
     afficherEcarts();
     afficherCarnet();
     afficherEnvies();
+    personnaliser();
     afficherBilan();
+    afficherBilanPeriode();
     remplirReglages();
 
     if (!dateSauvegardee) {
@@ -1100,6 +1704,11 @@ afficherAccueilSiBesoin();
         });
     }
 
+    document.getElementById("btnCommencer").addEventListener("click", function () {
+        document.getElementById("accueilIntro").style.display = "none";
+        document.getElementById("accueilFormulaire").style.display = "block";
+    });
+
     document.getElementById("btnBilan").addEventListener("click", function () {
         if (!niveauChoisi) {
             document.getElementById("bilanMessage").textContent =
@@ -1108,18 +1717,28 @@ afficherAccueilSiBesoin();
         }
 
         const journal = lireJournal();
+        const jour = dateDuJour();
 
-        journal[dateDuJour()] = {
+        if (!journal[jour]) {
+            journal[jour] = [];
+        }
+
+        journal[jour].push({
+            heure: heureCourante(),
             niveau: niveauChoisi,
             note: document.getElementById("bilanNote").value.trim()
-        };
+        });
 
         localStorage.setItem("journal", JSON.stringify(journal));
 
-        document.getElementById("btnBilan").textContent = "Mettre à jour ma journée";
-        document.getElementById("bilanMessage").textContent = "C'est noté. À demain.";
+        // On vide le formulaire : le moment suivant sera peut-etre different.
+        document.getElementById("bilanNote").value = "";
+        marquerNiveau(null);
+        document.getElementById("bilanMessage").textContent = "Noté.";
 
+        afficherBilan();
         afficherCarnet();
+        afficherBilanPeriode();
     });
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
@@ -1202,6 +1821,8 @@ afficherAccueilSiBesoin();
 
     localStorage.setItem("compteCree", "oui");
 
+    personnaliser();
+
     document.getElementById("accueilOverlay").style.display = "none";
     });
 
@@ -1255,6 +1876,14 @@ afficherAccueilSiBesoin();
         document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
         document.getElementById("astuceDuMoment").textContent = "";
 
+        // Un ecart remet les paliers a zero : on les refetera en les repassant.
+        localStorage.setItem("paliersFetes", JSON.stringify([]));
+        document.getElementById("fete").style.display = "none";
+
+        // Le moment ou l'information vaut le plus cher.
+        document.getElementById("ecartNote").value = "";
+        document.getElementById("ecartZone").style.display = "block";
+
         afficherJours(aujourdhui);
         afficherEcarts();
         afficherCarnet();
@@ -1262,11 +1891,31 @@ afficherAccueilSiBesoin();
         remplirReglages();
     });
 
+    document.getElementById("btnEcartNote").addEventListener("click", function () {
+        const texte = document.getElementById("ecartNote").value.trim();
+
+        if (texte) {
+            const notes = JSON.parse(localStorage.getItem("notesEcarts")) || {};
+            notes[dateDuJour()] = texte;
+            localStorage.setItem("notesEcarts", JSON.stringify(notes));
+        }
+
+        document.getElementById("ecartZone").style.display = "none";
+        document.getElementById("messageEcart").textContent =
+            texte ? "C'est noté. Tu le reliras quand ça comptera." : "";
+
+        afficherCarnet();
+    });
+
+    document.getElementById("btnFeteFermer").addEventListener("click", function () {
+        document.getElementById("fete").style.display = "none";
+    });
+
     // Toutes les cles qu'on emporte d'un appareil a l'autre.
     const CLES_SAUVEGARDE = [
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
-        "journal"
+        "journal", "notesEcarts", "paliersFetes"
     ];
 
     document.getElementById("btnExporter").addEventListener("click", function () {
