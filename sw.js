@@ -72,6 +72,19 @@ function composer(etat) {
         };
     }
 
+    // Avant le jour J : on ne demande pas de noter une journee qui n'a pas
+    // encore commence, on rappelle l'echeance.
+    if (etat.preparation) {
+        const restants = Math.abs(etat.jours);
+
+        return {
+            titre: restants === 1 ? "Demain, jour zéro" : "Dans " + restants + " jours",
+            corps: restants === 1
+                ? "C'est demain. Tu as tout ce qu'il faut."
+                : "Ton jour zéro approche. Prépare-le, ça compte."
+        };
+    }
+
     const jours = etat.jours;
     const titre = jours === 1 ? "1 jour" : jours + " jours";
 

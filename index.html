@@ -205,6 +205,35 @@
         margin: 10px 0 0;
     }
 
+    /* ---------- Avant le jour J ---------- */
+
+    #preparationCarte {
+        display: none;
+    }
+
+    #preparationIntro {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        margin: 0 0 16px;
+    }
+
+    #preparationListe {
+        margin: 0 0 4px;
+        padding-left: 20px;
+    }
+
+    #preparationListe li {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #C9D6CD;
+        margin-bottom: 12px;
+    }
+
+    #preparationListe strong {
+        color: #FFFFFF;
+    }
+
     /* ---------- Le bilan de la journee ---------- */
 
     #bilanQuestion {
@@ -1120,6 +1149,19 @@
         </div>
     </section>
 
+    <section class="carte" id="preparationCarte">
+        <h2>D'ici là</h2>
+        <p id="preparationIntro">Tu n'as rien à noter pour l'instant. Mais ces quelques jours ne sont pas du temps mort : c'est là que l'arrêt se prépare.</p>
+        <ol id="preparationListe">
+            <li><strong>Écris pourquoi tu arrêtes.</strong> Santé, argent, permis, sommeil. Cette liste te servira les jours durs, quand les raisons deviennent floues.</li>
+            <li><strong>Préviens quelqu'un.</strong> Arrêter à deux tient mieux que tout seul. Une personne au courant, c'est déjà une personne à qui écrire un soir difficile.</li>
+            <li><strong>Repère tes situations à risque.</strong> Quels moments, quels endroits, quelles personnes. Et décide dès maintenant quoi faire à la place.</li>
+            <li><strong>Prévois de quoi t'occuper.</strong> Sport, cuisine, marcher, n'importe quoi qui prend les mains. Les premiers jours, l'ennui est le pire ennemi.</li>
+            <li><strong>Les premiers jours, évite les fumeurs et l'alcool.</strong> Ce n'est pas pour toujours, juste le temps que ça se tasse.</li>
+        </ol>
+        <p class="legende">Conseils tirés de Stop-Cannabis.ch.</p>
+    </section>
+
     <section class="carte" id="bilanCarte">
         <h2>Aujourd'hui</h2>
         <p id="bilanQuestion">Comment s'est passée ta journée ?</p>
@@ -1141,7 +1183,7 @@
         <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
     </section>
 
-    <section class="carte">
+    <section class="carte" id="carnetCarte">
         <h2>Carnet de suivi</h2>
         <div id="carnet"></div>
         <p id="detailJour"></p>
@@ -2442,11 +2484,51 @@ afficherAccueilSiBesoin();
         champ.textContent = meilleure;
     }
 
+    // Deux etats possibles : avant le jour J, et apres. Tout ce qui sert a
+    // suivre une journee n'a pas de sens tant qu'on n'a pas commence.
+    function basculerMode(preparation) {
+        const avant = ["preparationCarte"];
+        const apres = ["stats", "actions", "bilanCarte"];
+
+        for (let i = 0; i < avant.length; i++) {
+            document.getElementById(avant[i]).style.display =
+                preparation ? "block" : "none";
+        }
+
+        for (let i = 0; i < apres.length; i++) {
+            document.getElementById(apres[i]).style.display =
+                preparation ? "none" : "";
+        }
+
+        document.getElementById("carnetCarte").style.display =
+            preparation ? "none" : "";
+    }
+
     function afficherJours(date) {
         const aujourdhui = new Date();
         const differenceMs = aujourdhui - date;
         const jours = Math.floor(differenceMs / (1000 * 60 * 60 * 24));
 
+        // Une date d'arret dans le futur : on compte a rebours vers le jour J.
+        if (jours < 0) {
+            const restants = Math.abs(jours);
+
+            basculerMode(true);
+            document.getElementById("compteur").textContent = restants;
+            document.getElementById("heroLabel").textContent =
+                restants === 1 ? "jour avant ton jour zéro" : "jours avant ton jour zéro";
+            document.getElementById("objectifZone").style.display = "none";
+            document.getElementById("fete").style.display = "none";
+
+            // Le plan reste affiche : savoir ce qui arrive fait partie de la
+            // preparation. Toutes les etapes sont a venir.
+            afficherPlan(jours);
+            deposerEtat(-restants);
+            return;
+        }
+
+        basculerMode(false);
+        document.getElementById("heroLabel").textContent = "jours sans consommation";
         document.getElementById("compteur").textContent = jours;
         afficherArgent(jours);
         afficherObjectif(jours);
@@ -2492,6 +2574,8 @@ afficherAccueilSiBesoin();
 
         const etat = {
             jours: jours,
+            // Negatif : on n'a pas encore commence.
+            preparation: jours < 0,
             noteAujourdhui: moments.length > 0,
             maj: new Date().toISOString()
         };
@@ -2666,17 +2750,14 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        if (new Date(valeurInput) > new Date()) {
-            confirmerReglage("Une date d'arrêt dans le futur, ça ne marche pas.", true);
-            this.value = localStorage.getItem("dateArret") || "";
-            return;
-        }
-
         localStorage.setItem("dateArret", valeurInput);
         afficherJours(new Date(valeurInput + "T12:00:00"));
         afficherBilanPeriode();
         afficherDepuisDebut();
-        confirmerReglage("Date d'arrêt enregistrée.");
+
+        confirmerReglage(valeurInput > dateDuJour()
+            ? "C'est noté. L'app t'attend jusque-là."
+            : "Date d'arrêt enregistrée.");
     });
     
     document.getElementById("pasDObjectifInput").addEventListener("change", function () {
