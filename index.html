@@ -1217,6 +1217,7 @@
             <p class="explication">Réservé à la mise en place du serveur de rappels.</p>
             <div class="champ">
                 <button id="btnAbonnement">Préparer l'abonnement</button>
+                <button id="btnTestNotif">Notification de test</button>
             </div>
             <textarea id="zoneAbonnement" rows="3" placeholder="L'adresse de ton téléphone apparaîtra ici."></textarea>
             <p id="messageAbonnement"></p>
@@ -1428,9 +1429,12 @@ afficherAccueilSiBesoin();
         if (Notification.permission === "granted") {
             message.textContent = "Notifications autorisées sur cet appareil.";
             message.className = "";
-            bouton.textContent = "Envoyer une notification de test";
+            // Plus rien a activer : le bouton n'a plus de raison d'etre la.
+            bouton.style.display = "none";
             return;
         }
+
+        bouton.style.display = "block";
 
         if (Notification.permission === "denied") {
             message.textContent = "Tu as refusé les notifications. Pour revenir en arrière : Réglages iOS → Jour Zéro → Notifications.";
@@ -2860,25 +2864,28 @@ afficherAccueilSiBesoin();
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
     // ou dans un setTimeout est refuse en silence.
-    document.getElementById("btnNotifications").addEventListener("click", function () {
-        const message = document.getElementById("messageNotifications");
-
-        if (Notification.permission === "granted") {
-            navigator.serviceWorker.ready.then(function (inscription) {
-                inscription.showNotification("Jour Zéro", {
-                    body: "Voilà à quoi ressemblera ton rappel.",
-                    icon: "icone-192.png",
-                    badge: "icone-192.png"
-                });
-            });
+    document.getElementById("btnTestNotif").addEventListener("click", function () {
+        if (Notification.permission !== "granted") {
             return;
         }
+
+        navigator.serviceWorker.ready.then(function (inscription) {
+            inscription.showNotification("Jour Zéro", {
+                body: "Voilà à quoi ressemblera ton rappel.",
+                icon: "icone-192.png",
+                badge: "icone-192.png"
+            });
+        });
+    });
+
+    document.getElementById("btnNotifications").addEventListener("click", function () {
+        const message = document.getElementById("messageNotifications");
 
         Notification.requestPermission().then(function (reponse) {
             afficherEtatNotifications();
 
             if (reponse === "granted") {
-                message.textContent = "C'est bon. Touche à nouveau pour voir un exemple.";
+                message.textContent = "C'est bon. Ton rappel arrivera à l'heure choisie.";
                 abonnerAuxRappels().catch(function () {});
             }
         });
