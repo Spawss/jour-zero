@@ -661,6 +661,21 @@
         color: #D9A441;
     }
 
+    #conseilHeure {
+        display: none;
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #A8CDB6;
+        background-color: rgba(47, 125, 82, 0.16);
+        border-radius: 12px;
+        padding: 12px 14px;
+        margin: -12px 0 22px;
+    }
+
+    #conseilHeure strong {
+        color: #F0883E;
+    }
+
     #messageNotifications {
         font-size: 11.5px;
         line-height: 1.5;
@@ -1207,6 +1222,20 @@
             <p id="messageAbonnement"></p>
         </div>
 
+        <label for="heureRappelInput">Heure du rappel</label>
+        <select id="heureRappelInput">
+            <option value="8">08:00</option>
+            <option value="12">12:00</option>
+            <option value="15">15:00</option>
+            <option value="17">17:00</option>
+            <option value="18">18:00</option>
+            <option value="19">19:00</option>
+            <option value="20">20:00</option>
+            <option value="21">21:00</option>
+            <option value="22">22:00</option>
+        </select>
+        <p id="conseilHeure"></p>
+
         <label for="pastilleInput">Pastille sur l'icône de l'app</label>
         <select id="pastilleInput">
             <option value="faits">Mes jours sans consommer</option>
@@ -1423,6 +1452,9 @@ afficherAccueilSiBesoin();
 
         document.getElementById("pastilleInput").value =
             localStorage.getItem("pastille") || "faits";
+
+        document.getElementById("heureRappelInput").value =
+            localStorage.getItem("heureRappel") || "19";
     }
 
     function afficherEnvies() {
@@ -1921,6 +1953,59 @@ afficherAccueilSiBesoin();
         return null;
     }
 
+    // Sur quel creneau tombent les moments difficiles des 4 dernieres semaines.
+    // Sert au bilan du carnet et au conseil sur l'heure du rappel.
+    function creneauDesMomentsDurs() {
+        const journal = lireJournal();
+        const aujourdhui = new Date();
+        const compteur = {};
+        let durs = 0;
+
+        for (let i = 0; i < 28; i++) {
+            const jour = new Date(aujourdhui);
+            jour.setDate(jour.getDate() - i);
+
+            const moments = journal[dateLocale(jour)] || [];
+
+            for (let j = 0; j < moments.length; j++) {
+                if (moments[j].niveau !== "difficile") {
+                    continue;
+                }
+
+                durs++;
+                const creneau = momentDeLaJournee(moments[j].heure);
+
+                if (creneau) {
+                    compteur[creneau] = (compteur[creneau] || 0) + 1;
+                }
+            }
+        }
+
+        return creneauDominant(compteur, durs);
+    }
+
+    // L'app finit par savoir quand c'est dur. Autant qu'elle le dise.
+    const HEURE_CONSEILLEE = {
+        "le matin": "08:00",
+        "l'après-midi": "15:00",
+        "le soir": "19:00"
+    };
+
+    function afficherConseilHeure() {
+        const ligne = document.getElementById("conseilHeure");
+        const creneau = creneauDesMomentsDurs();
+
+        if (!creneau) {
+            ligne.style.display = "none";
+            return;
+        }
+
+        ligne.innerHTML = "Tes moments difficiles arrivent surtout <strong>" +
+            creneau + "</strong>. Un rappel un peu avant te laisse le temps de " +
+            "voir venir : <strong>" + HEURE_CONSEILLEE[creneau] + "</strong>.";
+        ligne.style.display = "block";
+    }
+
     function afficherBilanPeriode() {
         const journal = lireJournal();
         const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
@@ -2329,13 +2414,17 @@ afficherAccueilSiBesoin();
         afficherObjectif(jours);
         afficherPlan(jours);
         majPastille(jours);
+        deposerEtat(jours);
         feter(jours);
     }
 
     // La cle PUBLIQUE VAPID. Elle est faite pour etre lue par tout le monde :
     // elle sert au telephone a verifier que les notifications viennent bien de
     // Jour Zero. La cle PRIVEE, elle, ne doit jamais se trouver dans ce fichier.
-    const CLE_PUBLIQUE_VAPID = "";
+    const CLE_PUBLIQUE_VAPID = "BCe0ycboi2Z_fqRuprrU3nXyuob5UWPxo33S75ird0mcoN4fXvCMi0xvOSSDe79diLy0nf9lMgroZJKAqUPLOVk";
+
+    // L'adresse du serveur de rappels, donnee par Cloudflare au deploiement.
+    const ADRESSE_SERVEUR = "https://jour-zero-rappels.spawss.workers.dev";
 
     // Le navigateur veut la cle en octets, pas en texte. Cette conversion est
     // le passage oblige de toutes les apps qui font du push.
@@ -2350,6 +2439,32 @@ afficherAccueilSiBesoin();
         }
 
         return octets;
+    }
+
+    // Le service worker ne peut pas lire le localStorage. On lui laisse donc
+    // un petit fichier dans le rangement partage : c'est avec ca qu'il
+    // composera le texte de la notification, sur le telephone. Rien de tout
+    // cela ne part sur le reseau.
+    function deposerEtat(jours) {
+        if (!("caches" in window)) {
+            return;
+        }
+
+        const moments = lireJournal()[dateDuJour()] || [];
+
+        const etat = {
+            jours: jours,
+            noteAujourdhui: moments.length > 0,
+            maj: new Date().toISOString()
+        };
+
+        caches.open("jour-zero-etat").then(function (rangement) {
+            // Le return compte : sans lui, un echec de put n'est rattrape par
+            // personne et le navigateur signale une erreur non geree.
+            return rangement.put("./etat.json", new Response(JSON.stringify(etat), {
+                headers: { "Content-Type": "application/json" }
+            }));
+        }).catch(function () {});
     }
 
     // Le service worker : un bout de code qui tourne a cote de la page, sur le
@@ -2410,6 +2525,7 @@ afficherAccueilSiBesoin();
     afficherDepuisDebut();
     afficherRappelSauvegarde();
     afficherEtatNotifications();
+    afficherConseilHeure();
     afficherModeAvance();
     remplirReglages();
 
@@ -2470,6 +2586,17 @@ afficherAccueilSiBesoin();
         afficherCarnet();
         afficherBilanPeriode();
         afficherDepuisDebut();
+        afficherConseilHeure();
+
+        // Le service worker doit savoir que la journee est notee : sinon la
+        // notification de ce soir redemanderait une note deja faite.
+        const dateArret = localStorage.getItem("dateArret");
+
+        if (dateArret) {
+            deposerEtat(Math.floor(
+                (new Date() - new Date(dateArret + "T12:00:00")) / (1000 * 60 * 60 * 24)
+            ));
+        }
     });
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
@@ -2577,7 +2704,10 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        Notification.requestPermission().then(fermerAccueil).catch(fermerAccueil);
+        Notification.requestPermission().then(function () {
+            abonnerAuxRappels().catch(function () {});
+            fermerAccueil();
+        }).catch(fermerAccueil);
     });
 
     document.getElementById("btnObjectif").addEventListener("click", function () {
@@ -2703,7 +2833,7 @@ afficherAccueilSiBesoin();
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
         "journal", "notesEcarts", "paliersFetes", "dateDebut",
-        "avantDernierEcart", "derniereSauvegarde", "pastille"
+        "avantDernierEcart", "derniereSauvegarde", "pastille", "heureRappel"
     ];
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
@@ -2727,6 +2857,7 @@ afficherAccueilSiBesoin();
 
             if (reponse === "granted") {
                 message.textContent = "C'est bon. Touche à nouveau pour voir un exemple.";
+                abonnerAuxRappels().catch(function () {});
             }
         });
     });
@@ -2758,6 +2889,75 @@ afficherAccueilSiBesoin();
         afficherModeAvance();
 
         document.getElementById("reglages").open = true;
+    });
+
+    // L'heure choisie est locale. Le serveur, lui, ne connait que l'heure de
+    // Londres : on convertit ici, et on renvoie a chaque ouverture de l'app —
+    // comme ca le changement d'heure d'hiver se rattrape tout seul.
+    function heureRappelUTC() {
+        const locale = parseInt(localStorage.getItem("heureRappel") || "19", 10);
+        const date = new Date();
+        date.setHours(locale, 0, 0, 0);
+        return date.getUTCHours();
+    }
+
+    function envoyerAbonnement(abonnement) {
+        if (!ADRESSE_SERVEUR) {
+            return Promise.resolve(null);
+        }
+
+        return fetch(ADRESSE_SERVEUR + "/abonnement", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            // On n'envoie que l'adresse du telephone et l'heure. Pas le
+            // prenom, pas le compteur : le serveur n'en a pas besoin.
+            body: JSON.stringify({
+                abonnement: abonnement,
+                heureUTC: heureRappelUTC()
+            })
+        });
+    }
+
+    // Demande l'abonnement au telephone, puis le transmet au serveur.
+    function abonnerAuxRappels() {
+        if (!CLE_PUBLIQUE_VAPID || !("PushManager" in window)) {
+            return Promise.resolve(null);
+        }
+
+        return navigator.serviceWorker.ready.then(function (inscription) {
+            return inscription.pushManager.getSubscription().then(function (existant) {
+                if (existant) {
+                    return existant;
+                }
+
+                return inscription.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: cleEnOctets(CLE_PUBLIQUE_VAPID)
+                });
+            });
+        }).then(function (abonnement) {
+            return envoyerAbonnement(abonnement).then(function () {
+                return abonnement;
+            });
+        });
+    }
+
+    // A chaque ouverture, on rafraichit l'inscription : prenom, heure, et
+    // adresse de push si le telephone en a change.
+    if (Notification.permission === "granted") {
+        abonnerAuxRappels().catch(function () {});
+    }
+
+    document.getElementById("heureRappelInput").addEventListener("change", function () {
+        localStorage.setItem("heureRappel", this.value);
+
+        if (Notification.permission === "granted") {
+            abonnerAuxRappels().catch(function () {});
+        }
+
+        document.getElementById("messageNotifications").textContent =
+            "Rappel réglé sur " + this.value + ":00.";
+        document.getElementById("messageNotifications").className = "";
     });
 
     document.getElementById("btnAbonnement").addEventListener("click", function () {

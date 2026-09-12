@@ -1,0 +1,17 @@
+name = "jour-zero-rappels"
+main = "src/index.js"
+compatibility_date = "2026-09-12"
+
+# Le déclencheur horaire : Cloudflare réveille le programme au début de
+# chaque heure, et il n'envoie qu'à ceux dont c'est l'heure.
+[triggers]
+crons = ["0 * * * *"]
+
+# Le rangement des abonnements. L'identifiant se remplit après la commande
+# de création (voir MISE-EN-PLACE.md).
+[[kv_namespaces]]
+binding = "ABONNEMENTS"
+id = "0361d27358f6482fbac56a93f2460a3f"
+
+[vars]
+CONTACT = "mailto:pabloze@me.com"

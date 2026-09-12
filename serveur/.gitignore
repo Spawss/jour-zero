@@ -1,0 +1,10 @@
+# Les bibliothèques téléchargées. Elles se reconstruisent avec « npm install »
+# à partir de package.json : inutile de les mettre sur GitHub.
+node_modules/
+
+# Les fichiers de travail de wrangler.
+.wrangler/
+
+# Au cas où : rien qui ressemble à une clé ne doit partir dans le dépôt.
+.dev.vars
+*.key
