@@ -638,6 +638,29 @@
         text-align: center;
     }
 
+    /* Bloc technique : invisible tant qu'on ne l'a pas reveille. */
+    #blocAbonnement {
+        display: none;
+        border-top: 1px solid rgba(255, 255, 255, 0.08);
+        margin-bottom: 22px;
+        padding-top: 14px;
+    }
+
+    #zoneAbonnement {
+        display: none;
+    }
+
+    #messageAbonnement {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #8FA396;
+        margin: 0 0 22px;
+    }
+
+    #messageAbonnement.alerte {
+        color: #D9A441;
+    }
+
     #messageNotifications {
         font-size: 11.5px;
         line-height: 1.5;
@@ -1174,6 +1197,15 @@
             <button id="btnNotifications">Activer les notifications</button>
         </div>
         <p id="messageNotifications"></p>
+
+        <div id="blocAbonnement">
+            <p class="explication">Réservé à la mise en place du serveur de rappels.</p>
+            <div class="champ">
+                <button id="btnAbonnement">Préparer l'abonnement</button>
+            </div>
+            <textarea id="zoneAbonnement" rows="3" placeholder="L'adresse de ton téléphone apparaîtra ici."></textarea>
+            <p id="messageAbonnement"></p>
+        </div>
 
         <label for="pastilleInput">Pastille sur l'icône de l'app</label>
         <select id="pastilleInput">
@@ -2300,6 +2332,26 @@ afficherAccueilSiBesoin();
         feter(jours);
     }
 
+    // La cle PUBLIQUE VAPID. Elle est faite pour etre lue par tout le monde :
+    // elle sert au telephone a verifier que les notifications viennent bien de
+    // Jour Zero. La cle PRIVEE, elle, ne doit jamais se trouver dans ce fichier.
+    const CLE_PUBLIQUE_VAPID = "";
+
+    // Le navigateur veut la cle en octets, pas en texte. Cette conversion est
+    // le passage oblige de toutes les apps qui font du push.
+    function cleEnOctets(cleTexte) {
+        const remplissage = "=".repeat((4 - cleTexte.length % 4) % 4);
+        const base64 = (cleTexte + remplissage).replace(/-/g, "+").replace(/_/g, "/");
+        const brut = atob(base64);
+        const octets = new Uint8Array(brut.length);
+
+        for (let i = 0; i < brut.length; i++) {
+            octets[i] = brut.charCodeAt(i);
+        }
+
+        return octets;
+    }
+
     // Le service worker : un bout de code qui tourne a cote de la page, sur le
     // telephone, et qui reste vivant quand l'app est fermee. Sans lui, aucune
     // notification n'est possible.
@@ -2358,6 +2410,7 @@ afficherAccueilSiBesoin();
     afficherDepuisDebut();
     afficherRappelSauvegarde();
     afficherEtatNotifications();
+    afficherModeAvance();
     remplirReglages();
 
     if (!dateSauvegardee) {
@@ -2675,6 +2728,76 @@ afficherAccueilSiBesoin();
             if (reponse === "granted") {
                 message.textContent = "C'est bon. Touche à nouveau pour voir un exemple.";
             }
+        });
+    });
+
+    // Cinq touches sur le logo revelent le bloc technique. Personne ne tombe
+    // dessus par hasard, et ca marche aussi depuis l'app installee — ou une
+    // adresse avec un parametre ne passerait pas.
+    let touchesLogo = 0;
+    let minuterieLogo = null;
+
+    function afficherModeAvance() {
+        document.getElementById("blocAbonnement").style.display =
+            localStorage.getItem("modeAvance") === "oui" ? "block" : "none";
+    }
+
+    document.getElementById("logo").addEventListener("click", function () {
+        touchesLogo++;
+        clearTimeout(minuterieLogo);
+        minuterieLogo = setTimeout(function () { touchesLogo = 0; }, 2000);
+
+        if (touchesLogo < 5) {
+            return;
+        }
+
+        touchesLogo = 0;
+
+        const actif = localStorage.getItem("modeAvance") === "oui";
+        localStorage.setItem("modeAvance", actif ? "non" : "oui");
+        afficherModeAvance();
+
+        document.getElementById("reglages").open = true;
+    });
+
+    document.getElementById("btnAbonnement").addEventListener("click", function () {
+        const message = document.getElementById("messageAbonnement");
+        const zone = document.getElementById("zoneAbonnement");
+
+        if (!CLE_PUBLIQUE_VAPID) {
+            message.textContent = "Il manque encore la clé publique dans le code de l'app.";
+            message.className = "alerte";
+            return;
+        }
+
+        if (Notification.permission !== "granted") {
+            message.textContent = "Autorise d'abord les notifications avec le bouton du dessus.";
+            message.className = "alerte";
+            return;
+        }
+
+        if (!("PushManager" in window)) {
+            message.textContent = "Ce navigateur ne sait pas recevoir de notifications. Sur iPhone, il faut ouvrir Jour Zéro depuis l'icône de l'écran d'accueil, pas depuis Safari.";
+            message.className = "alerte";
+            return;
+        }
+
+        navigator.serviceWorker.ready.then(function (inscription) {
+            return inscription.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: cleEnOctets(CLE_PUBLIQUE_VAPID)
+            });
+        }).then(function (abonnement) {
+            zone.style.display = "block";
+            zone.value = JSON.stringify(abonnement);
+            zone.focus();
+            zone.select();
+
+            message.textContent = "Voilà l'adresse de ce téléphone. Copie-la et range-la dans le secret GitHub : c'est elle qui dit au serveur où t'envoyer les rappels.";
+            message.className = "";
+        }).catch(function (erreur) {
+            message.textContent = "L'abonnement a échoué : " + erreur.message;
+            message.className = "alerte";
         });
     });
 
