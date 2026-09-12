@@ -1066,6 +1066,26 @@
         border-radius: 7px;
     }
 
+    .miniBouton {
+        width: 76px;
+        padding: 9px 4px;
+        border-radius: 10px;
+        font-size: 9.5px;
+        font-weight: 700;
+        text-align: center;
+        white-space: nowrap;
+    }
+
+    .miniVert {
+        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
+        color: #FFFFFF;
+    }
+
+    .miniBrique {
+        border: 1px solid rgba(140, 70, 45, 0.6);
+        color: #A8674A;
+    }
+
     .miniCarnet {
         display: grid;
         grid-template-columns: repeat(7, 1fr);
@@ -1393,13 +1413,27 @@
 
             <div class="apercuRang">
                 <div class="apercuVisuel">
+                    <div class="miniBouton miniVert">Résister</div>
+                </div>
+                <p class="apercuTexte"><strong>Quand l'envie monte, tu as un bouton.</strong> Il te donne quelque chose à faire tout de suite, et il compte les fois où tu as tenu.</p>
+            </div>
+
+            <div class="apercuRang">
+                <div class="apercuVisuel">
                     <div class="miniNiveaux">
                         <span class="miniPastille" style="background-color:#46B377"></span>
                         <span class="miniPastille" style="background-color:#D9A441"></span>
                         <span class="miniPastille" style="background-color:#E05C4B"></span>
                     </div>
                 </div>
-                <p class="apercuTexte"><strong>Tu dis comment ça va.</strong> Facile, moyen ou difficile, en une touche, autant de fois que tu veux.</p>
+                <p class="apercuTexte"><strong>Tu dis comment ça va.</strong> Facile, moyen ou difficile, en une touche, autant de fois par jour que tu veux.</p>
+            </div>
+
+            <div class="apercuRang">
+                <div class="apercuVisuel">
+                    <div class="miniBouton miniBrique">J'ai craqué</div>
+                </div>
+                <p class="apercuTexte"><strong>Si tu craques, tu le notes.</strong> Le compteur repart, sans reproche. C'est une information, pas une punition.</p>
             </div>
 
             <div class="apercuRang">
@@ -1409,7 +1443,7 @@
                         <i style="background-color:#E05C4B"></i><i style="background-color:#46B377"></i><i style="background-color:#C2795A"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i><i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i>
                     </div>
                 </div>
-                <p class="apercuTexte"><strong>Ton mois se lit d'un coup d'œil.</strong> Et au bout de quelques semaines, l'app te dit à quelle heure c'est le plus dur.</p>
+                <p class="apercuTexte"><strong>Et l'app finit par te connaître.</strong> Au bout de quelques semaines, elle te dit à quelle heure c'est le plus dur pour toi — et elle te rappelle un peu avant.</p>
             </div>
 
             <p id="introConfidentialite">Pas de compte, aucun serveur. Tout reste sur cet appareil.</p>
