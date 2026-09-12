@@ -301,6 +301,15 @@
         width: 100%;
     }
 
+    #astuceDuJour {
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #8FA396;
+        border-top: 1px solid rgba(255, 255, 255, 0.07);
+        margin: 16px 0 0;
+        padding-top: 14px;
+    }
+
     #bilanMessage {
         font-size: 12px;
         color: #6FBF8E;
@@ -594,7 +603,82 @@
 
     /* ---------- Reglages ---------- */
 
+    .explication {
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #8FA396;
+        margin: 0 0 12px;
+    }
+
+    .etape {
+        position: relative;
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #C9D6CD;
+        margin: 0 0 10px;
+        padding-left: 26px;
+    }
+
+    .etape strong {
+        color: #FFFFFF;
+    }
+
+    .etapeNumero {
+        position: absolute;
+        left: 0;
+        top: 1px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: rgba(47, 125, 82, 0.35);
+        color: #6FBF8E;
+        font-size: 10.5px;
+        font-weight: 700;
+        line-height: 18px;
+        text-align: center;
+    }
+
+    #messageNotifications {
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #6FBF8E;
+        margin: 10px 0 18px;
+        min-height: 16px;
+    }
+
+    #messageNotifications.alerte {
+        color: #D9A441;
+    }
+
+    #reglages label.checkboxLabel {
+        display: flex;
+        align-items: center;
+        font-size: 12px;
+        color: #C9D6CD;
+        margin-bottom: 22px;
+    }
+
+    #reglages label.checkboxLabel input {
+        width: auto;
+        margin-right: 10px;
+    }
+
+    #rappelSauvegarde {
+        display: none;
+        font-size: 11.5px;
+        line-height: 1.5;
+        color: #8FA396;
+        margin: 10px 0 0;
+    }
+
+    #rappelSauvegarde.alerte {
+        color: #D9A441;
+    }
+
     #reglages summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         font-family: 'Anton', Impact, sans-serif;
         font-weight: 400;
         text-transform: uppercase;
@@ -603,6 +687,7 @@
         color: #FFFFFF;
         cursor: pointer;
         list-style: none;
+        padding: 4px 0;
     }
 
     /* La fleche par defaut de Safari, remplacee par la notre. */
@@ -610,8 +695,14 @@
         display: none;
     }
 
+    /* Un mot vaut mieux qu'un signe : "+" ne dit pas ce qu'il fait. */
     #reglages summary::after {
-        content: " +";
+        content: "Ouvrir \25BE";
+        font-family: 'Space Mono', monospace;
+        font-size: 11.5px;
+        font-weight: 700;
+        letter-spacing: 0;
+        text-transform: none;
         color: #F0883E;
     }
 
@@ -620,7 +711,7 @@
     }
 
     #reglages[open] summary::after {
-        content: " \2013";
+        content: "Fermer \25B4";
     }
 
 
@@ -639,6 +730,18 @@
 
     #reglages .champ:last-child {
         margin-bottom: 0;
+    }
+
+    #reglages select {
+        width: 100%;
+        background-color: #0D1310;
+        color: #E6F0E9;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        padding: 12px 11px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        margin-bottom: 22px;
     }
 
     #reglages input {
@@ -759,8 +862,38 @@
         text-align: left;
     }
 
-    #accueilFormulaire {
+    #accueilFormulaire,
+    #accueilNotifications {
         display: none;
+    }
+
+    #accueilNotifications p {
+        font-size: 12.5px;
+        line-height: 1.6;
+        color: #D9EBDF;
+        margin: 0 0 12px;
+    }
+
+    #accueilNotifications .notifPetit {
+        font-size: 11px;
+        color: #8FA396;
+        margin-bottom: 20px;
+    }
+
+    #btnActiverRappels {
+        width: 100%;
+        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
+        color: #FFFFFF;
+        border: none;
+        margin-bottom: 8px;
+    }
+
+    #btnPlusTard {
+        width: 100%;
+        border: none;
+        color: #8FA396;
+        font-weight: 400;
+        font-size: 12px;
     }
 
     /* Le bandeau du premier ecran : meme degrade que la carte du compteur,
@@ -911,8 +1044,8 @@
             <span class="statLabel">envies résistées</span>
         </div>
         <div class="stat">
-            <span class="statValeur"><span id="compteurEcarts">0</span></span>
-            <span class="statLabel">fois craqué</span>
+            <span class="statValeur"><span id="meilleureSerie">0</span></span>
+            <span class="statLabel">meilleure série</span>
         </div>
     </section>
 
@@ -949,6 +1082,7 @@
         </div>
         <textarea id="bilanNote" rows="2" placeholder="Un mot sur ce moment, si tu veux."></textarea>
         <button id="btnBilan">Noter ce moment</button>
+        <p id="astuceDuJour"></p>
         <p id="bilanMessage"></p>
     </section>
 
@@ -1034,13 +1168,33 @@
             <button id="btnObjectif">Enregistrer</button>
         </div>
 
+        <label>Notifications</label>
+        <p class="explication">Un rappel quotidien pour venir noter ta journée. Il faut que Jour Zéro soit installé sur ton écran d'accueil — c'est le cas.</p>
+        <div class="champ">
+            <button id="btnNotifications">Activer les notifications</button>
+        </div>
+        <p id="messageNotifications"></p>
+
+        <label for="pastilleInput">Pastille sur l'icône de l'app</label>
+        <select id="pastilleInput">
+            <option value="non">Rien</option>
+            <option value="faits">Mes jours sans consommer</option>
+            <option value="restants">Les jours qui restent avant mon objectif</option>
+        </select>
+
         <label for="zoneSauvegarde">Sauvegarde et transfert</label>
-        <textarea id="zoneSauvegarde" rows="3" placeholder="Ton code de sauvegarde apparaîtra ici"></textarea>
+        <p class="explication">Tes données ne vivent que dans ce navigateur. Il n'y a pas de compte, donc personne ne peut te les rendre si tu les perds.</p>
+
+        <p class="etape"><span class="etapeNumero">1</span> Pour les mettre à l'abri, touche <strong>Exporter</strong> : un code apparaît dans le cadre. Copie-le et envoie-le-toi par message ou par mail.</p>
+        <p class="etape"><span class="etapeNumero">2</span> Pour les remettre ici — nouveau téléphone, ou passage du Mac au mobile — colle ce code dans le cadre et touche <strong>Importer</strong>.</p>
+
+        <textarea id="zoneSauvegarde" rows="3" placeholder="Le code apparaît ici après Exporter. Ou colle ici celui que tu t'es envoyé."></textarea>
         <div class="champ">
             <button id="btnExporter">Exporter</button>
             <button id="btnImporter">Importer</button>
         </div>
         <p id="messageSauvegarde"></p>
+        <p id="rappelSauvegarde"></p>
     </details>
 
 </div>
@@ -1058,9 +1212,10 @@
 
             <ul id="introListe">
                 <li><strong>Ça compte tes jours</strong> depuis ta date d'arrêt, et ce que tu économises au passage.</li>
-                <li><strong>Tu notes ta journée</strong> en un geste : facile, moyenne ou difficile. Au bout de quelques semaines, tu vois quels jours sont durs.</li>
+                <li><strong>Tu notes tes moments</strong> quand tu veux dans la journée : facile, moyen ou difficile, avec un mot si tu veux.</li>
                 <li><strong>Quand l'envie monte</strong>, un bouton te donne quelque chose à faire tout de suite.</li>
                 <li><strong>Si tu craques</strong>, tu le notes et le compteur repart. C'est une information, pas une sanction.</li>
+                <li><strong>Au bout de quelques semaines</strong>, l'app te dit à quelle heure c'est le plus dur pour toi. C'est là qu'elle devient vraiment utile.</li>
             </ul>
 
             <p id="introConfidentialite">Pas de compte, pas de mot de passe, aucun serveur. Tout reste sur cet appareil, et personne d'autre ne peut le lire.</p>
@@ -1108,7 +1263,17 @@
             J'arrête complètement, pas de date de fin
         </label>
 
-        <button id="btnCreerCompte">Créer mon compte</button>
+        <button id="btnCreerCompte">Continuer</button>
+        </div>
+
+        <div id="accueilNotifications">
+            <h2>Un rappel par jour ?</h2>
+            <p>Jour Zéro peut t'envoyer un rappel quotidien pour venir noter ta journée.</p>
+            <p>C'est souvent ce qui fait la différence entre une app qu'on ouvre trois jours et une app qui sert vraiment.</p>
+            <p class="notifPetit">Tu peux changer d'avis quand tu veux dans les réglages.</p>
+
+            <button id="btnActiverRappels">Activer les rappels</button>
+            <button id="btnPlusTard">Plus tard</button>
         </div>
 
     </div>
@@ -1147,6 +1312,67 @@
 
 afficherAccueilSiBesoin();
 
+    // Les donnees ne vivent que dans ce navigateur. Si personne ne rappelle
+    // d'exporter, personne ne le fait.
+    function afficherRappelSauvegarde() {
+        const ligne = document.getElementById("rappelSauvegarde");
+        const derniere = localStorage.getItem("derniereSauvegarde");
+
+        if (!localStorage.getItem("dateArret")) {
+            ligne.style.display = "none";
+            return;
+        }
+
+        if (!derniere) {
+            ligne.textContent = "Tu n'as jamais exporté tes données. Un copier-coller gardé quelque part, et tu ne risques plus de tout perdre.";
+            ligne.className = "alerte";
+            ligne.style.display = "block";
+            return;
+        }
+
+        const jours = ecartEnJours(derniere, dateDuJour());
+
+        if (jours === 0) {
+            ligne.textContent = "Dernière sauvegarde aujourd'hui.";
+        } else if (jours === 1) {
+            ligne.textContent = "Dernière sauvegarde hier.";
+        } else {
+            ligne.textContent = "Dernière sauvegarde il y a " + jours + " jours.";
+        }
+
+        ligne.className = jours > 30 ? "alerte" : "";
+        ligne.style.display = "block";
+    }
+
+    function afficherEtatNotifications() {
+        const message = document.getElementById("messageNotifications");
+        const bouton = document.getElementById("btnNotifications");
+
+        if (!("Notification" in window)) {
+            message.textContent = "Ce navigateur ne sait pas afficher de notifications.";
+            message.className = "alerte";
+            bouton.disabled = true;
+            return;
+        }
+
+        if (Notification.permission === "granted") {
+            message.textContent = "Notifications autorisées sur cet appareil.";
+            message.className = "";
+            bouton.textContent = "Envoyer une notification de test";
+            return;
+        }
+
+        if (Notification.permission === "denied") {
+            message.textContent = "Tu as refusé les notifications. Pour revenir en arrière : Réglages iOS → Jour Zéro → Notifications.";
+            message.className = "alerte";
+            bouton.disabled = true;
+            return;
+        }
+
+        message.textContent = "";
+        message.className = "";
+    }
+
     function remplirReglages() {
         const date = localStorage.getItem("dateArret");
         const depense = localStorage.getItem("depenseParSemaine");
@@ -1162,6 +1388,9 @@ afficherAccueilSiBesoin();
         if (objectif) {
             document.getElementById("objectifReglageInput").value = objectif;
         }
+
+        document.getElementById("pastilleInput").value =
+            localStorage.getItem("pastille") || "non";
     }
 
     function afficherEnvies() {
@@ -1222,6 +1451,20 @@ afficherAccueilSiBesoin();
         } else {
             ligne.style.display = "none";
         }
+    }
+
+    // Une astuce par JOUR, pas par ouverture : elle ne doit pas sauter d'un
+    // rechargement a l'autre. Le numero du jour choisit toujours la meme.
+    function afficherAstuceDuJour() {
+        const jour = dateDuJour();
+        let somme = 0;
+
+        for (let i = 0; i < jour.length; i++) {
+            somme += jour.charCodeAt(i);
+        }
+
+        document.getElementById("astuceDuJour").textContent =
+            astucesEnvie[somme % astucesEnvie.length];
     }
 
     // Le bilan quotidien : un niveau et une note facultative, par date.
@@ -1315,72 +1558,182 @@ afficherAccueilSiBesoin();
 
     // Au chargement : si la journee est deja renseignee, on la reaffiche.
     // La liste des moments deja notes aujourd'hui.
-    // Efface un moment. On passe par sa position REELLE dans le stockage,
-    // pas par sa place a l'ecran : la liste affichee est triee par heure.
-    function retirerMoment(position) {
-        const journal = lireJournal();
-        const jour = dateDuJour();
+    // Efface une entree d'aujourd'hui. Trois natures, trois rangements :
+    // un moment vit dans le journal, une envie et un ecart dans leur historique.
+    function retirerEntree(nature, reference) {
+        if (nature === "moment") {
+            const journal = lireJournal();
+            const jour = dateDuJour();
 
-        if (!journal[jour]) {
+            if (journal[jour]) {
+                journal[jour].splice(parseInt(reference, 10), 1);
+
+                if (journal[jour].length === 0) {
+                    delete journal[jour];
+                }
+
+                localStorage.setItem("journal", JSON.stringify(journal));
+            }
+        }
+
+        if (nature === "envie") {
+            const envies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+            const position = envies.indexOf(reference);
+
+            if (position !== -1) {
+                envies.splice(position, 1);
+                localStorage.setItem("historiqueEnvies", JSON.stringify(envies));
+            }
+        }
+
+        if (nature === "ecart") {
+            annulerEcart(reference);
+        }
+
+        rafraichirTout();
+    }
+
+    // Annuler un ecart, c'est remonter le temps : il faut aussi rendre sa date
+    // d'arret d'avant et les paliers qu'il avait effaces. On garde donc une
+    // photo de l'etat precedent au moment de l'enregistrer.
+    function annulerEcart(horodatage) {
+        const avant = JSON.parse(localStorage.getItem("avantDernierEcart"));
+
+        if (!avant || avant.horodatage !== horodatage) {
             return;
         }
 
-        journal[jour].splice(position, 1);
+        const ecarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+        const position = ecarts.indexOf(horodatage);
 
-        if (journal[jour].length === 0) {
-            delete journal[jour];
+        if (position !== -1) {
+            ecarts.splice(position, 1);
+            localStorage.setItem("historiqueEcarts", JSON.stringify(ecarts));
         }
 
-        localStorage.setItem("journal", JSON.stringify(journal));
+        localStorage.setItem("dateArret", avant.dateArret);
+        localStorage.setItem("paliersFetes", avant.paliersFetes);
+
+        const notes = JSON.parse(localStorage.getItem("notesEcarts")) || {};
+        delete notes[dateLocale(new Date(horodatage))];
+        localStorage.setItem("notesEcarts", JSON.stringify(notes));
+
+        localStorage.removeItem("avantDernierEcart");
+
+        document.getElementById("messageEcart").textContent = "Écart annulé.";
+    }
+
+    function rafraichirTout() {
+        const dateArret = localStorage.getItem("dateArret");
+
+        if (dateArret) {
+            afficherJours(new Date(dateArret + "T12:00:00"));
+        }
 
         afficherBilan();
+        afficherEnvies();
+        afficherEcarts();
         afficherCarnet();
         afficherBilanPeriode();
         afficherDepuisDebut();
     }
 
-    function afficherBilan() {
-        const bruts = lireJournal()[dateDuJour()] || [];
-        const liste = document.getElementById("momentsDuJour");
+    // Tout ce qui a ete enregistre aujourd'hui, dans l'ordre, effacable.
+    function entreesDuJour() {
+        const jour = dateDuJour();
+        const entrees = [];
 
-        // On garde la position d'origine a cote de chaque moment avant de trier.
-        const moments = bruts.map(function (moment, position) {
-            return { moment: moment, position: position };
-        }).sort(function (a, b) {
-            return parHeure(a.moment, b.moment);
-        });
+        const moments = lireJournal()[jour] || [];
+
+        for (let i = 0; i < moments.length; i++) {
+            entrees.push({
+                nature: "moment",
+                reference: i,
+                heure: moments[i].heure,
+                texte: NIVEAUX[moments[i].niveau].court,
+                couleur: NIVEAUX[moments[i].niveau].couleur,
+                note: moments[i].note
+            });
+        }
+
+        const envies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+
+        for (let i = 0; i < envies.length; i++) {
+            if (dateLocale(new Date(envies[i])) !== jour) {
+                continue;
+            }
+
+            entrees.push({
+                nature: "envie",
+                reference: envies[i],
+                heure: heureDe(envies[i]),
+                texte: "envie résistée",
+                couleur: "#6FBF8E",
+                note: ""
+            });
+        }
+
+        const ecarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+        const notes = JSON.parse(localStorage.getItem("notesEcarts")) || {};
+        const avant = JSON.parse(localStorage.getItem("avantDernierEcart"));
+
+        for (let i = 0; i < ecarts.length; i++) {
+            if (dateLocale(new Date(ecarts[i])) !== jour) {
+                continue;
+            }
+
+            entrees.push({
+                nature: "ecart",
+                // Seul le dernier ecart peut etre annule : c'est le seul dont
+                // on sache ce qu'il y avait avant.
+                reference: avant && avant.horodatage === ecarts[i] ? ecarts[i] : null,
+                heure: heureDe(ecarts[i]),
+                texte: "consommation",
+                couleur: "#C2795A",
+                note: notes[jour] || ""
+            });
+        }
+
+        return entrees.sort(parHeure);
+    }
+
+    function afficherBilan() {
+        const entrees = entreesDuJour();
+        const liste = document.getElementById("momentsDuJour");
 
         liste.innerHTML = "";
 
-        for (let i = 0; i < moments.length; i++) {
-            const courant = moments[i].moment;
+        for (let i = 0; i < entrees.length; i++) {
             const element = document.createElement("li");
 
             const heure = document.createElement("span");
             heure.className = "momentHeure";
-            heure.textContent = quand(courant);
+            heure.textContent = entrees[i].heure || "sur la journée";
 
-            const niveau = document.createElement("span");
-            niveau.className = "momentNiveau";
-            niveau.style.color = NIVEAUX[courant.niveau].couleur;
-            niveau.textContent = NIVEAUX[courant.niveau].court;
-
-            const retirer = document.createElement("button");
-            retirer.className = "momentRetirer";
-            retirer.type = "button";
-            retirer.textContent = "\u00D7";
-            retirer.title = "Retirer ce moment";
-            retirer.dataset.position = moments[i].position;
+            const quoi = document.createElement("span");
+            quoi.className = "momentNiveau";
+            quoi.style.color = entrees[i].couleur;
+            quoi.textContent = entrees[i].texte;
 
             element.appendChild(heure);
             element.appendChild(document.createTextNode(" \u00B7 "));
-            element.appendChild(niveau);
-            element.appendChild(retirer);
+            element.appendChild(quoi);
 
-            if (courant.note) {
+            if (entrees[i].reference !== null) {
+                const retirer = document.createElement("button");
+                retirer.className = "momentRetirer";
+                retirer.type = "button";
+                retirer.textContent = "\u00D7";
+                retirer.title = "Retirer";
+                retirer.dataset.nature = entrees[i].nature;
+                retirer.dataset.reference = entrees[i].reference;
+                element.appendChild(retirer);
+            }
+
+            if (entrees[i].note) {
                 const note = document.createElement("span");
                 note.className = "momentNote";
-                note.textContent = "\u00AB " + courant.note + " \u00BB";
+                note.textContent = "\u00AB " + entrees[i].note + " \u00BB";
                 element.appendChild(note);
             }
 
@@ -1634,17 +1987,7 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        // Le vrai debut, c'est le plus ancien entre la date d'arret actuelle
-        // et le premier ecart enregistre : chaque ecart a decale la date.
-        let debut = dateArret;
-
-        for (let i = 0; i < ecarts.length; i++) {
-            const jour = dateLocale(new Date(ecarts[i]));
-
-            if (jour < debut) {
-                debut = jour;
-            }
-        }
+        const debut = dateDebut();
 
         const total = Math.floor(
             (new Date() - new Date(debut + "T12:00:00")) / (1000 * 60 * 60 * 24)
@@ -1876,9 +2219,72 @@ afficherAccueilSiBesoin();
         document.getElementById("argentEconomise").textContent = argent.toFixed(2);
     }
 
+    // Le premier jour connu du parcours. On le fige une fois pour toutes,
+    // sinon chaque ecart deplace la date d'arret et on perd l'origine.
+    function dateDebut() {
+        let debut = localStorage.getItem("dateDebut");
+
+        if (debut) {
+            return debut;
+        }
+
+        const dateArret = localStorage.getItem("dateArret");
+
+        if (!dateArret) {
+            return null;
+        }
+
+        debut = dateArret;
+        const ecarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+
+        for (let i = 0; i < ecarts.length; i++) {
+            const jour = dateLocale(new Date(ecarts[i]));
+
+            if (jour < debut) {
+                debut = jour;
+            }
+        }
+
+        localStorage.setItem("dateDebut", debut);
+        return debut;
+    }
+
+    function ecartEnJours(depuis, jusqua) {
+        return Math.round(
+            (new Date(jusqua + "T12:00:00") - new Date(depuis + "T12:00:00"))
+            / (1000 * 60 * 60 * 24)
+        );
+    }
+
+    // La plus longue suite de jours sans consommer. Les bornes sont le debut,
+    // chaque ecart, et aujourd'hui : la plus grande distance entre deux bornes.
     function afficherEcarts() {
-        const historique = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
-        document.getElementById("compteurEcarts").textContent = historique.length;
+        const debut = dateDebut();
+        const champ = document.getElementById("meilleureSerie");
+
+        if (!debut) {
+            champ.textContent = "0";
+            return;
+        }
+
+        const ecarts = (JSON.parse(localStorage.getItem("historiqueEcarts")) || [])
+            .map(function (horodatage) {
+                return dateLocale(new Date(horodatage));
+            })
+            .sort();
+
+        const bornes = [debut].concat(ecarts, [dateDuJour()]);
+        let meilleure = 0;
+
+        for (let i = 1; i < bornes.length; i++) {
+            const longueur = ecartEnJours(bornes[i - 1], bornes[i]);
+
+            if (longueur > meilleure) {
+                meilleure = longueur;
+            }
+        }
+
+        champ.textContent = meilleure;
     }
 
     function afficherJours(date) {
@@ -1890,7 +2296,42 @@ afficherAccueilSiBesoin();
         afficherArgent(jours);
         afficherObjectif(jours);
         afficherPlan(jours);
+        majPastille(jours);
         feter(jours);
+    }
+
+    // Le service worker : un bout de code qui tourne a cote de la page, sur le
+    // telephone, et qui reste vivant quand l'app est fermee. Sans lui, aucune
+    // notification n'est possible.
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.register("sw.js").catch(function () {
+            // Sur un fichier ouvert en local (file://), le navigateur refuse :
+            // c'est normal, ca marchera en ligne.
+        });
+    }
+
+    // La pastille sur l'icone de l'ecran d'accueil : soit les jours faits,
+    // soit ceux qui restent avant l'objectif.
+    function majPastille(jours) {
+        if (!navigator.setAppBadge) {
+            return;
+        }
+
+        const choix = localStorage.getItem("pastille");
+        let nombre = 0;
+
+        if (choix === "faits") {
+            nombre = jours;
+        } else if (choix === "restants") {
+            const objectif = parseFloat(localStorage.getItem("objectifJours"));
+            nombre = objectif ? Math.max(objectif - jours, 0) : 0;
+        }
+
+        if (nombre > 0) {
+            navigator.setAppBadge(nombre).catch(function () {});
+        } else if (navigator.clearAppBadge) {
+            navigator.clearAppBadge().catch(function () {});
+        }
     }
 
     // Demande au navigateur de ne pas effacer nos donnees s'il fait du menage.
@@ -1910,8 +2351,11 @@ afficherAccueilSiBesoin();
     afficherEnvies();
     personnaliser();
     afficherBilan();
+    afficherAstuceDuJour();
     afficherBilanPeriode();
     afficherDepuisDebut();
+    afficherRappelSauvegarde();
+    afficherEtatNotifications();
     remplirReglages();
 
     if (!dateSauvegardee) {
@@ -1933,7 +2377,10 @@ afficherAccueilSiBesoin();
 
     document.getElementById("momentsDuJour").addEventListener("click", function (evenement) {
         if (evenement.target.classList.contains("momentRetirer")) {
-            retirerMoment(parseInt(evenement.target.dataset.position, 10));
+            retirerEntree(
+                evenement.target.dataset.nature,
+                evenement.target.dataset.reference
+            );
         }
     });
 
@@ -1980,6 +2427,7 @@ afficherAccueilSiBesoin();
     document.getElementById("messageEcart").textContent = "";
 
     afficherEnvies();
+    afficherBilan();
     });
 
     document.getElementById("btnValider").addEventListener("click", function () {
@@ -2052,7 +2500,29 @@ afficherAccueilSiBesoin();
 
     personnaliser();
 
-    document.getElementById("accueilOverlay").style.display = "none";
+    // On ne ferme pas encore : reste la question des rappels. Elle vient
+    // APRES, jamais pendant le formulaire — on demande une permission une
+    // fois qu'on a explique a quoi elle sert.
+    document.getElementById("accueilFormulaire").style.display = "none";
+    document.getElementById("accueilNotifications").style.display = "block";
+    });
+
+    function fermerAccueil() {
+        document.getElementById("accueilOverlay").style.display = "none";
+        afficherEtatNotifications();
+    }
+
+    document.getElementById("btnPlusTard").addEventListener("click", fermerAccueil);
+
+    // Le clic sur ce bouton EST le geste qu'iOS exige pour demander la
+    // permission. C'est pour ca qu'elle ne peut pas etre demandee toute seule.
+    document.getElementById("btnActiverRappels").addEventListener("click", function () {
+        if (!("Notification" in window)) {
+            fermerAccueil();
+            return;
+        }
+
+        Notification.requestPermission().then(fermerAccueil).catch(fermerAccueil);
     });
 
     document.getElementById("btnObjectif").addEventListener("click", function () {
@@ -2126,8 +2596,17 @@ afficherAccueilSiBesoin();
         const quandCetait = new Date();
         quandCetait.setDate(quandCetait.getDate() - joursEnArriere);
 
+        const horodatage = quandCetait.toISOString();
+
+        // Photo de l'etat d'avant, pour pouvoir annuler si c'est une erreur.
+        localStorage.setItem("avantDernierEcart", JSON.stringify({
+            horodatage: horodatage,
+            dateArret: localStorage.getItem("dateArret"),
+            paliersFetes: localStorage.getItem("paliersFetes") || "[]"
+        }));
+
         const historique = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
-        historique.push(quandCetait.toISOString());
+        historique.push(horodatage);
         localStorage.setItem("historiqueEcarts", JSON.stringify(historique));
 
         const jourEcart = dateLocale(quandCetait);
@@ -2154,6 +2633,7 @@ afficherAccueilSiBesoin();
         afficherEcarts();
         afficherCarnet();
         afficherEnvies();
+        afficherBilan();
         afficherBilanPeriode();
         afficherDepuisDebut();
         remplirReglages();
@@ -2167,8 +2647,45 @@ afficherAccueilSiBesoin();
     const CLES_SAUVEGARDE = [
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
-        "journal", "notesEcarts", "paliersFetes"
+        "journal", "notesEcarts", "paliersFetes", "dateDebut",
+        "avantDernierEcart", "derniereSauvegarde", "pastille"
     ];
+
+    // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
+    // ou dans un setTimeout est refuse en silence.
+    document.getElementById("btnNotifications").addEventListener("click", function () {
+        const message = document.getElementById("messageNotifications");
+
+        if (Notification.permission === "granted") {
+            navigator.serviceWorker.ready.then(function (inscription) {
+                inscription.showNotification("Jour Zéro", {
+                    body: "Voilà à quoi ressemblera ton rappel.",
+                    icon: "icone-192.png",
+                    badge: "icone-192.png"
+                });
+            });
+            return;
+        }
+
+        Notification.requestPermission().then(function (reponse) {
+            afficherEtatNotifications();
+
+            if (reponse === "granted") {
+                message.textContent = "C'est bon. Touche à nouveau pour voir un exemple.";
+            }
+        });
+    });
+
+    document.getElementById("pastilleInput").addEventListener("change", function () {
+        localStorage.setItem("pastille", this.value);
+
+        const dateArret = localStorage.getItem("dateArret");
+        const jours = dateArret
+            ? Math.floor((new Date() - new Date(dateArret + "T12:00:00")) / (1000 * 60 * 60 * 24))
+            : 0;
+
+        majPastille(jours);
+    });
 
     document.getElementById("btnExporter").addEventListener("click", function () {
         const donnees = {};
@@ -2185,8 +2702,11 @@ afficherAccueilSiBesoin();
         zone.focus();
         zone.select();
 
+        localStorage.setItem("derniereSauvegarde", dateDuJour());
+        afficherRappelSauvegarde();
+
         document.getElementById("messageSauvegarde").textContent =
-            "Copie ce code et envoie-le-toi, par message ou par mail.";
+            "Ton code est prêt et déjà sélectionné. Copie-le maintenant (⌘C sur Mac, appui long puis Copier sur téléphone) et envoie-le-toi.";
     });
 
     document.getElementById("btnImporter").addEventListener("click", function () {
@@ -2194,7 +2714,7 @@ afficherAccueilSiBesoin();
         const message = document.getElementById("messageSauvegarde");
 
         if (!zone.value.trim()) {
-            message.textContent = "Colle d'abord ton code de sauvegarde dans le cadre.";
+            message.textContent = "Le cadre est vide. Colle d'abord le code que tu t'es envoyé.";
             return;
         }
 
@@ -2207,7 +2727,7 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        const confirmation = confirm("Remplacer les données de cet appareil par celles du code ?");
+        const confirmation = confirm("Remplacer les données de cet appareil par celles du code ? Ce qui est sur cet appareil sera perdu.");
 
         if (!confirmation) {
             return;
