@@ -1009,24 +1009,73 @@
         margin: 0;
     }
 
-    #introListe {
-        list-style: none;
-        margin: 0 0 18px;
-        padding: 0;
+    /* Trois rangees : un morceau de l'app a gauche, une phrase a droite.
+       Montrer vaut mieux que decrire. */
+    .apercuRang {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        margin-bottom: 16px;
     }
 
-    #introListe li {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #D9EBDF;
-        padding-left: 16px;
-        margin-bottom: 12px;
-        border-left: 2px solid rgba(47, 125, 82, 0.6);
+    .apercuVisuel {
+        width: 84px;
+        flex: none;
+        display: flex;
+        justify-content: center;
     }
 
-    #introListe strong {
+    .apercuTexte {
+        font-size: 12px;
+        line-height: 1.55;
+        color: #C9D6CD;
+        margin: 0;
+    }
+
+    .apercuTexte strong {
+        display: block;
         color: #FFFFFF;
+    }
+
+    .miniCompteur {
+        width: 76px;
+        height: 54px;
+        border-radius: 12px;
+        background: linear-gradient(160deg, #2F7D52 0%, #14432C 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .miniCompteur span {
+        font-size: 26px;
         font-weight: 700;
+        color: #FFFFFF;
+        line-height: 1;
+    }
+
+    .miniNiveaux {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        width: 76px;
+    }
+
+    .miniPastille {
+        height: 14px;
+        border-radius: 7px;
+    }
+
+    .miniCarnet {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 3px;
+        width: 76px;
+    }
+
+    .miniCarnet i {
+        aspect-ratio: 1;
+        border-radius: 3px;
     }
 
     #introConfidentialite {
@@ -1335,17 +1384,37 @@
                 <p id="introAccroche">Un compteur, un carnet, des repères.<br>Rien d'autre.</p>
             </div>
 
-            <ul id="introListe">
-                <li><strong>Ça compte tes jours</strong> depuis ta date d'arrêt, et ce que tu économises au passage.</li>
-                <li><strong>Tu notes tes moments</strong> quand tu veux dans la journée : facile, moyen ou difficile, avec un mot si tu veux.</li>
-                <li><strong>Quand l'envie monte</strong>, un bouton te donne quelque chose à faire tout de suite.</li>
-                <li><strong>Si tu craques</strong>, tu le notes et le compteur repart. C'est une information, pas une sanction.</li>
-                <li><strong>Au bout de quelques semaines</strong>, l'app te dit à quelle heure c'est le plus dur pour toi. C'est là qu'elle devient vraiment utile.</li>
-            </ul>
+            <div class="apercuRang">
+                <div class="apercuVisuel">
+                    <div class="miniCompteur"><span>12</span></div>
+                </div>
+                <p class="apercuTexte"><strong>Tes jours se comptent tout seuls.</strong> Et l'argent que tu ne dépenses plus.</p>
+            </div>
 
-            <p id="introConfidentialite">Pas de compte, pas de mot de passe, aucun serveur. Tout reste sur cet appareil, et personne d'autre ne peut le lire.</p>
+            <div class="apercuRang">
+                <div class="apercuVisuel">
+                    <div class="miniNiveaux">
+                        <span class="miniPastille" style="background-color:#46B377"></span>
+                        <span class="miniPastille" style="background-color:#D9A441"></span>
+                        <span class="miniPastille" style="background-color:#E05C4B"></span>
+                    </div>
+                </div>
+                <p class="apercuTexte"><strong>Tu dis comment ça va.</strong> Facile, moyen ou difficile, en une touche, autant de fois que tu veux.</p>
+            </div>
 
-            <p id="introReserve">Jour Zéro ne remplace pas un soignant. Pour en parler à quelqu'un : Stop-Cannabis.ch, ou un service d'addiction près de chez toi.</p>
+            <div class="apercuRang">
+                <div class="apercuVisuel">
+                    <div class="miniCarnet">
+                        <i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i><i style="background-color:#E05C4B"></i><i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i>
+                        <i style="background-color:#E05C4B"></i><i style="background-color:#46B377"></i><i style="background-color:#C2795A"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i><i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i>
+                    </div>
+                </div>
+                <p class="apercuTexte"><strong>Ton mois se lit d'un coup d'œil.</strong> Et au bout de quelques semaines, l'app te dit à quelle heure c'est le plus dur.</p>
+            </div>
+
+            <p id="introConfidentialite">Pas de compte, aucun serveur. Tout reste sur cet appareil.</p>
+
+            <p id="introReserve">Jour Zéro ne remplace pas un soignant. Pour en parler : Stop-Cannabis.ch.</p>
 
             <button id="btnCommencer">Commencer</button>
         </div>
