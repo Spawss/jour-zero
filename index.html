@@ -754,6 +754,13 @@
     }
 
     .repliable summary {
+        display: block;
+        cursor: pointer;
+        list-style: none;
+        padding: 4px 0;
+    }
+
+    .titreReplie {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -763,9 +770,30 @@
         letter-spacing: 0.5px;
         font-size: 15px;
         color: #FFFFFF;
-        cursor: pointer;
-        list-style: none;
-        padding: 4px 0;
+    }
+
+    /* L'etape en cours reste lisible meme quand le plan est ferme : c'est
+       elle qui motive, le reste est de la documentation. */
+    #planResume {
+        display: block;
+        font-family: 'Space Mono', monospace;
+        font-size: 11.5px;
+        line-height: 1.55;
+        letter-spacing: 0;
+        text-transform: none;
+        color: #D9EBDF;
+        margin-top: 10px;
+        padding-left: 16px;
+        border-left: 2px solid #F0883E;
+    }
+
+    #planResume strong {
+        display: block;
+        color: #F0883E;
+    }
+
+    .repliable[open] #planResume {
+        display: none;
     }
 
     /* La fleche par defaut de Safari, remplacee par la notre. */
@@ -774,7 +802,7 @@
     }
 
     /* Un mot vaut mieux qu'un signe : "+" ne dit pas ce qu'il fait. */
-    .repliable summary::after {
+    .titreReplie::after {
         content: "Ouvrir \25BE";
         font-family: 'Space Mono', monospace;
         font-size: 11.5px;
@@ -788,7 +816,12 @@
         margin-bottom: 16px;
     }
 
-    .repliable[open] summary::after {
+    /* Sans ca, iOS affiche encore son propre triangle. */
+    .repliable summary::marker {
+        content: "";
+    }
+
+    .repliable[open] .titreReplie::after {
         content: "Fermer \25B4";
     }
 
@@ -1241,7 +1274,10 @@
     </section>
 
     <details class="carte repliable" id="planCarte">
-        <summary>Ton plan</summary>
+        <summary>
+            <span class="titreReplie">Ton plan</span>
+            <span id="planResume"></span>
+        </summary>
         <ol id="planListe"></ol>
         <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
     </details>
@@ -1256,7 +1292,7 @@
     </section>
 
     <details class="carte repliable" id="astucesCarte">
-        <summary>Les astuces</summary>
+        <summary><span class="titreReplie">Les astuces</span></summary>
 
         <div id="astucesBloc">
 
@@ -1302,7 +1338,7 @@
     </details>
 
     <details class="carte repliable" id="reglages">
-        <summary>Réglages</summary>
+        <summary><span class="titreReplie">Réglages</span></summary>
 
         <p class="explication">Tout s'enregistre tout seul : il n'y a rien à valider.</p>
 
@@ -2402,6 +2438,19 @@ afficherAccueilSiBesoin();
         }
 
         liste.innerHTML = "";
+
+        // Ce qu'on lit quand le plan est ferme : juste l'etape en cours.
+        const resume = document.getElementById("planResume");
+        const courante = etapes[indexEnCours];
+
+        resume.innerHTML = "";
+
+        if (courante) {
+            const titre = document.createElement("strong");
+            titre.textContent = courante.titre;
+            resume.appendChild(titre);
+            resume.appendChild(document.createTextNode(courante.texte));
+        }
 
         for (let i = 0; i < etapes.length; i++) {
             const element = document.createElement("li");
