@@ -1177,9 +1177,9 @@
 
         <label for="pastilleInput">Pastille sur l'icône de l'app</label>
         <select id="pastilleInput">
-            <option value="non">Rien</option>
             <option value="faits">Mes jours sans consommer</option>
             <option value="restants">Les jours qui restent avant mon objectif</option>
+            <option value="non">Rien</option>
         </select>
 
         <label for="zoneSauvegarde">Sauvegarde et transfert</label>
@@ -1390,7 +1390,7 @@ afficherAccueilSiBesoin();
         }
 
         document.getElementById("pastilleInput").value =
-            localStorage.getItem("pastille") || "non";
+            localStorage.getItem("pastille") || "faits";
     }
 
     function afficherEnvies() {
@@ -2317,7 +2317,9 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        const choix = localStorage.getItem("pastille");
+        // Par defaut : les jours faits. C'est le chiffre de l'app, et le seul
+        // qui ne fait que monter.
+        const choix = localStorage.getItem("pastille") || "faits";
         let nombre = 0;
 
         if (choix === "faits") {
