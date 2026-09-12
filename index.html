@@ -1339,9 +1339,9 @@
 
         <div id="accueilNotifications">
             <h2>Un rappel par jour ?</h2>
-            <p>Jour Zéro peut t'envoyer un rappel quotidien pour venir noter ta journée.</p>
+            <p>Deux rappels par jour : un le matin pour lancer la journée, un le soir pour la noter.</p>
             <p>C'est souvent ce qui fait la différence entre une app qu'on ouvre trois jours et une app qui sert vraiment.</p>
-            <p class="notifPetit">Tu peux changer d'avis quand tu veux dans les réglages.</p>
+            <p class="notifPetit">Tu peux changer les heures, ou n'en garder qu'un seul, dans les réglages.</p>
 
             <button id="btnActiverRappels">Activer les rappels</button>
             <button id="btnPlusTard">Plus tard</button>
@@ -1467,7 +1467,7 @@ afficherAccueilSiBesoin();
             localStorage.getItem("pastille") || "faits";
 
         document.getElementById("heureMatinInput").value =
-            localStorage.getItem("heureMatin") || "non";
+            localStorage.getItem("heureMatin") || "10";
 
         document.getElementById("heureSoirInput").value =
             localStorage.getItem("heureSoir") || "19";
@@ -2928,7 +2928,7 @@ afficherAccueilSiBesoin();
     // comme ca le changement d'heure d'hiver se rattrape tout seul.
     function heuresRappelUTC() {
         const choisies = [
-            localStorage.getItem("heureMatin") || "non",
+            localStorage.getItem("heureMatin") || "10",
             localStorage.getItem("heureSoir") || "19"
         ];
 
