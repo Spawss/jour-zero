@@ -753,7 +753,7 @@
         color: #D9A441;
     }
 
-    #reglages summary {
+    .repliable summary {
         display: flex;
         align-items: center;
         justify-content: space-between;
@@ -769,12 +769,12 @@
     }
 
     /* La fleche par defaut de Safari, remplacee par la notre. */
-    #reglages summary::-webkit-details-marker {
+    .repliable summary::-webkit-details-marker {
         display: none;
     }
 
     /* Un mot vaut mieux qu'un signe : "+" ne dit pas ce qu'il fait. */
-    #reglages summary::after {
+    .repliable summary::after {
         content: "Ouvrir \25BE";
         font-family: 'Space Mono', monospace;
         font-size: 11.5px;
@@ -784,11 +784,11 @@
         color: #F0883E;
     }
 
-    #reglages[open] summary {
+    .repliable[open] summary {
         margin-bottom: 16px;
     }
 
-    #reglages[open] summary::after {
+    .repliable[open] summary::after {
         content: "Fermer \25B4";
     }
 
@@ -861,14 +861,8 @@
 
     /* ---------- Astuces ---------- */
 
-    #btnAstuces {
-        width: 100%;
-    }
-
     #astucesBloc {
-        display: none;
         text-align: left;
-        margin-top: 6px;
     }
 
     #astucesBloc h3 {
@@ -1246,11 +1240,11 @@
         <p id="bilanMessage"></p>
     </section>
 
-    <section class="carte" id="planCarte">
-        <h2>Ton plan</h2>
+    <details class="carte repliable" id="planCarte">
+        <summary>Ton plan</summary>
         <ol id="planListe"></ol>
         <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
-    </section>
+    </details>
 
     <section class="carte" id="carnetCarte">
         <h2>Carnet de suivi</h2>
@@ -1261,8 +1255,8 @@
         <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. La couleur suit le moment le plus dur de la journée : vert si tout a été facile, ambre si moyen, rouge s'il y a eu un moment difficile, brique si tu as craqué.</p>
     </section>
 
-    <section class="carte">
-        <button id="btnAstuces">Voir les astuces</button>
+    <details class="carte repliable" id="astucesCarte">
+        <summary>Les astuces</summary>
 
         <div id="astucesBloc">
 
@@ -1305,9 +1299,9 @@
             <p id="astucesSource">Conseils adaptés de Stop-Cannabis.ch et de Drogues Info Service.</p>
 
         </div>
-    </section>
+    </details>
 
-    <details class="carte" id="reglages">
+    <details class="carte repliable" id="reglages">
         <summary>Réglages</summary>
 
         <p class="explication">Tout s'enregistre tout seul : il n'y a rien à valider.</p>
@@ -2626,6 +2620,7 @@ afficherAccueilSiBesoin();
             // Le plan reste affiche : savoir ce qui arrive fait partie de la
             // preparation. Toutes les etapes sont a venir.
             afficherPlan(jours);
+            document.getElementById("planCarte").open = true;
             deposerEtat(-restants);
             return;
         }
@@ -3347,17 +3342,6 @@ afficherAccueilSiBesoin();
         setTimeout(function () { location.reload(); }, 900);
     });
 
-    document.getElementById("btnAstuces").addEventListener("click", function () {
-        const bloc = document.getElementById("astucesBloc");
-
-        if (bloc.style.display === "block") {
-            bloc.style.display = "none";
-            this.textContent = "Voir les astuces";
-        } else {
-            bloc.style.display = "block";
-            this.textContent = "Masquer les astuces";
-        }
-    });
 </script>
 </body>
 </html>
