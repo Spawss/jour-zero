@@ -65,11 +65,17 @@ export default {
             const cle = await empreinte(recu.abonnement.endpoint);
 
             // Deux informations, pas une de plus : où joindre ce téléphone,
-            // et à quelle heure. Ni prénom, ni compteur, ni journal — le
+            // et à quelles heures. Ni prénom, ni compteur, ni journal — le
             // message est composé sur l'appareil par le service worker.
+            const heures = Array.isArray(recu.heuresUTC)
+                ? recu.heuresUTC.map(Number).filter(function (h) {
+                    return h >= 0 && h <= 23;
+                })
+                : [];
+
             await env.ABONNEMENTS.put(cle, JSON.stringify({
                 abonnement: recu.abonnement,
-                heureUTC: Number(recu.heureUTC),
+                heuresUTC: heures,
                 maj: new Date().toISOString()
             }));
 
@@ -120,7 +126,9 @@ async function envoyerLesRappels(env, toutLeMonde) {
 
         const fiche = JSON.parse(brut);
 
-        if (!toutLeMonde && fiche.heureUTC !== heure) {
+        const heures = fiche.heuresUTC || [];
+
+        if (!toutLeMonde && heures.indexOf(heure) === -1) {
             continue;
         }
 

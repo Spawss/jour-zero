@@ -1222,10 +1222,19 @@
             <p id="messageAbonnement"></p>
         </div>
 
-        <label for="heureRappelInput">Heure du rappel</label>
-        <select id="heureRappelInput">
+        <label for="heureMatinInput">Rappel du matin — pour lancer la journée</label>
+        <select id="heureMatinInput">
+            <option value="non">Aucun</option>
+            <option value="7">07:00</option>
             <option value="8">08:00</option>
+            <option value="9">09:00</option>
+            <option value="10">10:00</option>
             <option value="12">12:00</option>
+        </select>
+
+        <label for="heureSoirInput">Rappel du soir — pour noter ta journée</label>
+        <select id="heureSoirInput">
+            <option value="non">Aucun</option>
             <option value="15">15:00</option>
             <option value="17">17:00</option>
             <option value="18">18:00</option>
@@ -1453,8 +1462,11 @@ afficherAccueilSiBesoin();
         document.getElementById("pastilleInput").value =
             localStorage.getItem("pastille") || "faits";
 
-        document.getElementById("heureRappelInput").value =
-            localStorage.getItem("heureRappel") || "19";
+        document.getElementById("heureMatinInput").value =
+            localStorage.getItem("heureMatin") || "non";
+
+        document.getElementById("heureSoirInput").value =
+            localStorage.getItem("heureSoir") || "19";
     }
 
     function afficherEnvies() {
@@ -1742,19 +1754,29 @@ afficherAccueilSiBesoin();
         const avant = JSON.parse(localStorage.getItem("avantDernierEcart"));
 
         for (let i = 0; i < ecarts.length; i++) {
-            if (dateLocale(new Date(ecarts[i])) !== jour) {
+            const jourEcart = dateLocale(new Date(ecarts[i]));
+
+            // Seul le dernier ecart peut etre annule : c'est le seul dont on
+            // sache ce qu'il y avait avant.
+            const annulable = avant && avant.horodatage === ecarts[i];
+
+            // Un ecart declare « hier » n'est pas dans la liste d'aujourd'hui.
+            // On l'y montre quand meme tant qu'il est annulable, sinon une
+            // fausse manip serait impossible a corriger.
+            if (jourEcart !== jour && !annulable) {
                 continue;
             }
 
+            const hier = jourEcart !== jour;
+
             entrees.push({
                 nature: "ecart",
-                // Seul le dernier ecart peut etre annule : c'est le seul dont
-                // on sache ce qu'il y avait avant.
-                reference: avant && avant.horodatage === ecarts[i] ? ecarts[i] : null,
-                heure: heureDe(ecarts[i]),
+                reference: annulable ? ecarts[i] : null,
+                // Le prefixe fait aussi office de tri : il passe apres les heures.
+                heure: hier ? "hier " + heureDe(ecarts[i]) : heureDe(ecarts[i]),
                 texte: "consommation",
                 couleur: "#C2795A",
-                note: notes[jour] || ""
+                note: notes[jourEcart] || ""
             });
         }
 
@@ -2833,7 +2855,7 @@ afficherAccueilSiBesoin();
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
         "journal", "notesEcarts", "paliersFetes", "dateDebut",
-        "avantDernierEcart", "derniereSauvegarde", "pastille", "heureRappel"
+        "avantDernierEcart", "derniereSauvegarde", "pastille", "heureMatin", "heureSoir"
     ];
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
@@ -2894,11 +2916,28 @@ afficherAccueilSiBesoin();
     // L'heure choisie est locale. Le serveur, lui, ne connait que l'heure de
     // Londres : on convertit ici, et on renvoie a chaque ouverture de l'app —
     // comme ca le changement d'heure d'hiver se rattrape tout seul.
-    function heureRappelUTC() {
-        const locale = parseInt(localStorage.getItem("heureRappel") || "19", 10);
-        const date = new Date();
-        date.setHours(locale, 0, 0, 0);
-        return date.getUTCHours();
+    // Les heures choisies sont locales. Le serveur ne connait que l'heure de
+    // Londres : on convertit ici, et on renvoie a chaque ouverture de l'app —
+    // comme ca le changement d'heure d'hiver se rattrape tout seul.
+    function heuresRappelUTC() {
+        const choisies = [
+            localStorage.getItem("heureMatin") || "non",
+            localStorage.getItem("heureSoir") || "19"
+        ];
+
+        const heures = [];
+
+        for (let i = 0; i < choisies.length; i++) {
+            if (choisies[i] === "non") {
+                continue;
+            }
+
+            const date = new Date();
+            date.setHours(parseInt(choisies[i], 10), 0, 0, 0);
+            heures.push(date.getUTCHours());
+        }
+
+        return heures;
     }
 
     function envoyerAbonnement(abonnement) {
@@ -2913,7 +2952,7 @@ afficherAccueilSiBesoin();
             // prenom, pas le compteur : le serveur n'en a pas besoin.
             body: JSON.stringify({
                 abonnement: abonnement,
-                heureUTC: heureRappelUTC()
+                heuresUTC: heuresRappelUTC()
             })
         });
     }
@@ -2948,16 +2987,33 @@ afficherAccueilSiBesoin();
         abonnerAuxRappels().catch(function () {});
     }
 
-    document.getElementById("heureRappelInput").addEventListener("change", function () {
-        localStorage.setItem("heureRappel", this.value);
+    function changerHeure(cle, valeur) {
+        localStorage.setItem(cle, valeur);
 
         if (Notification.permission === "granted") {
             abonnerAuxRappels().catch(function () {});
         }
 
-        document.getElementById("messageNotifications").textContent =
-            "Rappel réglé sur " + this.value + ":00.";
-        document.getElementById("messageNotifications").className = "";
+        const message = document.getElementById("messageNotifications");
+        const heures = heuresRappelUTC();
+
+        if (heures.length === 0) {
+            message.textContent = "Aucun rappel : tu ne recevras plus rien.";
+        } else if (heures.length === 1) {
+            message.textContent = "Un rappel par jour.";
+        } else {
+            message.textContent = "Deux rappels par jour, matin et soir.";
+        }
+
+        message.className = "";
+    }
+
+    document.getElementById("heureMatinInput").addEventListener("change", function () {
+        changerHeure("heureMatin", this.value);
+    });
+
+    document.getElementById("heureSoirInput").addEventListener("change", function () {
+        changerHeure("heureSoir", this.value);
     });
 
     document.getElementById("btnAbonnement").addEventListener("click", function () {

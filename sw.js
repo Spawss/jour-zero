@@ -11,6 +11,15 @@
 const RANGEMENT_ETAT = "jour-zero-etat";
 const ADRESSE_ETAT = "./etat.json";
 
+// Le matin, on ne demande rien : la journée n'a pas eu lieu. On lance.
+const MATIN = [
+    "Une journée de plus commence. Une seule à la fois.",
+    "Aujourd'hui aussi, c'est jouable.",
+    "Le plus dur est souvent le soir. Tu le sais, c'est déjà ça.",
+    "Rien à faire de spécial. Juste ne pas commencer.",
+    "Si une envie monte aujourd'hui, tu as un bouton pour ça."
+];
+
 // Les mêmes conseils que dans l'app, pour les jours où tu as déjà noté.
 const ASTUCES = [
     "Une envie dure rarement plus d'un quart d'heure.",
@@ -47,20 +56,31 @@ async function lireEtat() {
 
 // Le message dépend de ce que tu as déjà fait aujourd'hui : s'il te manque
 // une note, on te la demande ; sinon on ne redemande rien, on t'encourage.
+function auHasard(liste) {
+    return liste[Math.floor(Math.random() * liste.length)];
+}
+
+// Le serveur n'indique pas s'il s'agit du rappel du matin ou du soir : le
+// téléphone regarde sa propre horloge. Une information de moins à transmettre.
 function composer(etat) {
+    const matin = new Date().getHours() < 12;
+
     if (!etat) {
         return {
             titre: "Jour Zéro",
-            corps: "Comment s'est passée ta journée ?"
+            corps: matin ? auHasard(MATIN) : "Comment s'est passée ta journée ?"
         };
     }
 
     const jours = etat.jours;
     const titre = jours === 1 ? "1 jour" : jours + " jours";
 
+    if (matin) {
+        return { titre: titre, corps: auHasard(MATIN) };
+    }
+
     if (etat.noteAujourdhui) {
-        const numero = Math.floor(Math.random() * ASTUCES.length);
-        return { titre: titre, corps: ASTUCES[numero] };
+        return { titre: titre, corps: auHasard(ASTUCES) };
     }
 
     return { titre: titre, corps: "Comment s'est passée ta journée ?" };
