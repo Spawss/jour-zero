@@ -196,6 +196,58 @@
         margin: 10px 0 0;
     }
 
+    /* ---------- Le bilan de la journee ---------- */
+
+    #bilanQuestion {
+        font-size: 12.5px;
+        color: #C9D6CD;
+        margin: 0 0 12px;
+    }
+
+    #bilanNiveaux {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+    }
+
+    .niveau {
+        padding: 12px 4px;
+        font-size: 12px;
+    }
+
+    .niveau.choisi {
+        border-color: #F0883E;
+        color: #F0883E;
+    }
+
+    #bilanNote {
+        width: 100%;
+        box-sizing: border-box;
+        background-color: #0D1310;
+        color: #E6F0E9;
+        border: 1px solid rgba(255, 255, 255, 0.14);
+        border-radius: 12px;
+        padding: 11px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+        margin-bottom: 12px;
+    }
+
+    #btnBilan {
+        width: 100%;
+    }
+
+    #bilanMessage {
+        font-size: 12px;
+        color: #6FBF8E;
+        margin: 10px 0 0;
+        text-align: center;
+        min-height: 16px;
+    }
+
     /* ---------- Les trois chiffres ---------- */
 
     #stats {
@@ -325,6 +377,7 @@
     }
 
     #detailJour {
+        white-space: pre-line;
         font-size: 12.5px;
         line-height: 1.6;
         color: #C9D6CD;
@@ -535,6 +588,19 @@
         </div>
     </section>
 
+    <section class="carte" id="bilanCarte">
+        <h2>Ta journée</h2>
+        <p id="bilanQuestion">Comment ça s'est passé aujourd'hui ?</p>
+        <div id="bilanNiveaux">
+            <button class="niveau" data-niveau="facile">Facile</button>
+            <button class="niveau" data-niveau="moyen">Moyen</button>
+            <button class="niveau" data-niveau="difficile">Difficile</button>
+        </div>
+        <textarea id="bilanNote" rows="2" placeholder="Un mot sur ta journée, si tu veux."></textarea>
+        <button id="btnBilan">Valider ma journée</button>
+        <p id="bilanMessage"></p>
+    </section>
+
     <section id="actions">
         <button id="btnEnvie">Résister à l'envie</button>
         <p id="astuceDuMoment"></p>
@@ -552,7 +618,7 @@
         <h2>Carnet de suivi</h2>
         <div id="carnet"></div>
         <p id="detailJour"></p>
-        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée.</p>
+        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. Vert clair : journée facile. Vert foncé : journée difficile.</p>
     </section>
 
     <section class="carte">
@@ -741,6 +807,59 @@ afficherAccueilSiBesoin();
         });
     }
 
+    // Le bilan quotidien : un niveau et une note facultative, par date.
+    function lireJournal() {
+        return JSON.parse(localStorage.getItem("journal")) || {};
+    }
+
+    // toISOString() donne l'heure de Londres. En Suisse l'ete on a deux heures
+    // d'avance, donc apres 22h il renverrait DEMAIN. On retire le decalage.
+    function dateLocale(date) {
+        const decalage = date.getTimezoneOffset() * 60000;
+        return new Date(date - decalage).toISOString().split("T")[0];
+    }
+
+    function dateDuJour() {
+        return dateLocale(new Date());
+    }
+
+    const NIVEAUX = {
+        facile: { mot: "facile", couleur: "#46B377" },
+        moyen: { mot: "moyenne", couleur: "#2F7D52" },
+        difficile: { mot: "difficile", couleur: "#1D5335" }
+    };
+
+    let niveauChoisi = null;
+
+    function marquerNiveau(niveau) {
+        niveauChoisi = niveau;
+
+        const boutons = document.querySelectorAll(".niveau");
+        for (let i = 0; i < boutons.length; i++) {
+            if (boutons[i].dataset.niveau === niveau) {
+                boutons[i].classList.add("choisi");
+            } else {
+                boutons[i].classList.remove("choisi");
+            }
+        }
+    }
+
+    // Au chargement : si la journee est deja renseignee, on la reaffiche.
+    function afficherBilan() {
+        const journal = lireJournal();
+        const entree = journal[dateDuJour()];
+
+        if (!entree) {
+            return;
+        }
+
+        marquerNiveau(entree.niveau);
+        document.getElementById("bilanNote").value = entree.note || "";
+        document.getElementById("btnBilan").textContent = "Mettre à jour ma journée";
+        document.getElementById("bilanMessage").textContent =
+            "Journée déjà notée comme " + NIVEAUX[entree.niveau].mot + ".";
+    }
+
     // Ce qui s'est passe un jour donne
     function afficherDetailJour(jourTexte) {
         const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
@@ -748,11 +867,11 @@ afficherAccueilSiBesoin();
         const dateArret = localStorage.getItem("dateArret");
 
         const aEcart = historiqueEcarts.some(function (date) {
-            return date.split("T")[0] === jourTexte;
+            return dateLocale(new Date(date)) === jourTexte;
         });
 
         const nombreEnvies = historiqueEnvies.filter(function (date) {
-            return date.split("T")[0] === jourTexte;
+            return dateLocale(new Date(date)) === jourTexte;
         }).length;
 
         let texte = jourEnTexte(jourTexte) + " — ";
@@ -771,6 +890,16 @@ afficherAccueilSiBesoin();
             texte += " " + nombreEnvies + " envies résistées.";
         }
 
+        const entree = lireJournal()[jourTexte];
+
+        if (entree) {
+            texte += " Journée " + NIVEAUX[entree.niveau].mot + ".";
+
+            if (entree.note) {
+                texte += "\n\u00AB " + entree.note + " \u00BB";
+            }
+        }
+
         document.getElementById("detailJour").textContent = texte;
     }
 
@@ -780,17 +909,18 @@ afficherAccueilSiBesoin();
 
         const historiqueEcarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
         const joursEcarts = historiqueEcarts.map(function (date) {
-            return date.split("T")[0];
+            return dateLocale(new Date(date));
         });
 
         const dateArret = localStorage.getItem("dateArret");
+        const journal = lireJournal();
         const nombreDeJours = 28;
         const aujourdhui = new Date();
 
         for (let i = nombreDeJours - 1; i >= 0; i--) {
             const jour = new Date(aujourdhui);
             jour.setDate(jour.getDate() - i);
-            const jourTexte = jour.toISOString().split("T")[0];
+            const jourTexte = dateLocale(jour);
 
             const carre = document.createElement("div");
             carre.classList.add("jour-case");
@@ -802,7 +932,13 @@ afficherAccueilSiBesoin();
             } else if (joursEcarts.includes(jourTexte)) {
                 carre.style.backgroundColor = "#A85A3B";
             } else {
-                carre.style.backgroundColor = "#2F7D52";
+                const entree = journal[jourTexte];
+
+                if (entree) {
+                    carre.style.backgroundColor = NIVEAUX[entree.niveau].couleur;
+                } else {
+                    carre.style.backgroundColor = "#2F7D52";
+                }
             }
 
             carre.addEventListener("click", function () {
@@ -949,12 +1085,42 @@ afficherAccueilSiBesoin();
     afficherEcarts();
     afficherCarnet();
     afficherEnvies();
+    afficherBilan();
     remplirReglages();
 
     if (!dateSauvegardee) {
         afficherObjectif(0);
         afficherPlan(0);
     }
+
+    const boutonsNiveau = document.querySelectorAll(".niveau");
+    for (let i = 0; i < boutonsNiveau.length; i++) {
+        boutonsNiveau[i].addEventListener("click", function () {
+            marquerNiveau(this.dataset.niveau);
+        });
+    }
+
+    document.getElementById("btnBilan").addEventListener("click", function () {
+        if (!niveauChoisi) {
+            document.getElementById("bilanMessage").textContent =
+                "Choisis d'abord facile, moyen ou difficile.";
+            return;
+        }
+
+        const journal = lireJournal();
+
+        journal[dateDuJour()] = {
+            niveau: niveauChoisi,
+            note: document.getElementById("bilanNote").value.trim()
+        };
+
+        localStorage.setItem("journal", JSON.stringify(journal));
+
+        document.getElementById("btnBilan").textContent = "Mettre à jour ma journée";
+        document.getElementById("bilanMessage").textContent = "C'est noté. À demain.";
+
+        afficherCarnet();
+    });
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
     const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
@@ -1082,7 +1248,7 @@ afficherAccueilSiBesoin();
         historique.push(aujourdhui.toISOString());
         localStorage.setItem("historiqueEcarts", JSON.stringify(historique));
 
-        const nouvelleDateArret = aujourdhui.toISOString().split("T")[0];
+        const nouvelleDateArret = dateLocale(aujourdhui);
         localStorage.setItem("dateArret", nouvelleDateArret);
 
         const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
@@ -1099,7 +1265,8 @@ afficherAccueilSiBesoin();
     // Toutes les cles qu'on emporte d'un appareil a l'autre.
     const CLES_SAUVEGARDE = [
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
-        "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree"
+        "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
+        "journal"
     ];
 
     document.getElementById("btnExporter").addEventListener("click", function () {
