@@ -676,6 +676,17 @@
         color: #F0883E;
     }
 
+    #messageReglages {
+        font-size: 11.5px;
+        color: #6FBF8E;
+        margin: -12px 0 22px;
+        min-height: 16px;
+    }
+
+    #messageReglages.alerte {
+        color: #D9A441;
+    }
+
     #messageNotifications {
         font-size: 11.5px;
         line-height: 1.5;
@@ -1188,23 +1199,24 @@
     <details class="carte" id="reglages">
         <summary>Réglages</summary>
 
+        <p class="explication">Tout s'enregistre tout seul : il n'y a rien à valider.</p>
+
         <label for="dateArretInput">Ma date d'arrêt</label>
         <div class="champ">
             <input type="date" id="dateArretInput">
-            <button id="btnValider">Valider</button>
         </div>
 
         <label for="depenseInput">Dépense habituelle par semaine (CHF)</label>
         <div class="champ">
             <input type="number" id="depenseInput" min="0" step="0.5">
-            <button id="btnDepense">Enregistrer</button>
         </div>
 
         <label for="objectifReglageInput">Mon objectif (en jours) — laisse vide si tu n'en veux pas</label>
         <div class="champ">
             <input type="number" id="objectifReglageInput" min="1" placeholder="Aucun objectif">
-            <button id="btnObjectif">Enregistrer</button>
         </div>
+
+        <p id="messageReglages"></p>
 
         <label>Notifications</label>
         <p class="explication">Un rappel quotidien pour venir noter ta journée. Il faut que Jour Zéro soit installé sur ton écran d'accueil — c'est le cas.</p>
@@ -2638,18 +2650,33 @@ afficherAccueilSiBesoin();
     afficherBilan();
     });
 
-    document.getElementById("btnValider").addEventListener("click", function () {
-        const valeurInput = document.getElementById("dateArretInput").value;
-        const nouvelleDate = new Date(valeurInput);
-        const aujourdhui = new Date();
+    // Un reglage se prend en compte des qu'on quitte le champ. Pas de bouton
+    // « Enregistrer » : un reglage qu'on croit enregistre et qui ne l'est pas,
+    // c'est pire que pas de reglage du tout.
+    function confirmerReglage(texte, probleme) {
+        const ligne = document.getElementById("messageReglages");
+        ligne.textContent = texte;
+        ligne.className = probleme ? "alerte" : "";
+    }
 
-        if (nouvelleDate > aujourdhui) {
-            alert("La date d'arrêt ne peut pas être dans le futur.");
+    document.getElementById("dateArretInput").addEventListener("change", function () {
+        const valeurInput = this.value;
+
+        if (!valeurInput) {
+            return;
+        }
+
+        if (new Date(valeurInput) > new Date()) {
+            confirmerReglage("Une date d'arrêt dans le futur, ça ne marche pas.", true);
+            this.value = localStorage.getItem("dateArret") || "";
             return;
         }
 
         localStorage.setItem("dateArret", valeurInput);
-        afficherJours(nouvelleDate);
+        afficherJours(new Date(valeurInput + "T12:00:00"));
+        afficherBilanPeriode();
+        afficherDepuisDebut();
+        confirmerReglage("Date d'arrêt enregistrée.");
     });
     
     document.getElementById("pasDObjectifInput").addEventListener("change", function () {
@@ -2736,8 +2763,8 @@ afficherAccueilSiBesoin();
         }).catch(fermerAccueil);
     });
 
-    document.getElementById("btnObjectif").addEventListener("click", function () {
-        const valeur = document.getElementById("objectifReglageInput").value.trim();
+    document.getElementById("objectifReglageInput").addEventListener("change", function () {
+        const valeur = this.value.trim();
 
         if (valeur === "") {
             localStorage.removeItem("objectifJours");
@@ -2748,22 +2775,27 @@ afficherAccueilSiBesoin();
         }
 
         const dateArret = localStorage.getItem("dateArret");
+
         if (dateArret) {
-            afficherJours(new Date(dateArret));
+            afficherJours(new Date(dateArret + "T12:00:00"));
         } else {
             afficherObjectif(0);
             afficherPlan(0);
         }
+
+        confirmerReglage(valeur === "" ? "Objectif retiré." : "Objectif enregistré.");
     });
 
-    document.getElementById("btnDepense").addEventListener("click", function () {
-        const valeurDepense = document.getElementById("depenseInput").value;
-        localStorage.setItem("depenseParSemaine", valeurDepense);
+    document.getElementById("depenseInput").addEventListener("change", function () {
+        localStorage.setItem("depenseParSemaine", this.value);
 
         const dateSauvegardee = localStorage.getItem("dateArret");
+
         if (dateSauvegardee) {
-            afficherJours(new Date(dateSauvegardee));
+            afficherJours(new Date(dateSauvegardee + "T12:00:00"));
         }
+
+        confirmerReglage("Dépense enregistrée.");
     });
 
     let joursEnArriere = 0;
