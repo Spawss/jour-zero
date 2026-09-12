@@ -220,11 +220,25 @@
     }
 
     #momentsDuJour li {
+        position: relative;
         font-size: 11.5px;
         line-height: 1.5;
         color: #A8CDB6;
-        padding: 7px 0 7px 12px;
+        padding: 7px 34px 7px 12px;
         border-left: 2px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .momentRetirer {
+        position: absolute;
+        right: 0;
+        top: 2px;
+        border: none;
+        background: transparent;
+        color: #6E8177;
+        font-size: 16px;
+        line-height: 1;
+        padding: 6px 10px;
+        cursor: pointer;
     }
 
     #momentsDuJour .momentHeure {
@@ -250,9 +264,22 @@
         font-size: 12px;
     }
 
+    .niveau[data-niveau="facile"] {
+        color: #46B377;
+    }
+
+    .niveau[data-niveau="moyen"] {
+        color: #D9A441;
+    }
+
+    .niveau[data-niveau="difficile"] {
+        color: #E05C4B;
+    }
+
+    /* Choisi : le contour prend la couleur du niveau, pas une couleur a part. */
     .niveau.choisi {
-        border-color: #F0883E;
-        color: #F0883E;
+        border-color: currentColor;
+        background-color: rgba(255, 255, 255, 0.05);
     }
 
     #bilanNote {
@@ -335,13 +362,8 @@
         cursor: pointer;
     }
 
-    #actions button,
-    #zoneEcart button {
+    #actions button {
         width: 100%;
-    }
-
-    #zoneEcart {
-        margin-bottom: 26px;
     }
 
     #btnEnvie {
@@ -350,10 +372,67 @@
         border: none;
     }
 
-    /* Le brique des cases "ecart" du carnet : meme couleur, meme sens. */
+    /* Le brique des cases "ecart" du carnet : meme couleur, meme sens.
+       Un vrai bouton, mais en contour : present sans etre attirant. */
     #btnEcart {
-        border-color: rgba(168, 90, 59, 0.55);
+        border-color: rgba(140, 70, 45, 0.6);
+        color: #A8674A;
+    }
+
+    #ecartZone {
+        display: none;
+        margin-top: 6px;
+        border: 1px solid rgba(140, 70, 45, 0.4);
+        border-radius: 16px;
+        padding: 16px;
+    }
+
+    #ecartQuand {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 14px;
+    }
+
+    .ecartJour {
+        padding: 11px 4px;
+        font-size: 12px;
         color: #C2795A;
+    }
+
+    .ecartJour.choisi {
+        border-color: #C2795A;
+        background-color: rgba(168, 90, 59, 0.16);
+    }
+
+    #btnEcartAnnuler {
+        border: none;
+        color: #6E8177;
+        font-size: 12px;
+        font-weight: 400;
+        padding: 10px;
+        margin-top: 2px;
+    }
+
+    #ecartZone label {
+        display: block;
+        font-size: 12px;
+        color: #C2795A;
+        margin-bottom: 8px;
+    }
+
+    #ecartNote {
+        width: 100%;
+        background-color: #0D1310;
+        color: #E6F0E9;
+        border: 1px solid rgba(168, 90, 59, 0.45);
+        border-radius: 12px;
+        padding: 11px;
+        font-family: 'Space Mono', monospace;
+        font-size: 12px;
+        line-height: 1.5;
+        resize: vertical;
+        margin-bottom: 10px;
     }
 
     #astuceDuMoment,
@@ -430,13 +509,51 @@
         color: #F0883E;
     }
 
+    #bilanDepuisDebut {
+        display: none;
+        font-size: 11.5px;
+        line-height: 1.6;
+        color: #8FA396;
+        margin: 10px 0 0;
+    }
+
+    #bilanDepuisDebut strong {
+        color: #D9EBDF;
+        font-weight: 700;
+    }
+
     #detailJour {
-        white-space: pre-line;
         font-size: 12.5px;
         line-height: 1.6;
         color: #C9D6CD;
         margin: 16px 0 0;
         min-height: 20px;
+    }
+
+    #detailJour p {
+        margin: 0;
+    }
+
+    .detailEntete {
+        margin-bottom: 6px !important;
+    }
+
+    .detailLigne {
+        padding-left: 10px;
+        border-left: 2px solid rgba(255, 255, 255, 0.10);
+        padding-top: 3px;
+        padding-bottom: 3px;
+    }
+
+    .detailHeure {
+        color: #FFFFFF;
+        font-weight: 700;
+    }
+
+    .detailNote {
+        display: block;
+        color: #8FA396;
+        font-style: italic;
     }
 
     /* ---------- Le palier franchi ---------- */
@@ -474,32 +591,6 @@
     }
 
     /* ---------- La note d'ecart ---------- */
-
-    #ecartZone {
-        display: none;
-        margin-top: 4px;
-    }
-
-    #ecartZone label {
-        display: block;
-        font-size: 12px;
-        color: #C2795A;
-        margin-bottom: 8px;
-    }
-
-    #ecartNote {
-        width: 100%;
-        background-color: #0D1310;
-        color: #E6F0E9;
-        border: 1px solid rgba(168, 90, 59, 0.45);
-        border-radius: 12px;
-        padding: 11px;
-        font-family: 'Space Mono', monospace;
-        font-size: 12px;
-        line-height: 1.5;
-        resize: vertical;
-        margin-bottom: 10px;
-    }
 
     /* ---------- Reglages ---------- */
 
@@ -828,6 +919,23 @@
     <section id="actions">
         <button id="btnEnvie">Résister à l'envie</button>
         <p id="astuceDuMoment"></p>
+
+        <button id="btnEcart">J'ai craqué</button>
+        <p id="messageEcart"></p>
+
+        <div id="ecartZone">
+            <label>C'était quand ?</label>
+            <div id="ecartQuand">
+                <button class="ecartJour choisi" data-jour="0">Aujourd'hui</button>
+                <button class="ecartJour" data-jour="1">Hier</button>
+            </div>
+
+            <label for="ecartNote">Qu'est-ce qui s'est passé juste avant ?</label>
+            <textarea id="ecartNote" rows="2" placeholder="Où tu étais, avec qui, ce qui a déclenché."></textarea>
+
+            <button id="btnEcartNote">Confirmer</button>
+            <button id="btnEcartAnnuler">Annuler</button>
+        </div>
     </section>
 
     <section class="carte" id="bilanCarte">
@@ -839,20 +947,9 @@
             <button class="niveau" data-niveau="moyen">Moyen</button>
             <button class="niveau" data-niveau="difficile">Difficile</button>
         </div>
-        <textarea id="bilanNote" rows="2" placeholder="Un mot sur ta journée, si tu veux."></textarea>
+        <textarea id="bilanNote" rows="2" placeholder="Un mot sur ce moment, si tu veux."></textarea>
         <button id="btnBilan">Noter ce moment</button>
         <p id="bilanMessage"></p>
-    </section>
-
-    <section id="zoneEcart">
-        <button id="btnEcart">J'ai craqué</button>
-        <p id="messageEcart"></p>
-
-        <div id="ecartZone">
-            <label for="ecartNote">Qu'est-ce qui s'est passé juste avant ?</label>
-            <textarea id="ecartNote" rows="2" placeholder="Où tu étais, avec qui, ce qui a déclenché."></textarea>
-            <button id="btnEcartNote">Enregistrer</button>
-        </div>
     </section>
 
     <section class="carte" id="planCarte">
@@ -866,7 +963,8 @@
         <div id="carnet"></div>
         <p id="detailJour"></p>
         <p id="bilanPeriode"></p>
-        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. La teinte suit le moment le plus dur de la journée : vert clair si tout a été facile, vert foncé s'il y a eu un moment difficile.</p>
+        <p id="bilanDepuisDebut"></p>
+        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. La couleur suit le moment le plus dur de la journée : vert si tout a été facile, ambre si moyen, rouge s'il y a eu un moment difficile, brique si tu as craqué.</p>
     </section>
 
     <section class="carte">
@@ -1196,8 +1294,8 @@ afficherAccueilSiBesoin();
 
     const NIVEAUX = {
         facile: { mot: "facile", court: "facile", couleur: "#46B377", poids: 1 },
-        moyen: { mot: "moyenne", court: "moyen", couleur: "#2F7D52", poids: 2 },
-        difficile: { mot: "difficile", court: "difficile", couleur: "#1D5335", poids: 3 }
+        moyen: { mot: "moyenne", court: "moyen", couleur: "#D9A441", poids: 2 },
+        difficile: { mot: "difficile", court: "difficile", couleur: "#E05C4B", poids: 3 }
     };
 
     let niveauChoisi = null;
@@ -1217,28 +1315,72 @@ afficherAccueilSiBesoin();
 
     // Au chargement : si la journee est deja renseignee, on la reaffiche.
     // La liste des moments deja notes aujourd'hui.
+    // Efface un moment. On passe par sa position REELLE dans le stockage,
+    // pas par sa place a l'ecran : la liste affichee est triee par heure.
+    function retirerMoment(position) {
+        const journal = lireJournal();
+        const jour = dateDuJour();
+
+        if (!journal[jour]) {
+            return;
+        }
+
+        journal[jour].splice(position, 1);
+
+        if (journal[jour].length === 0) {
+            delete journal[jour];
+        }
+
+        localStorage.setItem("journal", JSON.stringify(journal));
+
+        afficherBilan();
+        afficherCarnet();
+        afficherBilanPeriode();
+        afficherDepuisDebut();
+    }
+
     function afficherBilan() {
-        const moments = (lireJournal()[dateDuJour()] || []).slice().sort(parHeure);
+        const bruts = lireJournal()[dateDuJour()] || [];
         const liste = document.getElementById("momentsDuJour");
+
+        // On garde la position d'origine a cote de chaque moment avant de trier.
+        const moments = bruts.map(function (moment, position) {
+            return { moment: moment, position: position };
+        }).sort(function (a, b) {
+            return parHeure(a.moment, b.moment);
+        });
 
         liste.innerHTML = "";
 
         for (let i = 0; i < moments.length; i++) {
+            const courant = moments[i].moment;
             const element = document.createElement("li");
 
             const heure = document.createElement("span");
             heure.className = "momentHeure";
-            heure.textContent = quand(moments[i]);
+            heure.textContent = quand(courant);
+
+            const niveau = document.createElement("span");
+            niveau.className = "momentNiveau";
+            niveau.style.color = NIVEAUX[courant.niveau].couleur;
+            niveau.textContent = NIVEAUX[courant.niveau].court;
+
+            const retirer = document.createElement("button");
+            retirer.className = "momentRetirer";
+            retirer.type = "button";
+            retirer.textContent = "\u00D7";
+            retirer.title = "Retirer ce moment";
+            retirer.dataset.position = moments[i].position;
 
             element.appendChild(heure);
-            element.appendChild(
-                document.createTextNode(" · " + NIVEAUX[moments[i].niveau].court)
-            );
+            element.appendChild(document.createTextNode(" \u00B7 "));
+            element.appendChild(niveau);
+            element.appendChild(retirer);
 
-            if (moments[i].note) {
+            if (courant.note) {
                 const note = document.createElement("span");
                 note.className = "momentNote";
-                note.textContent = "\u00AB " + moments[i].note + " \u00BB";
+                note.textContent = "\u00AB " + courant.note + " \u00BB";
                 element.appendChild(note);
             }
 
@@ -1267,64 +1409,95 @@ afficherAccueilSiBesoin();
 
         const ecarts = historiqueEcarts.filter(duJour);
         const envies = historiqueEnvies.filter(duJour);
+        const zone = document.getElementById("detailJour");
 
-        let texte = jourEnTexte(jourTexte) + " \u2014 ";
+        zone.innerHTML = "";
 
-        // Un jour ou une consommation est notee le dit, meme s'il precede la
-        // date d'arret en cours : c'est justement lui qui l'a fait repartir.
+        // La premiere ligne : le jour, et ce qu'il a ete.
+        const entete = document.createElement("p");
+        entete.className = "detailEntete";
+
+        let resume = jourEnTexte(jourTexte) + " \u2014 ";
+
         if (ecarts.length > 0) {
-            texte += "tu as craqué ce jour-là.";
+            resume += "tu as craqué ce jour-là.";
         } else if (dateArret && jourTexte < dateArret) {
-            texte += "avant ton arrêt.";
+            resume += "avant ton arrêt.";
         } else {
-            texte += "journée tenue.";
+            resume += "journée tenue.";
         }
+
+        entete.appendChild(document.createTextNode(resume));
 
         if (moments.length > 0) {
-            texte += " Journée " + NIVEAUX[momentLePlusDur(moments).niveau].mot + ".";
+            const pire = NIVEAUX[momentLePlusDur(moments).niveau];
+            const mot = document.createElement("span");
+            mot.style.color = pire.couleur;
+            mot.textContent = " Journée " + pire.mot + ".";
+            entete.appendChild(mot);
         }
+
+        zone.appendChild(entete);
 
         // Tout ce qui s'est passe ce jour-la, remis dans l'ordre de l'horloge.
         const evenements = [];
 
         for (let i = 0; i < moments.length; i++) {
-            let ligne = NIVEAUX[moments[i].niveau].court;
-
-            if (moments[i].note) {
-                ligne += " \u2014 \u00AB " + moments[i].note + " \u00BB";
-            }
-
-            evenements.push({ heure: moments[i].heure, texte: ligne });
+            evenements.push({
+                heure: moments[i].heure,
+                texte: NIVEAUX[moments[i].niveau].court,
+                couleur: NIVEAUX[moments[i].niveau].couleur,
+                note: moments[i].note
+            });
         }
 
         for (let i = 0; i < envies.length; i++) {
-            evenements.push({ heure: heureDe(envies[i]), texte: "envie résistée" });
+            evenements.push({
+                heure: heureDe(envies[i]),
+                texte: "envie résistée",
+                couleur: "#6FBF8E",
+                note: ""
+            });
         }
 
         for (let i = 0; i < ecarts.length; i++) {
-            let ligne = "consommation";
-
-            if (notesEcarts[jourTexte]) {
-                ligne += " \u2014 \u00AB " + notesEcarts[jourTexte] + " \u00BB";
-            }
-
-            evenements.push({ heure: heureDe(ecarts[i]), texte: ligne });
+            evenements.push({
+                heure: heureDe(ecarts[i]),
+                texte: "consommation",
+                couleur: "#C2795A",
+                note: notesEcarts[jourTexte] || ""
+            });
         }
 
         evenements.sort(parHeure);
 
         for (let i = 0; i < evenements.length; i++) {
-            texte += "\n" + (evenements[i].heure || "sur la journée") +
-                " \u00B7 " + evenements[i].texte;
-        }
+            const ligne = document.createElement("p");
+            ligne.className = "detailLigne";
 
-        document.getElementById("detailJour").textContent = texte;
+            const heure = document.createElement("span");
+            heure.className = "detailHeure";
+            heure.textContent = evenements[i].heure || "sur la journée";
+
+            const quoi = document.createElement("span");
+            quoi.style.color = evenements[i].couleur;
+            quoi.textContent = evenements[i].texte;
+
+            ligne.appendChild(heure);
+            ligne.appendChild(document.createTextNode(" \u00B7 "));
+            ligne.appendChild(quoi);
+
+            if (evenements[i].note) {
+                const note = document.createElement("span");
+                note.className = "detailNote";
+                note.textContent = "\u00AB " + evenements[i].note + " \u00BB";
+                ligne.appendChild(note);
+            }
+
+            zone.appendChild(ligne);
+        }
     }
 
-
-    // Matin, apres-midi, soir : ce decoupage ne sert pas a etiqueter chaque
-    // ligne (l'heure exacte en dit plus), mais a repondre a LA question :
-    // a quel moment de la journee est-ce que ca coince ?
     function momentDeLaJournee(heure) {
         if (!heure) {
             return null;
@@ -1446,6 +1619,54 @@ afficherAccueilSiBesoin();
         }
 
         ligne.innerHTML = "Sur 4 semaines : " + phrases.join("<br>");
+        ligne.style.display = "block";
+    }
+
+    // Le carnet ne montre que 4 semaines. Pour un objectif de plusieurs mois,
+    // il faut aussi une ligne qui embrasse tout le parcours.
+    function afficherDepuisDebut() {
+        const ligne = document.getElementById("bilanDepuisDebut");
+        const dateArret = localStorage.getItem("dateArret");
+        const ecarts = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
+
+        if (!dateArret) {
+            ligne.style.display = "none";
+            return;
+        }
+
+        // Le vrai debut, c'est le plus ancien entre la date d'arret actuelle
+        // et le premier ecart enregistre : chaque ecart a decale la date.
+        let debut = dateArret;
+
+        for (let i = 0; i < ecarts.length; i++) {
+            const jour = dateLocale(new Date(ecarts[i]));
+
+            if (jour < debut) {
+                debut = jour;
+            }
+        }
+
+        const total = Math.floor(
+            (new Date() - new Date(debut + "T12:00:00")) / (1000 * 60 * 60 * 24)
+        );
+
+        if (total < 1) {
+            ligne.style.display = "none";
+            return;
+        }
+
+        let texte = "Depuis le " + jourEnTexte(debut) + " : <strong>" + total;
+        texte += total > 1 ? " jours</strong>" : " jour</strong>";
+
+        if (ecarts.length === 0) {
+            texte += ", aucun écart.";
+        } else if (ecarts.length === 1) {
+            texte += ", 1 écart.";
+        } else {
+            texte += ", " + ecarts.length + " écarts.";
+        }
+
+        ligne.innerHTML = texte;
         ligne.style.display = "block";
     }
 
@@ -1690,6 +1911,7 @@ afficherAccueilSiBesoin();
     personnaliser();
     afficherBilan();
     afficherBilanPeriode();
+    afficherDepuisDebut();
     remplirReglages();
 
     if (!dateSauvegardee) {
@@ -1707,6 +1929,12 @@ afficherAccueilSiBesoin();
     document.getElementById("btnCommencer").addEventListener("click", function () {
         document.getElementById("accueilIntro").style.display = "none";
         document.getElementById("accueilFormulaire").style.display = "block";
+    });
+
+    document.getElementById("momentsDuJour").addEventListener("click", function (evenement) {
+        if (evenement.target.classList.contains("momentRetirer")) {
+            retirerMoment(parseInt(evenement.target.dataset.position, 10));
+        }
     });
 
     document.getElementById("btnBilan").addEventListener("click", function () {
@@ -1739,6 +1967,7 @@ afficherAccueilSiBesoin();
         afficherBilan();
         afficherCarnet();
         afficherBilanPeriode();
+        afficherDepuisDebut();
     });
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
@@ -1856,55 +2085,78 @@ afficherAccueilSiBesoin();
         }
     });
 
-    document.getElementById("btnEcart").addEventListener("click", function () {
-        const confirmation = confirm("Confirmer une consommation ? Le compteur de jours va repartir à zéro.");
+    let joursEnArriere = 0;
 
-        if (!confirmation) {
-            return;
+    // Le bouton n'ecrit plus rien : il ouvre la question. Rien n'est enregistre
+    // tant que Confirmer n'est pas touche, donc pas besoin de fenetre systeme.
+    document.getElementById("btnEcart").addEventListener("click", function () {
+        joursEnArriere = 0;
+        marquerJourEcart(0);
+        document.getElementById("ecartNote").value = "";
+        document.getElementById("messageEcart").textContent = "";
+        document.getElementById("ecartZone").style.display = "block";
+    });
+
+    function marquerJourEcart(valeur) {
+        const boutons = document.querySelectorAll(".ecartJour");
+
+        for (let i = 0; i < boutons.length; i++) {
+            if (parseInt(boutons[i].dataset.jour, 10) === valeur) {
+                boutons[i].classList.add("choisi");
+            } else {
+                boutons[i].classList.remove("choisi");
+            }
         }
+    }
+
+    const boutonsJourEcart = document.querySelectorAll(".ecartJour");
+
+    for (let i = 0; i < boutonsJourEcart.length; i++) {
+        boutonsJourEcart[i].addEventListener("click", function () {
+            joursEnArriere = parseInt(this.dataset.jour, 10);
+            marquerJourEcart(joursEnArriere);
+        });
+    }
+
+    document.getElementById("btnEcartAnnuler").addEventListener("click", function () {
+        document.getElementById("ecartZone").style.display = "none";
+    });
+
+    document.getElementById("btnEcartNote").addEventListener("click", function () {
+        const quandCetait = new Date();
+        quandCetait.setDate(quandCetait.getDate() - joursEnArriere);
 
         const historique = JSON.parse(localStorage.getItem("historiqueEcarts")) || [];
-        const aujourdhui = new Date();
-
-        historique.push(aujourdhui.toISOString());
+        historique.push(quandCetait.toISOString());
         localStorage.setItem("historiqueEcarts", JSON.stringify(historique));
 
-        const nouvelleDateArret = dateLocale(aujourdhui);
-        localStorage.setItem("dateArret", nouvelleDateArret);
+        const jourEcart = dateLocale(quandCetait);
+        localStorage.setItem("dateArret", jourEcart);
 
-        const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
-        document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
-        document.getElementById("astuceDuMoment").textContent = "";
+        const texte = document.getElementById("ecartNote").value.trim();
+
+        if (texte) {
+            const notes = JSON.parse(localStorage.getItem("notesEcarts")) || {};
+            notes[jourEcart] = texte;
+            localStorage.setItem("notesEcarts", JSON.stringify(notes));
+        }
 
         // Un ecart remet les paliers a zero : on les refetera en les repassant.
         localStorage.setItem("paliersFetes", JSON.stringify([]));
         document.getElementById("fete").style.display = "none";
 
-        // Le moment ou l'information vaut le plus cher.
-        document.getElementById("ecartNote").value = "";
-        document.getElementById("ecartZone").style.display = "block";
+        const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
+        document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
+        document.getElementById("astuceDuMoment").textContent = "";
+        document.getElementById("ecartZone").style.display = "none";
 
-        afficherJours(aujourdhui);
+        afficherJours(quandCetait);
         afficherEcarts();
         afficherCarnet();
         afficherEnvies();
+        afficherBilanPeriode();
+        afficherDepuisDebut();
         remplirReglages();
-    });
-
-    document.getElementById("btnEcartNote").addEventListener("click", function () {
-        const texte = document.getElementById("ecartNote").value.trim();
-
-        if (texte) {
-            const notes = JSON.parse(localStorage.getItem("notesEcarts")) || {};
-            notes[dateDuJour()] = texte;
-            localStorage.setItem("notesEcarts", JSON.stringify(notes));
-        }
-
-        document.getElementById("ecartZone").style.display = "none";
-        document.getElementById("messageEcart").textContent =
-            texte ? "C'est noté. Tu le reliras quand ça comptera." : "";
-
-        afficherCarnet();
     });
 
     document.getElementById("btnFeteFermer").addEventListener("click", function () {
