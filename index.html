@@ -118,6 +118,77 @@
         letter-spacing: 0.3px;
     }
 
+    #planListe {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .palier {
+        position: relative;
+        padding: 0 0 18px 24px;
+        border-left: 2px solid rgba(255, 255, 255, 0.10);
+    }
+
+    .palier:last-child {
+        padding-bottom: 0;
+        border-left-color: transparent;
+    }
+
+    .palier::before {
+        content: "";
+        position: absolute;
+        left: -7px;
+        top: 2px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        background-color: #0D1310;
+        border: 2px solid rgba(255, 255, 255, 0.20);
+    }
+
+    .palier.fait::before {
+        background-color: #2F7D52;
+        border-color: #2F7D52;
+    }
+
+    .palier.encours::before {
+        background-color: #F0883E;
+        border-color: #F0883E;
+        box-shadow: 0 0 0 4px rgba(240, 136, 62, 0.18);
+    }
+
+    .palierTitre {
+        font-size: 12px;
+        color: #FFFFFF;
+        letter-spacing: 0.4px;
+        margin: 0 0 4px;
+    }
+
+    .palier.fait .palierTitre::after {
+        content: " \2713";
+        color: #2F7D52;
+    }
+
+    .palier.encours .palierTitre {
+        color: #F0883E;
+    }
+
+    .palier.avenir .palierTitre {
+        color: #7E9187;
+    }
+
+    .palierTexte {
+        font-size: 11.5px;
+        line-height: 1.55;
+        color: #D9EBDF;
+        margin: 0;
+    }
+
+    .palier.avenir .palierTexte {
+        color: #6E8177;
+    }
+
     #heroLabel {
         font-size: 12px;
         letter-spacing: 0.5px;
@@ -471,11 +542,17 @@
         <p id="messageEcart"></p>
     </section>
 
+    <section class="carte" id="planCarte">
+        <h2>Ton plan</h2>
+        <ol id="planListe"></ol>
+        <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
+    </section>
+
     <section class="carte">
         <h2>Carnet de suivi</h2>
         <div id="carnet"></div>
         <p id="detailJour"></p>
-        <p class="legende">Les 30 derniers jours. Touche un carré pour voir la journée.</p>
+        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée.</p>
     </section>
 
     <section class="carte">
@@ -741,6 +818,76 @@ afficherAccueilSiBesoin();
         }
     }
  
+    // Les etapes du sevrage. Reperes tires de Stop-Cannabis.ch.
+    const PALIERS = [
+        { jour: 0,  titre: "Jour zéro",
+          texte: "Le compteur démarre. Les premiers symptômes arrivent en général entre 24 et 48 heures." },
+        { jour: 2,  titre: "Jours 2 et 3",
+          texte: "Irritabilité, sommeil perturbé, appétit en baisse. C'est le corps qui se réajuste." },
+        { jour: 4,  titre: "Jours 4 à 6",
+          texte: "Le pic. C'est le moment le plus dur, et il était prévu. Ça ne veut pas dire que ça rate." },
+        { jour: 7,  titre: "Une semaine",
+          texte: "Le plus fort est derrière. Un tiers des gens qui reprennent le font pour calmer ces jours-là : tu viens de les passer." },
+        { jour: 14, titre: "Deux semaines",
+          texte: "Le sommeil et l'humeur commencent à revenir." },
+        { jour: 21, titre: "Trois semaines",
+          texte: "Fin de la fenêtre habituelle de sevrage, qui dure d'une à trois semaines." }
+    ];
+
+    // Construit la liste des etapes et marque ou on en est.
+    function afficherPlan(jours) {
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        const liste = document.getElementById("planListe");
+
+        let etapes = PALIERS.slice();
+
+        if (objectif) {
+            etapes = etapes.filter(function (etape) {
+                return etape.jour < objectif;
+            });
+            etapes.push({
+                jour: objectif,
+                titre: "Ton objectif : " + objectif + " jours",
+                texte: "Le repère que tu t'es donné."
+            });
+        }
+
+        // L'etape en cours est la derniere dont le jour est deja atteint.
+        let indexEnCours = 0;
+        for (let i = 0; i < etapes.length; i++) {
+            if (etapes[i].jour <= jours) {
+                indexEnCours = i;
+            }
+        }
+
+        liste.innerHTML = "";
+
+        for (let i = 0; i < etapes.length; i++) {
+            const element = document.createElement("li");
+            element.className = "palier";
+
+            if (i < indexEnCours) {
+                element.classList.add("fait");
+            } else if (i === indexEnCours) {
+                element.classList.add("encours");
+            } else {
+                element.classList.add("avenir");
+            }
+
+            const titre = document.createElement("p");
+            titre.className = "palierTitre";
+            titre.textContent = etapes[i].titre;
+
+            const texte = document.createElement("p");
+            texte.className = "palierTexte";
+            texte.textContent = etapes[i].texte;
+
+            element.appendChild(titre);
+            element.appendChild(texte);
+            liste.appendChild(element);
+        }
+    }
+
     // Le compte a rebours vers l'objectif, s'il y en a un.
     function afficherObjectif(jours) {
         const objectif = parseFloat(localStorage.getItem("objectifJours"));
@@ -790,6 +937,7 @@ afficherAccueilSiBesoin();
         document.getElementById("compteur").textContent = jours;
         afficherArgent(jours);
         afficherObjectif(jours);
+        afficherPlan(jours);
     }
 
     const dateSauvegardee = localStorage.getItem("dateArret");
@@ -805,6 +953,7 @@ afficherAccueilSiBesoin();
 
     if (!dateSauvegardee) {
         afficherObjectif(0);
+        afficherPlan(0);
     }
 
     document.getElementById("btnEnvie").addEventListener("click", function () {
@@ -882,6 +1031,7 @@ afficherAccueilSiBesoin();
 
     if (!dateAccueil) {
         afficherObjectif(0);
+        afficherPlan(0);
     }
 
     localStorage.setItem("compteCree", "oui");
@@ -905,6 +1055,7 @@ afficherAccueilSiBesoin();
             afficherJours(new Date(dateArret));
         } else {
             afficherObjectif(0);
+            afficherPlan(0);
         }
     });
 
