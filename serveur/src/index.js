@@ -67,11 +67,18 @@ export default {
             // Deux informations, pas une de plus : où joindre ce téléphone,
             // et à quelles heures. Ni prénom, ni compteur, ni journal — le
             // message est composé sur l'appareil par le service worker.
-            const heures = Array.isArray(recu.heuresUTC)
-                ? recu.heuresUTC.map(Number).filter(function (h) {
-                    return h >= 0 && h <= 23;
-                })
-                : [];
+            // On accepte aussi l'ancien format « heureUTC » au singulier : une
+            // app installée avant la mise à jour l'envoie encore, et sans ça
+            // elle serait enregistrée sans aucune heure — donc jamais prévenue.
+            let brutes = recu.heuresUTC;
+
+            if (!Array.isArray(brutes)) {
+                brutes = recu.heureUTC === undefined ? [] : [recu.heureUTC];
+            }
+
+            const heures = brutes.map(Number).filter(function (h) {
+                return Number.isInteger(h) && h >= 0 && h <= 23;
+            });
 
             await env.ABONNEMENTS.put(cle, JSON.stringify({
                 abonnement: recu.abonnement,
@@ -129,6 +136,12 @@ async function envoyerLesRappels(env, toutLeMonde) {
         const heures = fiche.heuresUTC || [];
 
         if (!toutLeMonde && heures.indexOf(heure) === -1) {
+            // Un abonnement sans aucune heure ne recevra jamais rien. On le
+            // signale plutôt que de l'ignorer en silence.
+            if (heures.length === 0) {
+                console.log("sans heure", entree.name);
+            }
+
             continue;
         }
 
@@ -146,7 +159,17 @@ async function envoyerLesRappels(env, toutLeMonde) {
             });
 
             const reponse = await fetch(endpoint, { method: "POST", headers, body });
-            envoyes++;
+
+            // On dit toujours ce qu'a répondu Apple : sans ça, un envoi refusé
+            // ressemble exactement à un envoi réussi.
+            console.log("envoi", entree.name, "->", reponse.status);
+
+            if (reponse.status >= 200 && reponse.status < 300) {
+                envoyes++;
+            } else {
+                const detail = await reponse.text();
+                console.log("refus", reponse.status, detail.slice(0, 300));
+            }
 
             // 404 ou 410 : l'abonnement n'existe plus (app désinstallée,
             // notifications coupées). On fait le ménage.
