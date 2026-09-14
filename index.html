@@ -997,78 +997,9 @@
         color: #D9A441;
     }
 
-    .repliable summary {
-        display: block;
-        cursor: pointer;
-        list-style: none;
-        padding: 4px 0;
-    }
-
-    .titreReplie {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        font-family: 'Anton', Impact, sans-serif;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 15px;
-        color: #FFFFFF;
-    }
-
-    /* L'etape en cours reste lisible meme quand le plan est ferme : c'est
-       elle qui motive, le reste est de la documentation. */
-    #planResume {
-        display: block;
-        font-family: 'Space Mono', monospace;
-        font-size: 11.5px;
-        line-height: 1.55;
-        letter-spacing: 0;
-        text-transform: none;
-        color: #D9EBDF;
-        margin-top: 10px;
-        padding-left: 16px;
-        border-left: 2px solid #F0883E;
-    }
-
-    #planResume strong {
-        display: block;
-        color: #F0883E;
-    }
-
-    .repliable[open] #planResume {
-        display: none;
-    }
-
-    /* La fleche par defaut de Safari, remplacee par la notre. */
-    .repliable summary::-webkit-details-marker {
-        display: none;
-    }
-
-    /* Un mot vaut mieux qu'un signe : "+" ne dit pas ce qu'il fait. */
-    .titreReplie::after {
-        content: "Ouvrir \25BE";
-        font-family: 'Space Mono', monospace;
-        font-size: 11.5px;
-        font-weight: 700;
-        letter-spacing: 0;
-        text-transform: none;
-        color: #F0883E;
-    }
-
-    .repliable[open] summary {
-        margin-bottom: 16px;
-    }
-
-    /* Sans ca, iOS affiche encore son propre triangle. */
-    .repliable summary::marker {
-        content: "";
-    }
-
-    .repliable[open] .titreReplie::after {
-        content: "Fermer \25B4";
-    }
-
+    /* Note : l'ancien systeme replier/deplier (plan, astuces, reglages)
+       a disparu avec le passage aux quatre ecrans du 2026-09-14. Ses styles
+       (.repliable, #planResume, .titreReplie) ont ete retires avec lui. */
 
     #reglages label {
         display: block;
