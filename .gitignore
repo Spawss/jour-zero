@@ -1,0 +1,6 @@
+# Comme pour le serveur : les fichiers de travail de wrangler ne doivent
+# jamais partir sur GitHub, même lances par erreur depuis ce dossier.
+.wrangler/
+
+# Le fichier que macOS depose dans chaque dossier ouvert dans le Finder.
+.DS_Store
