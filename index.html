@@ -3959,21 +3959,59 @@ afficherAccueilSiBesoin();
         });
     }
 
+    // Deux tableaux d'octets representent-ils la meme cle ? Utilise pour
+    // savoir si l'abonnement deja enregistre sur ce telephone correspond
+    // encore a la cle publique actuelle du code.
+    function memeCle(brute, octets) {
+        if (!brute) {
+            return false;
+        }
+
+        const comparee = new Uint8Array(brute);
+
+        if (comparee.length !== octets.length) {
+            return false;
+        }
+
+        for (let i = 0; i < octets.length; i++) {
+            if (comparee[i] !== octets[i]) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     // Demande l'abonnement au telephone, puis le transmet au serveur.
+    //
+    // Un abonnement push est verrouille sur la cle publique utilisee au
+    // moment ou il a ete cree : si la cle change plus tard dans le code (une
+    // erreur de copier-coller, une regeneration des cles...), reutiliser
+    // l'ancien abonnement tel quel envoie des messages qu'Apple refusera
+    // silencieusement (erreur "VapidPkHashMismatch"). On verifie donc que
+    // l'abonnement existant correspond encore a la cle actuelle, et sinon on
+    // le remplace — Safari exige de se desabonner avant de s'abonner a
+    // nouveau avec une cle differente.
     function abonnerAuxRappels() {
         if (!CLE_PUBLIQUE_VAPID || !("PushManager" in window)) {
             return Promise.resolve(null);
         }
 
+        const cleActuelle = cleEnOctets(CLE_PUBLIQUE_VAPID);
+
         return navigator.serviceWorker.ready.then(function (inscription) {
             return inscription.pushManager.getSubscription().then(function (existant) {
-                if (existant) {
+                if (existant && memeCle(existant.options && existant.options.applicationServerKey, cleActuelle)) {
                     return existant;
                 }
 
-                return inscription.pushManager.subscribe({
-                    userVisibleOnly: true,
-                    applicationServerKey: cleEnOctets(CLE_PUBLIQUE_VAPID)
+                const liberer = existant ? existant.unsubscribe() : Promise.resolve();
+
+                return liberer.then(function () {
+                    return inscription.pushManager.subscribe({
+                        userVisibleOnly: true,
+                        applicationServerKey: cleActuelle
+                    });
                 });
             });
         }).then(function (abonnement) {
