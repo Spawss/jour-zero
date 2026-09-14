@@ -39,6 +39,110 @@
         letter-spacing: 0.5px;
     }
 
+    /* ---------- Bandeau d'installation ----------
+       Il ne ressemble pas aux autres cartes : c'est un avertissement, pas une
+       section de l'app. D'ou la bordure doree et le fond plus clair. */
+
+    #bandeauInstall {
+        display: none;
+        background-color: #1C1A12;
+        border: 1px solid #4A3F1C;
+        border-radius: 20px;
+        padding: 20px 20px 16px;
+        margin-bottom: 20px;
+    }
+
+    #installTitre {
+        font-family: 'Anton', Impact, sans-serif;
+        font-weight: 400;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 15px;
+        color: #D9A441;
+        margin: 0 0 8px;
+    }
+
+    #installPourquoi {
+        font-size: 12px;
+        line-height: 1.6;
+        color: #C9BFA0;
+        margin: 0 0 14px;
+    }
+
+    #installEtapes {
+        margin: 0 0 14px;
+        padding-left: 20px;
+        font-size: 12.5px;
+        line-height: 1.75;
+        color: #FFFFFF;
+    }
+
+    #installEtapes li {
+        margin-bottom: 4px;
+    }
+
+    #installEtapes b {
+        color: #D9A441;
+        font-weight: 700;
+    }
+
+    /* Le carre avec la fleche : le bouton Partager d'iOS, dessine en CSS
+       plutot qu'en image, pour ne rien avoir a telecharger. */
+    .iconePartager {
+        display: inline-block;
+        width: 13px;
+        height: 15px;
+        vertical-align: -3px;
+        margin: 0 1px;
+        border: 1.5px solid #D9A441;
+        border-top: none;
+        border-radius: 3px;
+        position: relative;
+    }
+
+    .iconePartager::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -6px;
+        width: 1.5px;
+        height: 9px;
+        background-color: #D9A441;
+        transform: translateX(-50%);
+    }
+
+    .iconePartager::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -6px;
+        width: 5px;
+        height: 5px;
+        border-left: 1.5px solid #D9A441;
+        border-top: 1.5px solid #D9A441;
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    #btnInstallNatif {
+        display: none;
+        width: 100%;
+        background: linear-gradient(120deg, #D9A441 0%, #A87B22 100%);
+        color: #14110A;
+        border: none;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+    #btnInstallPlusTard {
+        width: 100%;
+        background: none;
+        border: none;
+        color: #8A8068;
+        font-weight: 400;
+        font-size: 11.5px;
+        padding: 6px;
+    }
+
     /* ---------- En-tete ---------- */
 
     #entete {
@@ -1185,6 +1289,14 @@
 </style>
 <body>
 <div id="page">
+
+    <section id="bandeauInstall">
+        <p id="installTitre"></p>
+        <p id="installPourquoi"></p>
+        <ol id="installEtapes"></ol>
+        <button id="btnInstallNatif">Installer l'application</button>
+        <button id="btnInstallPlusTard">Plus tard</button>
+    </section>
 
     <header id="entete">
         <img id="logoMark" src="jour-zero-banniere.svg" alt="">
@@ -2793,6 +2905,159 @@ afficherAccueilSiBesoin();
     afficherBilanPeriode();
     afficherDepuisDebut();
     afficherRappelSauvegarde();
+
+    // ---------- Bandeau d'installation ----------
+    //
+    // Le probleme qu'il resout : sur iPhone, les notifications n'existent QUE
+    // si l'app a ete ajoutee a l'ecran d'accueil. Un lien ouvert dans Safari
+    // ne recevra jamais aucun rappel, et rien a l'ecran ne le dit. Quelqu'un a
+    // qui j'envoie le lien installerait donc une app muette sans le savoir.
+
+    // Deux facons de savoir qu'on tourne depuis l'ecran d'accueil : Safari iOS
+    // pose son propre drapeau, les autres repondent au media query standard.
+    // On regarde les deux, sinon on se trompe sur un des deux mondes.
+    function estInstallee() {
+        if (window.navigator.standalone === true) {
+            return true;
+        }
+
+        if (window.matchMedia && window.matchMedia("(display-mode: standalone)").matches) {
+            return true;
+        }
+
+        return false;
+    }
+
+    // Les gestes ne sont pas les memes selon l'appareil, et sur iOS seul
+    // Safari sait ajouter a l'ecran d'accueil : dans Chrome iOS le menu
+    // Partager n'a tout simplement pas l'option.
+    function quelAppareil() {
+        const ua = navigator.userAgent;
+
+        const iOS = /iPad|iPhone|iPod/.test(ua) ||
+            (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+
+        if (iOS) {
+            return /CriOS|FxiOS|EdgiOS|OPiOS/.test(ua) ? "ios-autre" : "ios-safari";
+        }
+
+        if (/Android/.test(ua)) {
+            return "android";
+        }
+
+        return "ordinateur";
+    }
+
+    // Chrome Android propose un vrai bouton d'installation, mais seulement si
+    // on attrape cet evenement au vol et qu'on le garde de cote.
+    let invitationInstall = null;
+
+    window.addEventListener("beforeinstallprompt", function (evenement) {
+        evenement.preventDefault();
+        invitationInstall = evenement;
+        afficherBandeauInstall();
+    });
+
+    function masquerBandeauInstall() {
+        document.getElementById("bandeauInstall").style.display = "none";
+    }
+
+    function afficherBandeauInstall() {
+        const bandeau = document.getElementById("bandeauInstall");
+        const titre = document.getElementById("installTitre");
+        const pourquoi = document.getElementById("installPourquoi");
+        const etapes = document.getElementById("installEtapes");
+        const boutonNatif = document.getElementById("btnInstallNatif");
+
+        // Rien tant que l'ecran d'accueil est ouvert : deux messages en meme
+        // temps, et on n'en lit aucun.
+        if (!localStorage.getItem("compteCree")) {
+            masquerBandeauInstall();
+            return;
+        }
+
+        if (estInstallee()) {
+            masquerBandeauInstall();
+            return;
+        }
+
+        // « Plus tard » ne veut pas dire « jamais » : sans installation il n'y
+        // a pas de rappels, donc le bandeau revient au bout de trois jours.
+        const reporte = localStorage.getItem("installReporte");
+
+        if (reporte && ecartEnJours(reporte, dateDuJour()) < 3) {
+            masquerBandeauInstall();
+            return;
+        }
+
+        const appareil = quelAppareil();
+        etapes.innerHTML = "";
+        boutonNatif.style.display = "none";
+
+        if (appareil === "ios-safari") {
+            titre.textContent = "Installe Jour Zéro";
+            pourquoi.textContent = "Sans ça, pas de rappels : sur iPhone, les notifications n'existent que depuis l'app posée sur l'écran d'accueil. Dix secondes.";
+            etapes.innerHTML =
+                "<li>Touche <span class=\"iconePartager\"></span> en bas de Safari</li>" +
+                "<li>Descends et choisis <b>Sur l'écran d'accueil</b></li>" +
+                "<li>Rouvre Jour Zéro depuis l'icône, pas depuis Safari</li>";
+        } else if (appareil === "ios-autre") {
+            titre.textContent = "Ouvre plutôt ce lien dans Safari";
+            pourquoi.textContent = "Sur iPhone, seul Safari sait ajouter une app à l'écran d'accueil — et sans ça, pas de rappels.";
+            etapes.innerHTML =
+                "<li>Copie l'adresse de cette page</li>" +
+                "<li>Colle-la dans <b>Safari</b></li>" +
+                "<li>Partager, puis <b>Sur l'écran d'accueil</b></li>";
+        } else if (appareil === "android") {
+            titre.textContent = "Installe Jour Zéro";
+            pourquoi.textContent = "Posée sur ton écran d'accueil, elle s'ouvre en plein écran et peut t'envoyer tes rappels.";
+
+            if (invitationInstall) {
+                boutonNatif.style.display = "block";
+            } else {
+                etapes.innerHTML =
+                    "<li>Ouvre le menu <b>⋮</b> en haut à droite</li>" +
+                    "<li>Choisis <b>Ajouter à l'écran d'accueil</b></li>";
+            }
+        } else {
+            titre.textContent = "Jour Zéro est fait pour ton téléphone";
+            pourquoi.textContent = "Ici tu peux tout consulter, mais les rappels n'arrivent que sur un téléphone où l'app est installée.";
+            etapes.innerHTML =
+                "<li>Ouvre cette adresse sur ton téléphone</li>" +
+                "<li>Ajoute-la à ton écran d'accueil</li>";
+        }
+
+        bandeau.style.display = "block";
+    }
+
+    document.getElementById("btnInstallPlusTard").addEventListener("click", function () {
+        localStorage.setItem("installReporte", dateDuJour());
+        masquerBandeauInstall();
+    });
+
+    document.getElementById("btnInstallNatif").addEventListener("click", function () {
+        if (!invitationInstall) {
+            return;
+        }
+
+        invitationInstall.prompt();
+
+        invitationInstall.userChoice.then(function () {
+            invitationInstall = null;
+            afficherBandeauInstall();
+        }).catch(function () {});
+    });
+
+    // Installee pendant qu'on regarde la page : le bandeau disparait tout seul.
+    window.addEventListener("appinstalled", function () {
+        invitationInstall = null;
+        masquerBandeauInstall();
+    });
+
+    document.getElementById("btnPlusTard").addEventListener("click", afficherBandeauInstall);
+    document.getElementById("btnActiverRappels").addEventListener("click", afficherBandeauInstall);
+
+    afficherBandeauInstall();
     afficherEtatNotifications();
     afficherConseilHeure();
     afficherModeAvance();
@@ -3119,7 +3384,8 @@ afficherAccueilSiBesoin();
         "dateArret", "depenseParSemaine", "historiqueEcarts", "historiqueEnvies",
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
         "journal", "notesEcarts", "paliersFetes", "dateDebut",
-        "avantDernierEcart", "derniereSauvegarde", "pastille", "heureMatin", "heureSoir"
+        "avantDernierEcart", "derniereSauvegarde", "pastille", "heureMatin", "heureSoir",
+        "installReporte"
     ];
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
