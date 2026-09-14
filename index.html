@@ -1173,9 +1173,75 @@
         text-align: left;
     }
 
+    #accueilIntro,
     #accueilFormulaire,
     #accueilNotifications {
         display: none;
+    }
+
+    /* Le bandeau dore du premier ecran : meme forme que celui de l'intro,
+       debordant jusqu'aux bords de la boite. */
+    #installTete {
+        background: linear-gradient(160deg, #F0883E 0%, #B85420 55%, #3A1B0C 100%);
+        margin: -28px -24px 20px;
+        padding: 26px 24px 22px;
+        border-radius: 20px 20px 0 0;
+        text-align: center;
+    }
+
+    #installTeteTitre {
+        font-family: 'Anton', Impact, sans-serif;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        font-size: 12px;
+        color: #FFE2CB;
+        margin: 0 0 6px;
+    }
+
+    #installTeteTexte {
+        font-size: 14px;
+        line-height: 1.5;
+        color: #FFFFFF;
+        margin: 0;
+    }
+
+    #accueilInstallPourquoi {
+        font-size: 12.5px;
+        line-height: 1.65;
+        color: #C9D6CD;
+        margin: 0 0 16px;
+    }
+
+    #accueilInstallEtapes {
+        margin: 0 0 20px;
+        padding-left: 20px;
+        font-size: 13px;
+        line-height: 1.8;
+        color: #FFFFFF;
+    }
+
+    #accueilInstallEtapes b {
+        color: #D9A441;
+        font-weight: 700;
+    }
+
+    #btnAccueilInstallNatif {
+        display: none;
+        width: 100%;
+        background: linear-gradient(120deg, #D9A441 0%, #A87B22 100%);
+        color: #14110A;
+        border: none;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    #btnAccueilInstallPlusTard {
+        width: 100%;
+        background: none;
+        border: none;
+        color: #8FA396;
+        font-weight: 400;
+        font-size: 12px;
     }
 
     #accueilNotifications p {
@@ -1214,6 +1280,7 @@
         margin: -28px -24px 22px;
         padding: 30px 24px 26px;
         border-radius: 20px 20px 0 0;
+        border-bottom: 2px solid #F0883E;
         text-align: center;
     }
 
@@ -1317,6 +1384,28 @@
     .miniBrique {
         border: 1px solid rgba(140, 70, 45, 0.6);
         color: #A8674A;
+    }
+
+    /* La barre du bas en miniature : quatre traits, le premier allume. */
+    .miniBarre {
+        display: flex;
+        gap: 5px;
+        align-items: flex-end;
+        width: 76px;
+        border-top: 1px solid #2A3B32;
+        padding-top: 10px;
+    }
+
+    .miniBarre i {
+        flex: 1;
+        height: 5px;
+        border-radius: 3px;
+        background-color: #33453B;
+    }
+
+    .miniBarre .miniOngletActif {
+        height: 11px;
+        background-color: #46B377;
     }
 
     .miniCarnet {
@@ -1657,6 +1746,19 @@
 <div id="accueilOverlay">
     <div id="accueilBoite">
 
+        <div id="accueilInstall">
+            <div id="installTete">
+                <p id="installTeteTitre">Première étape</p>
+                <p id="installTeteTexte">Pose Jour Zéro sur ton écran d'accueil.</p>
+            </div>
+
+            <p id="accueilInstallPourquoi"></p>
+            <ol id="accueilInstallEtapes"></ol>
+
+            <button id="btnAccueilInstallNatif">Installer l'application</button>
+            <button id="btnAccueilInstallPlusTard">Continuer sans installer</button>
+        </div>
+
         <div id="accueilIntro">
 
             <div id="introTete">
@@ -1705,6 +1807,15 @@
                     </div>
                 </div>
                 <p class="apercuTexte"><strong>Jour Zéro finit par te connaître.</strong> Il repère à quelle heure c'est dur, et te prévient avant.</p>
+            </div>
+
+            <div class="apercuRang">
+                <div class="apercuVisuel">
+                    <div class="miniBarre">
+                        <i class="miniOngletActif"></i><i></i><i></i><i></i>
+                    </div>
+                </div>
+                <p class="apercuTexte"><strong>Quatre écrans, pas un.</strong> Glisse du doigt, ou touche la barre du bas.</p>
             </div>
 
             <p id="introConfidentialite">Pas de compte, aucun serveur. Tout reste sur cet appareil.</p>
@@ -3072,6 +3183,56 @@ afficherAccueilSiBesoin();
         document.getElementById("bandeauInstall").style.display = "none";
     }
 
+    // Le bandeau du haut et le premier ecran d'accueil disent la meme chose.
+    // Un seul endroit pour ce texte : deux copies finiraient par diverger.
+    function texteInstallation() {
+        const appareil = quelAppareil();
+
+        if (appareil === "ios-safari") {
+            return {
+                titre: "Installe Jour Zéro",
+                pourquoi: "Sans ça, pas de rappels : iOS ne les autorise que depuis l'écran d'accueil.",
+                etapes:
+                    "<li>Touche <span class=\"iconePartager\"></span> en bas de Safari</li>" +
+                    "<li>Descends et choisis <b>Sur l'écran d'accueil</b></li>" +
+                    "<li>Rouvre Jour Zéro depuis l'icône, pas depuis Safari</li>",
+                boutonNatif: false
+            };
+        }
+
+        if (appareil === "ios-autre") {
+            return {
+                titre: "Ouvre plutôt ce lien dans Safari",
+                pourquoi: "Sur iPhone, seul Safari sait ajouter une app à l'écran d'accueil — et sans ça, pas de rappels.",
+                etapes:
+                    "<li>Copie l'adresse de cette page</li>" +
+                    "<li>Colle-la dans <b>Safari</b></li>" +
+                    "<li>Partager, puis <b>Sur l'écran d'accueil</b></li>",
+                boutonNatif: false
+            };
+        }
+
+        if (appareil === "android") {
+            return {
+                titre: "Installe Jour Zéro",
+                pourquoi: "Posée sur ton écran d'accueil, elle s'ouvre en plein écran et peut t'envoyer tes rappels.",
+                etapes: invitationInstall ? "" :
+                    "<li>Ouvre le menu <b>⋮</b> en haut à droite</li>" +
+                    "<li>Choisis <b>Ajouter à l'écran d'accueil</b></li>",
+                boutonNatif: Boolean(invitationInstall)
+            };
+        }
+
+        return {
+            titre: "Jour Zéro est fait pour ton téléphone",
+            pourquoi: "Ici tu peux tout consulter, mais les rappels n'arrivent que sur un téléphone où l'app est installée.",
+            etapes:
+                "<li>Ouvre cette adresse sur ton téléphone</li>" +
+                "<li>Ajoute-la à ton écran d'accueil</li>",
+            boutonNatif: false
+        };
+    }
+
     function afficherBandeauInstall() {
         const bandeau = document.getElementById("bandeauInstall");
         const titre = document.getElementById("installTitre");
@@ -3100,42 +3261,12 @@ afficherAccueilSiBesoin();
             return;
         }
 
-        const appareil = quelAppareil();
-        etapes.innerHTML = "";
-        boutonNatif.style.display = "none";
+        const mode = texteInstallation();
 
-        if (appareil === "ios-safari") {
-            titre.textContent = "Installe Jour Zéro";
-            pourquoi.textContent = "Sans ça, pas de rappels : iOS ne les autorise que depuis l'écran d'accueil.";
-            etapes.innerHTML =
-                "<li>Touche <span class=\"iconePartager\"></span> en bas de Safari</li>" +
-                "<li>Descends et choisis <b>Sur l'écran d'accueil</b></li>" +
-                "<li>Rouvre Jour Zéro depuis l'icône, pas depuis Safari</li>";
-        } else if (appareil === "ios-autre") {
-            titre.textContent = "Ouvre plutôt ce lien dans Safari";
-            pourquoi.textContent = "Sur iPhone, seul Safari sait ajouter une app à l'écran d'accueil — et sans ça, pas de rappels.";
-            etapes.innerHTML =
-                "<li>Copie l'adresse de cette page</li>" +
-                "<li>Colle-la dans <b>Safari</b></li>" +
-                "<li>Partager, puis <b>Sur l'écran d'accueil</b></li>";
-        } else if (appareil === "android") {
-            titre.textContent = "Installe Jour Zéro";
-            pourquoi.textContent = "Posée sur ton écran d'accueil, elle s'ouvre en plein écran et peut t'envoyer tes rappels.";
-
-            if (invitationInstall) {
-                boutonNatif.style.display = "block";
-            } else {
-                etapes.innerHTML =
-                    "<li>Ouvre le menu <b>⋮</b> en haut à droite</li>" +
-                    "<li>Choisis <b>Ajouter à l'écran d'accueil</b></li>";
-            }
-        } else {
-            titre.textContent = "Jour Zéro est fait pour ton téléphone";
-            pourquoi.textContent = "Ici tu peux tout consulter, mais les rappels n'arrivent que sur un téléphone où l'app est installée.";
-            etapes.innerHTML =
-                "<li>Ouvre cette adresse sur ton téléphone</li>" +
-                "<li>Ajoute-la à ton écran d'accueil</li>";
-        }
+        titre.textContent = mode.titre;
+        pourquoi.textContent = mode.pourquoi;
+        etapes.innerHTML = mode.etapes;
+        boutonNatif.style.display = mode.boutonNatif ? "block" : "none";
 
         bandeau.style.display = "block";
     }
@@ -3235,6 +3366,124 @@ afficherAccueilSiBesoin();
     });
 
     allumerOnglet(0);
+
+    // ---------- Le premier ecran de l'accueil : l'installation ----------
+    //
+    // Il passe AVANT la presentation, pour une raison qui n'est pas
+    // cosmetique : sur une page Safari, l'objet Notification n'existe meme
+    // pas. La derniere etape du questionnaire demandait donc une permission
+    // qui ne pouvait pas etre accordee. On installe d'abord, on demande
+    // ensuite — et dans l'ordre inverse, on previent au lieu de demander.
+
+    function preparerEtapeInstallation() {
+        const ecranInstall = document.getElementById("accueilInstall");
+        const ecranIntro = document.getElementById("accueilIntro");
+
+        // Deja installee, ou sur un ordinateur : rien a proposer, on passe
+        // directement a la presentation.
+        if (estInstallee() || quelAppareil() === "ordinateur") {
+            ecranInstall.style.display = "none";
+            ecranIntro.style.display = "block";
+            return;
+        }
+
+        const mode = texteInstallation();
+
+        document.getElementById("accueilInstallPourquoi").textContent = mode.pourquoi;
+        document.getElementById("accueilInstallEtapes").innerHTML = mode.etapes;
+        document.getElementById("btnAccueilInstallNatif").style.display =
+            mode.boutonNatif ? "block" : "none";
+
+        ecranInstall.style.display = "block";
+        ecranIntro.style.display = "none";
+    }
+
+    function passerALIntro() {
+        document.getElementById("accueilInstall").style.display = "none";
+        document.getElementById("accueilIntro").style.display = "block";
+    }
+
+    document.getElementById("btnAccueilInstallPlusTard")
+        .addEventListener("click", passerALIntro);
+
+    document.getElementById("btnAccueilInstallNatif").addEventListener("click", function () {
+        if (!invitationInstall) {
+            passerALIntro();
+            return;
+        }
+
+        invitationInstall.prompt();
+
+        invitationInstall.userChoice.then(function () {
+            invitationInstall = null;
+            passerALIntro();
+        }).catch(passerALIntro);
+    });
+
+    // La derniere etape du questionnaire : elle ne peut promettre des rappels
+    // que si l'app tourne depuis l'ecran d'accueil.
+    function ajusterEtapeNotifications() {
+        if (estInstallee() || quelAppareil() === "ordinateur") {
+            return;
+        }
+
+        document.querySelector("#accueilNotifications h2").textContent =
+            "Tes rappels, plus tard";
+        document.getElementById("btnActiverRappels").style.display = "none";
+        document.getElementById("btnPlusTard").textContent = "J'ai compris";
+
+        const paragraphes = document.querySelectorAll("#accueilNotifications p");
+
+        if (paragraphes.length > 0) {
+            paragraphes[0].textContent =
+                "Deux rappels par jour : un le matin pour lancer la journée, un le soir pour la noter.";
+        }
+
+        if (paragraphes.length > 1) {
+            paragraphes[1].textContent =
+                "Ils ne peuvent pas être activés depuis Safari. Quand tu auras posé Jour Zéro sur ton écran d'accueil, ouvre-la depuis l'icône : elle te le reproposera.";
+        }
+
+        if (paragraphes.length > 2) {
+            paragraphes[2].textContent = "";
+        }
+    }
+
+
+    // Quelqu'un qui a rempli le questionnaire depuis Safari a lu « elle te le
+    // reproposera ». Il faut tenir cette promesse : a la premiere ouverture
+    // depuis l'ecran d'accueil, on repose la question — une seule fois.
+    function proposerRappelsSiInstallee() {
+        if (!localStorage.getItem("compteCree")) {
+            return;
+        }
+
+        if (!estInstallee() || !("Notification" in window)) {
+            return;
+        }
+
+        // « default » = jamais repondu. Si la personne a deja dit oui ou non,
+        // on ne revient pas dessus.
+        if (Notification.permission !== "default") {
+            return;
+        }
+
+        if (localStorage.getItem("rappelsProposes") === "oui") {
+            return;
+        }
+
+        localStorage.setItem("rappelsProposes", "oui");
+
+        document.getElementById("accueilInstall").style.display = "none";
+        document.getElementById("accueilIntro").style.display = "none";
+        document.getElementById("accueilFormulaire").style.display = "none";
+        document.getElementById("accueilNotifications").style.display = "block";
+        document.getElementById("accueilOverlay").style.display = "flex";
+    }
+
+    preparerEtapeInstallation();
+    ajusterEtapeNotifications();
+    proposerRappelsSiInstallee();
 
     afficherBandeauInstall();
     afficherEtatNotifications();
