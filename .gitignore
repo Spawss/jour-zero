@@ -4,3 +4,6 @@
 
 # Le fichier que macOS depose dans chaque dossier ouvert dans le Finder.
 .DS_Store
+
+# Captures d'apps d'autres studios : inspiration privée, jamais publiée.
+references/inspiration/
