@@ -37,9 +37,14 @@
         --vert-clair: #46B377;
         --vert-pale: #7DDBA5;
         --vert-nuit: #0B1A12;
-        --flamme: #F0883E;
-        --flamme-pale: #F6C9A6;
-        --flamme-encre: #23110A;
+        /* L'orange d'origine de Jour Zero : l'accent chaud (actions,
+           moment present, badges, etincelles). Le vert reste la base. */
+        --orange: #F0883E;
+        --orange-clair: #F5A25F;
+        --orange-fonce: #C9632A;
+        --creme: #FFF6E5;
+        --orange-pale: #F6C9A6;
+        --orange-encre: #23110A;
 
         /* Les touches pop : jamais en grand, jamais a la place du vert. */
         --pop-rose: #FF6FA5;
@@ -68,6 +73,28 @@
         --ecart-doux: rgba(240, 136, 62, 0.18);
         --case-avant: rgba(255, 255, 255, 0.05);
         --alerte: #E6B65C;
+
+        /* Les badges : une couleur par famille (trois teintes : reflet,
+           milieu, ombre) et un cadre qui change avec le niveau. */
+        --badge-serie-a: #5FC08A; --badge-serie-b: #2F7D52; --badge-serie-c: #163F28;
+        --badge-total-a: #F4FFB8; --badge-total-b: #C9E04A; --badge-total-c: #6E7E14;
+        --badge-envie-a: #FFC08A; --badge-envie-b: #F0883E; --badge-envie-c: #8A3E12;
+        --badge-journal-a: #A9C1FF; --badge-journal-b: #4A72E0; --badge-journal-c: #1E2F6E;
+        --badge-rythme-a: #FFD98A; --badge-rythme-b: #E3A52C; --badge-rythme-c: #7A520C;
+        --badge-effort-a: #FFA9C9; --badge-effort-b: #E0548A; --badge-effort-c: #7A1C45;
+        --badge-divers-a: #9FE8D9; --badge-divers-b: #2BA38A; --badge-divers-c: #0F4F42;
+        --badge-encre: #FFFFFF;
+        --badge-encre-sombre: #1A2008;
+        --badge-verrou: #232B27;
+        --badge-verrou-fond: #161C19;
+
+        --cadre-graphite-a: #C9D2CE; --cadre-graphite-b: #7D8984; --cadre-graphite-c: #3E4743;
+        --cadre-bronze-a: #F6C29B; --cadre-bronze-b: #B8693A; --cadre-bronze-c: #6E3A1A;
+        --cadre-argent-a: #FFFFFF; --cadre-argent-b: #B4C0BB; --cadre-argent-c: #67736E;
+        --cadre-or-a: #FFF0B3; --cadre-or-b: #E3B23C; --cadre-or-c: #8F600C;
+        --cadre-emeraude-a: #C2F7DA; --cadre-emeraude-b: #46B377; --cadre-emeraude-c: #1E5A3A;
+        --cadre-flamme-a: #FFD7B3; --cadre-flamme-b: #F0883E; --cadre-flamme-c: #9C430E;
+        --cadre-holo-a: #FF8DB8; --cadre-holo-b: #D7F25C; --cadre-holo-c: #5B8CFF;
 
         /* Echelle de tailles, ratio 1,25 a partir de 16 px. */
         --t-moins2: 0.64rem;
@@ -117,7 +144,7 @@
         -webkit-tap-highlight-color: transparent;
         background:
             radial-gradient(120% 55% at 50% -8%, rgba(47, 125, 82, 0.9), rgba(47, 125, 82, 0.22) 45%, transparent 70%),
-            radial-gradient(70% 40% at 108% 72%, rgba(240, 136, 62, 0.24), transparent 70%),
+            radial-gradient(70% 40% at 108% 72%, rgba(240, 136, 62, 0.32), transparent 70%),
             var(--fond);
     }
 
@@ -141,7 +168,7 @@
     }
 
     :focus-visible {
-        outline: 2px solid var(--flamme);
+        outline: 2px solid var(--orange);
         outline-offset: 3px;
     }
 
@@ -172,13 +199,13 @@
         cursor: default;
     }
 
-    /* Du vert de Jour Zero vers un vert plus profond : le texte blanc garde
-       au moins 4,5:1 partout sur le bouton. */
+    /* L'action a faire maintenant : en orange. Le texte est en encre
+       sombre (plus de 7:1) : le blanc sur cet orange ne serait pas lisible. */
     .boutonPrincipal {
         border: none;
-        background: linear-gradient(135deg, var(--vert), #24653F);
-        color: #FFFFFF;
-        box-shadow: 0 14px 30px -12px rgba(70, 179, 119, 0.7);
+        background: linear-gradient(135deg, var(--orange-clair), var(--orange));
+        color: var(--orange-encre);
+        box-shadow: 0 14px 30px -12px rgba(240, 136, 62, 0.75);
     }
 
     .boutonDiscret {
@@ -257,7 +284,7 @@
         height: 4px;
         margin-top: 8px;
         border-radius: var(--pilule);
-        background: linear-gradient(90deg, var(--vert-clair), var(--flamme));
+        background: linear-gradient(90deg, var(--vert-clair), var(--orange));
     }
 
     /* Les images d'ambiance : en bandeau en haut d'une carte, jusqu'aux
@@ -393,7 +420,7 @@
     }
 
     #logoPoint {
-        color: var(--flamme);
+        color: var(--orange);
     }
 
     #tagline {
@@ -480,7 +507,7 @@
     .rond.doux {
         background-color: var(--ecart-doux);
         border: 0;
-        color: var(--flamme-pale);
+        color: var(--orange-pale);
     }
 
     .rond.vide {
@@ -493,7 +520,7 @@
         color: #0E2A1B;
         border: 0;
         font-weight: 500;
-        box-shadow: 0 0 0 4px rgba(70, 179, 119, 0.45), 0 0 22px rgba(70, 179, 119, 0.7);
+        box-shadow: 0 0 0 4px rgba(240, 136, 62, 0.6), 0 0 22px rgba(240, 136, 62, 0.65);
     }
 
     /* ---------- Le compteur ----------
@@ -573,22 +600,79 @@
         margin: 6px 0 0;
     }
 
-    #heroSticker {
+    /* La pastille a cote du chiffre : ce qui reste avant la prochaine
+       etape (l'objectif, ou le prochain palier). Ronde, orange, bord creme
+       et ombre verte decalee, avec son propre petit anneau de progression. */
+    #heroObjectif {
+        --avance: 0%;
         position: absolute;
         right: 0;
-        top: 4px;
-        width: 76px;
-        transform: rotate(10deg);
-        filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
+        top: 0;
+        width: 108px;
+        height: 108px;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        text-align: center;
+        color: var(--orange-encre);
+        background: radial-gradient(circle at 35% 30%, var(--orange-clair), var(--orange) 70%);
+        border: 3px solid var(--creme);
+        box-shadow: 5px 6px 0 var(--vert), 0 16px 28px -12px rgba(0, 0, 0, 0.7);
+        transform: rotate(8deg);
     }
 
-    #heroSticker:empty {
-        display: none;
+    #pastilleAnneau {
+        position: absolute;
+        inset: 5px;
+        border-radius: 50%;
+        background: conic-gradient(var(--orange-encre) 0 var(--avance), rgba(35, 17, 10, 0.16) var(--avance) 100%);
+        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4.5px));
+        mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4.5px));
     }
 
-    #heroSticker svg,
-    .stickerCase svg,
-    #feteSticker svg {
+    #pastilleHaut,
+    #pastilleChiffre,
+    #pastilleBas {
+        position: relative;
+        display: block;
+        line-height: 1;
+    }
+
+    #pastilleHaut {
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins2);
+        font-weight: 500;
+    }
+
+    #pastilleChiffre {
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-4);
+        line-height: 0.9;
+        letter-spacing: -0.02em;
+        font-variant-numeric: tabular-nums;
+    }
+
+    #pastilleChiffre[data-chiffres="3"] {
+        font-size: var(--t-3);
+    }
+
+    /* Le bas du cercle est etroit : le mot passe sur deux lignes. */
+    #pastilleBas {
+        max-width: 56px;
+        font-size: var(--t-moins2);
+        font-weight: 600;
+        line-height: 1.1;
+    }
+
+    #feteSticker svg,
+    #toastSticker svg,
+    .miniSticker svg,
+    .badgeMedaille svg,
+    #niveauMedaille svg {
         display: block;
         width: 100%;
         height: auto;
@@ -699,11 +783,12 @@
         font-size: var(--t-1);
     }
 
-    /* « J'ai craque » : un vrai bouton, mais en contour, sans couleur
-       d'alarme. Present sans etre attirant. */
+    /* « J'ai craque » : un vrai bouton, en contour orange (pas plein) :
+       visible et chaleureux, sans rien d'alarmant. */
     #btnEcart {
         background: transparent;
-        color: var(--texte2);
+        border: 1.5px solid var(--orange);
+        color: var(--orange-pale);
     }
 
     /* L'astuce du moment se lit en pleine envie : grosse, courte, calme.
@@ -721,12 +806,12 @@
     }
 
     #astuceDuMoment {
-        border-left: 4px solid var(--vert-clair);
+        border-left: 4px solid var(--orange);
     }
 
     #messageEcart {
         color: var(--texte);
-        border-left: 4px solid var(--flamme-pale);
+        border-left: 4px solid var(--orange-pale);
     }
 
     #astuceDuMoment:empty,
@@ -755,7 +840,7 @@
     }
 
     .ecartJour.choisi {
-        border-color: var(--flamme-pale);
+        border-color: var(--orange-pale);
         background-color: var(--ecart-doux);
     }
 
@@ -784,8 +869,8 @@
         flex: none;
         padding: 6px 10px;
         border-radius: var(--pilule);
-        background-color: var(--flamme);
-        color: var(--flamme-encre);
+        background-color: var(--orange);
+        color: var(--orange-encre);
         font-size: var(--t-moins1);
         font-weight: 600;
         line-height: 1;
@@ -884,6 +969,8 @@
 
     #btnBilan {
         width: 100%;
+        border-color: var(--orange);
+        color: var(--orange-pale);
     }
 
     #bilanMessage {
@@ -933,8 +1020,13 @@
         cursor: pointer;
     }
 
+    /* Aujourd'hui dans le carnet : un anneau orange, le moment present. */
+    .jour-case.aujourdhui {
+        box-shadow: inset 0 0 0 3px var(--orange);
+    }
+
     .jour-case.choisi {
-        outline: 2px solid var(--flamme);
+        outline: 2px solid var(--orange);
         outline-offset: 2px;
     }
 
@@ -985,7 +1077,7 @@
 
     #bilanPeriode strong,
     #conseilHeure strong {
-        color: var(--flamme);
+        color: var(--orange);
     }
 
     #bilanDepuisDebut {
@@ -1038,8 +1130,8 @@
     }
 
     .palier.encours::before {
-        background-color: var(--flamme);
-        border-color: var(--flamme);
+        background-color: var(--orange);
+        border-color: var(--orange);
         box-shadow: 0 0 0 5px rgba(240, 136, 62, 0.2);
     }
 
@@ -1055,7 +1147,7 @@
     }
 
     .palier.encours .palierTitre {
-        color: var(--flamme);
+        color: var(--orange);
     }
 
     .palier.avenir .palierTitre {
@@ -1110,64 +1202,135 @@
         transform: rotate(12deg);
     }
 
-    /* ---------- La collection d'autocollants ---------- */
+    /* ---------- La collection de badges ---------- */
+
+    /* Le bandeau du niveau : un niveau tous les 5 badges. */
+    #niveauBandeau {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        gap: 14px;
+        align-items: center;
+        padding: 16px;
+        margin: 0 0 14px;
+        border-radius: var(--rayon-m);
+        background: linear-gradient(135deg, rgba(240, 136, 62, 0.26), rgba(47, 125, 82, 0.28));
+        border: 1px solid rgba(240, 136, 62, 0.45);
+    }
+
+    #niveauMedaille {
+        width: 68px;
+        filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.45));
+    }
+
+    #niveauTitre {
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-2);
+        line-height: 1;
+        text-transform: uppercase;
+        margin: 0;
+    }
+
+    #niveauNom {
+        font-weight: 600;
+        color: var(--orange-pale);
+        margin: 4px 0 10px;
+    }
+
+    #niveauBarre {
+        height: 14px;
+    }
+
+    #niveauPlein {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0;
+        border-radius: var(--pilule);
+        background: linear-gradient(90deg, var(--orange), var(--orange-clair));
+        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #niveauLigne {
+        font-size: var(--t-moins1);
+        color: var(--texte);
+        margin: 8px 0 0;
+    }
 
     #collectionCompte {
-        display: inline-block;
         font-family: var(--police-chiffres);
         font-size: var(--t-moins1);
-        color: var(--flamme-encre);
-        background-color: var(--pop-citron);
-        border-radius: var(--pilule);
-        padding: 6px 12px;
-        margin: -4px 0 18px;
-        transform: rotate(-3deg);
+        color: var(--texte2);
+        margin: 0 0 18px;
     }
 
     #collection {
         display: grid;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px 12px;
+        gap: 20px 10px;
         list-style: none;
         margin: 0;
         padding: 0;
     }
 
-    .stickerCase {
-        text-align: center;
+    /* Un badge : la medaille, puis son nom, centres l'un sous l'autre. */
+    .badgeCase {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 8px;
         min-width: 0;
+        text-align: center;
     }
 
-    .stickerCase .stickerDessin {
+    .badgeMedaille {
+        position: relative;
         width: 100%;
-        max-width: 96px;
-        margin: 0 auto 8px;
+        max-width: 92px;
     }
 
-    .stickerCase.debloque .stickerDessin {
-        filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+    .badgeCase.debloque .badgeMedaille {
+        filter: drop-shadow(0 9px 10px rgba(0, 0, 0, 0.5));
     }
 
-    /* Une petite rotation differente pour chacun : des autocollants poses a
-       la main, pas une grille d'icones. */
-    .stickerCase.debloque:nth-child(3n+1) .stickerDessin { transform: rotate(-6deg); }
-    .stickerCase.debloque:nth-child(3n+2) .stickerDessin { transform: rotate(4deg); }
-    .stickerCase.debloque:nth-child(3n) .stickerDessin { transform: rotate(-2deg); }
-
-    .stickerNom {
+    .badgeNom {
         display: block;
+        max-width: 100%;
         font-size: var(--t-moins1);
         font-weight: 600;
         line-height: 1.25;
         color: var(--texte);
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
 
-    .stickerIndice {
+    .badgeCase.verrouille .badgeNom {
+        color: var(--texte2);
+    }
+
+    .badgeIndice {
         display: block;
-        font-size: var(--t-moins1);
-        line-height: 1.3;
+        max-width: 100%;
+        font-size: var(--t-moins2);
+        line-height: 1.35;
         color: var(--texte3);
-        margin-top: 2px;
+        margin-top: -4px;
+    }
+
+    /* La pastille « NEW » : un badge gagne que tu n'as pas encore vu ici. */
+    .badgeNouveau {
+        position: absolute;
+        top: -4px;
+        right: -8px;
+        padding: 4px 7px;
+        border-radius: var(--pilule);
+        background-color: var(--orange);
+        color: var(--orange-encre);
+        border: 2px solid var(--fond);
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins2);
+        font-weight: 500;
+        line-height: 1;
+        transform: rotate(10deg);
     }
 
     #collectionVide:empty {
@@ -1237,7 +1400,7 @@
 
     #messageSauvegarde {
         font-size: var(--t-moins1);
-        color: var(--flamme-pale);
+        color: var(--orange-pale);
         margin: 4px 0 0;
         min-height: 18px;
     }
@@ -1266,8 +1429,8 @@
         width: 22px;
         height: 22px;
         border-radius: 50%;
-        background-color: var(--vert);
-        color: #FFFFFF;
+        background-color: var(--orange);
+        color: var(--orange-encre);
         font-family: var(--police-chiffres);
         font-size: var(--t-moins1);
         line-height: 22px;
@@ -1353,8 +1516,9 @@
 
     /* Une lueur, pas une ombre : l'icone choisie doit sembler allumee. */
     .ongletBouton.actif svg {
+        color: var(--orange);
         transform: translateY(-1px);
-        filter: drop-shadow(0 0 7px rgba(125, 219, 165, 0.7));
+        filter: drop-shadow(0 0 7px rgba(240, 136, 62, 0.7));
     }
 
     #ongletResister {
@@ -1367,9 +1531,9 @@
         border-radius: 50%;
         display: grid;
         place-items: center;
-        color: #FFFFFF;
-        background: radial-gradient(circle at 35% 30%, #5CC48A, var(--vert));
-        box-shadow: 0 0 0 5px rgba(47, 125, 82, 0.3), 0 10px 26px rgba(47, 125, 82, 0.6);
+        color: var(--orange-encre);
+        background: radial-gradient(circle at 35% 30%, var(--orange-clair), var(--orange));
+        box-shadow: 0 0 0 5px rgba(240, 136, 62, 0.28), 0 10px 26px rgba(240, 136, 62, 0.55);
     }
 
     #ongletResister svg {
@@ -1509,7 +1673,7 @@
         font-size: var(--t-1);
         line-height: 1.15;
         text-transform: uppercase;
-        color: var(--flamme-pale);
+        color: var(--orange-pale);
         margin: 0 0 8px;
     }
 
@@ -1529,7 +1693,7 @@
 
     #installEtapes b,
     #accueilInstallEtapes b {
-        color: var(--flamme-pale);
+        color: var(--orange-pale);
     }
 
     /* Le carre avec la fleche : le bouton Partager d'iOS, dessine en CSS
@@ -1540,7 +1704,7 @@
         height: 15px;
         vertical-align: -3px;
         margin: 0 1px;
-        border: 1.5px solid var(--flamme-pale);
+        border: 1.5px solid var(--orange-pale);
         border-top: none;
         border-radius: 3px;
         position: relative;
@@ -1553,7 +1717,7 @@
         top: -6px;
         width: 1.5px;
         height: 9px;
-        background-color: var(--flamme-pale);
+        background-color: var(--orange-pale);
         transform: translateX(-50%);
     }
 
@@ -1564,8 +1728,8 @@
         top: -6px;
         width: 5px;
         height: 5px;
-        border-left: 1.5px solid var(--flamme-pale);
-        border-top: 1.5px solid var(--flamme-pale);
+        border-left: 1.5px solid var(--orange-pale);
+        border-top: 1.5px solid var(--orange-pale);
         transform: translateX(-50%) rotate(45deg);
     }
 
@@ -1573,8 +1737,8 @@
         display: none;
         width: 100%;
         border: none;
-        background: linear-gradient(135deg, #F5A25F, var(--flamme));
-        color: var(--flamme-encre);
+        background: linear-gradient(135deg, var(--orange-clair), var(--orange));
+        color: var(--orange-encre);
         margin-bottom: 6px;
     }
 
@@ -1635,15 +1799,15 @@
     }
 
     #installTete {
-        background: linear-gradient(160deg, #F5A25F 0%, #C9632A 55%, #3A1B0C 100%);
+        background: linear-gradient(160deg, var(--orange-clair) 0%, var(--orange-fonce) 55%, #3A1B0C 100%);
     }
 
     #installTeteTitre {
         display: inline-block;
         font-size: var(--t-moins1);
         font-weight: 600;
-        color: var(--flamme-encre);
-        background-color: var(--flamme-pale);
+        color: var(--orange-encre);
+        background-color: var(--orange-pale);
         border-radius: var(--pilule);
         padding: 5px 12px;
         margin: 0 0 10px;
@@ -1687,7 +1851,7 @@
     }
 
     #introPoint {
-        color: var(--flamme);
+        color: var(--orange);
     }
 
     #introAccroche {
@@ -1768,8 +1932,8 @@
     }
 
     .miniVert {
-        background: linear-gradient(135deg, var(--vert), #24653F);
-        color: #FFFFFF;
+        background: linear-gradient(135deg, var(--orange-clair), var(--orange));
+        color: var(--orange-encre);
     }
 
     .miniContour {
@@ -1857,7 +2021,7 @@
         height: 4px;
         margin-top: 8px;
         border-radius: var(--pilule);
-        background: linear-gradient(90deg, var(--vert-clair), var(--flamme));
+        background: linear-gradient(90deg, var(--vert-clair), var(--orange));
     }
 
     #accueilFormulaire > p,
@@ -1938,6 +2102,10 @@
             animation: confetti 2.2s ease-out both;
         }
 
+        .badgeCase.nouveau .badgeMedaille {
+            animation: debloque 0.7s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+        }
+
         #fete.visible #feteSticker {
             animation: colle 0.6s 0.1s cubic-bezier(0.2, 1.6, 0.4, 1) both;
         }
@@ -1964,6 +2132,11 @@
     @keyframes apparait {
         from { transform: translateX(-50%) translateY(-12px) scale(0.92); opacity: 0; }
         to { transform: translateX(-50%); opacity: 1; }
+    }
+
+    @keyframes debloque {
+        from { transform: scale(0.4) rotate(-18deg); opacity: 0; }
+        to { transform: none; opacity: 1; }
     }
 
     @keyframes colle {
@@ -2004,8 +2177,22 @@
             height: 200px;
         }
 
-        #heroSticker {
-            width: 62px;
+        #heroObjectif {
+            width: 100px;
+            height: 100px;
+            right: -4px;
+        }
+
+        #pastilleChiffre {
+            font-size: var(--t-3);
+        }
+
+        #pastilleChiffre[data-chiffres="3"] {
+            font-size: var(--t-2);
+        }
+
+        #niveauMedaille {
+            width: 56px;
         }
 
         .statValeur {
@@ -2071,7 +2258,12 @@
                 <div id="anneau"><div id="anneauDedans"><span id="compteur">0</span></div></div>
                 <p id="heroLabel"></p>
                 <p id="motivationLigne"></p>
-                <span id="heroSticker" aria-hidden="true"></span>
+                <div id="heroObjectif" role="img">
+                    <span id="pastilleAnneau" aria-hidden="true"></span>
+                    <span id="pastilleHaut" aria-hidden="true"></span>
+                    <strong id="pastilleChiffre" aria-hidden="true"></strong>
+                    <span id="pastilleBas" aria-hidden="true"></span>
+                </div>
             </section>
 
             <section class="carte" id="palierCarte">
@@ -2185,6 +2377,15 @@
             <section class="carte" id="collectionCarte">
                 <img class="ambiance" src="images/ambiance-collection.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2 id="collectionTitre"></h2>
+                <div id="niveauBandeau">
+                    <span id="niveauMedaille" aria-hidden="true"></span>
+                    <div>
+                        <p id="niveauTitre"></p>
+                        <p id="niveauNom"></p>
+                        <div class="barre" id="niveauBarre" role="img"><div id="niveauPlein"></div></div>
+                        <p id="niveauLigne"></p>
+                    </div>
+                </div>
                 <p id="collectionCompte"></p>
                 <p id="collectionVide" class="explication"></p>
                 <ul id="collection"></ul>
@@ -3305,6 +3506,10 @@ afficherAccueilSiBesoin();
             carre.classList.add("jour-case");
             carre.title = jourEnTexte(jourTexte);
 
+            if (i === 0) {
+                carre.classList.add("aujourdhui");
+            }
+
             if (dateArret && jourTexte < dateArret) {
                 // Avant l'arret : ces jours-la ne comptent pas comme tenus.
                 carre.style.backgroundColor = "var(--case-avant)";
@@ -3407,74 +3612,147 @@ afficherAccueilSiBesoin();
     // Les paliers fetes : 1, 3, 7, 14, 30, 60, 90, 180 et 365 jours.
     const CELEBRATIONS = TEXTES.celebrations;
 
-    // ---------- Les autocollants ----------
+    // ---------- Les badges ----------
     //
-    // Chaque autocollant se deduit des donnees deja la : la meilleure serie,
-    // les envies, le journal, la derniere sauvegarde. Rien de nouveau a
-    // stocker pour savoir lequel est gagne, et une personne qui a deja 40
-    // jours les retrouve tous des la mise a jour. Seule la liste de ceux
-    // deja « vus » est rangee (stickersVus), pour ne fêter chacun qu'une fois.
+    // Chaque badge se deduit des donnees deja rangees sur le telephone : les
+    // series, les envies, le journal, la derniere sauvegarde, l'objectif.
+    // Une fois gagne, un badge est garde dans stickersVus et ne se perd plus,
+    // meme si une envie ou un moment est efface ensuite.
+    //
+    // Ce qui est range en plus (tout est dans l'export) :
+    //   stickersVus   les badges deja gagnes et annonces
+    //   collectionVue les badges deja vus dans l'ecran Collection (sinon « NEW »)
+    //   niveauVu      le dernier niveau fete
+    //   badgesVersion « 2 » une fois la migration de JZ-2 faite
 
-    const TEINTES = {
-        vert: ["#5FC08A", "#2F7D52", "#163F28", "#FFFFFF"],
-        flamme: ["#F7A462", "#D9702A", "#7A3410", "#FFFFFF"],
-        rose: ["#FF8DB8", "#E0548A", "#7A1C45", "#FFFFFF"],
-        bleu: ["#8EADFF", "#4A72E0", "#1E2F6E", "#FFFFFF"],
-        citron: ["#F4FFB8", "#D7F25C", "#7A8C1E", "#1A2008"]
-    };
+    // Les chiffres dont dependent les badges, calcules en une fois.
+    function mesuresBadges() {
+        const journal = lireJournal();
+        const debut = dateDebut();
+        const envies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+        const joursEcarts = {};
 
-    const TEINTE_STICKER = {
-        envie1: "flamme", envie10: "rose", moment1: "bleu", abri: "citron", toujours: "flamme"
-    };
+        (JSON.parse(localStorage.getItem("historiqueEcarts")) || []).forEach(function (horodatage) {
+            joursEcarts[dateLocale(new Date(horodatage))] = true;
+        });
 
-    const DESSINS = {
-        main: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5V4.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7.5-6.5 7.5-3 0-4.6-1.7-5.8-4.3L4.3 14a1.5 1.5 0 0 1 2.6-1.5L8 14"/>',
-        mains: '<path d="M6 11V7a1.2 1.2 0 0 1 2.4 0v3.5m0-4V5.2a1.2 1.2 0 0 1 2.4 0v5.3m0-4a1.2 1.2 0 0 1 2.4 0v5c0 3-1.8 5.6-4.9 5.6-2.2 0-3.4-1.3-4.3-3.2l-1.6-3a1.2 1.2 0 0 1 2-1.1L6 12"/><path d="M15.5 9.5l1.2-1.2M17.5 12h1.8M15.5 14.5l1.2 1.2"/>',
-        crayon: '<path d="M14.5 5.5l4 4L9 19H5v-4z"/><path d="M12.5 7.5l4 4"/>',
-        bouclier: '<path d="M12 3.5l7 2.8v5c0 4.4-3 7.9-7 9.2-4-1.3-7-4.8-7-9.2v-5z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/>',
-        soleil: '<path d="M4 17h16M7.5 17a4.5 4.5 0 0 1 9 0"/><path d="M12 8.5v-2M6.6 10.6l-1.4-1.4M17.4 10.6l1.4-1.4M3.5 14h1.5M19 14h1.5"/>'
-    };
+        // Jours tenus au total : les jours depuis le debut, moins les jours
+        // d'ecart. Une rechute n'efface pas ce qui a ete tenu avant.
+        let tenus = 0;
 
-    let numeroSticker = 0;
-
-    // Un autocollant en SVG : un medaillon arrondi, bord clair, une petite
-    // etoile flamme collee en haut. Verrouille, il n'en reste que la silhouette.
-    function dessinerSticker(def, debloque) {
-        const uid = "st" + (numeroSticker++);
-        const teinte = TEINTES[TEINTE_STICKER[def.id] || "vert"];
-        const encre = debloque ? teinte[3] : "rgba(255,255,255,0.22)";
-        // Un fin contour sombre sous le texte blanc : lisible meme sur le reflet.
-        const contour = debloque && teinte[3] === "#FFFFFF"
-            ? ' stroke="rgba(0,0,0,0.35)" stroke-width="3" paint-order="stroke" stroke-linejoin="round"'
-            : "";
-        let svg = '<svg viewBox="0 0 100 100" aria-hidden="true">';
-
-        if (debloque) {
-            svg += '<defs><radialGradient id="' + uid + '" cx=".35" cy=".3" r=".8">' +
-                '<stop offset="0" stop-color="' + teinte[0] + '"/>' +
-                '<stop offset=".6" stop-color="' + teinte[1] + '"/>' +
-                '<stop offset="1" stop-color="' + teinte[2] + '"/></radialGradient></defs>' +
-                '<circle cx="50" cy="50" r="44" fill="url(#' + uid + ')" stroke="#F2FFF6" stroke-width="3.5"/>' +
-                '<path d="M80 6l3.6 7.2 7.8-1.8-3 7.2 7.2 4.2-7.2 3.6 2.4 7.8-7.8-1.8-3 7.2-3-7.2-7.8 1.8 2.4-7.8-7.2-3.6 7.2-4.2-3-7.2 7.8 1.8z" fill="' +
-                (def.id === "j365" ? "#D7F25C" : "#F0883E") + '" stroke="#0B1A12" stroke-width="1.5" stroke-linejoin="round"/>';
-        } else {
-            svg += '<circle cx="50" cy="50" r="44" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.22)" stroke-width="2.5" stroke-dasharray="5 5"/>';
+        if (debut && debut <= dateDuJour()) {
+            const ecartsDepuis = Object.keys(joursEcarts).filter(function (jour) {
+                return jour >= debut;
+            }).length;
+            tenus = Math.max(ecartEnJours(debut, dateDuJour()) - ecartsDepuis, 0);
         }
 
-        if (def.nombre) {
-            const taille = def.nombre >= 100 ? 26 : 32;
-            svg += '<text x="50" y="58" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="' +
-                taille + '" fill="' + encre + '"' + contour + '>' + def.nombre + '</text>';
-        } else {
-            svg += '<g transform="translate(32 22) scale(1.5)" fill="none" stroke="' + encre +
-                '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + DESSINS[def.dessin] + '</g>';
+        const mesures = {
+            serie: meilleureSerieJours(),
+            serieApresEcart: serieApresEcart(),
+            tenus: tenus,
+            envies: envies.length,
+            joursNotes: 0,
+            matins: 0,
+            soirs: 0,
+            legeres: 0,
+            durs: 0,
+            notesEcrites: 0,
+            sauvegarde: Boolean(localStorage.getItem("derniereSauvegarde")),
+            objectifAtteint: false
+        };
+
+        for (const jour in journal) {
+            const moments = journal[jour];
+
+            if (moments.length === 0) {
+                continue;
+            }
+
+            mesures.joursNotes++;
+
+            // « 08:40 » se compare comme du texte ; un moment sans heure
+            // (anciennes sauvegardes) ne compte ni pour le matin ni pour le soir.
+            if (moments.some(function (m) { return m.heure && m.heure < "12:00"; })) {
+                mesures.matins++;
+            }
+
+            if (moments.some(function (m) { return m.heure && m.heure >= "18:00"; })) {
+                mesures.soirs++;
+            }
+
+            if (moments.every(function (m) { return m.niveau === "facile"; })) {
+                mesures.legeres++;
+            }
+
+            if (!joursEcarts[jour] && moments.some(function (m) { return m.niveau === "difficile"; })) {
+                mesures.durs++;
+            }
+
+            moments.forEach(function (m) {
+                if (m.note && m.note.trim()) {
+                    mesures.notesEcrites++;
+                }
+            });
         }
 
-        svg += '<text x="50" y="76" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="600" font-size="10" letter-spacing="1.2" fill="' +
-            encre + '"' + contour + '>' + def.mot + '</text></svg>';
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        mesures.objectifAtteint = Boolean(objectif) && mesures.serie >= objectif;
 
-        return svg;
+        return mesures;
     }
+
+    // La condition de chaque badge. m = mesuresBadges().
+    const REGLES_BADGES = {
+        // Meilleure serie de jours d'affilee sans consommer.
+        j1: function (m) { return m.serie >= 1; },
+        j3: function (m) { return m.serie >= 3; },
+        j7: function (m) { return m.serie >= 7; },
+        j14: function (m) { return m.serie >= 14; },
+        j21: function (m) { return m.serie >= 21; },
+        j30: function (m) { return m.serie >= 30; },
+        j45: function (m) { return m.serie >= 45; },
+        j60: function (m) { return m.serie >= 60; },
+        j90: function (m) { return m.serie >= 90; },
+        j100: function (m) { return m.serie >= 100; },
+        j150: function (m) { return m.serie >= 150; },
+        j180: function (m) { return m.serie >= 180; },
+        j200: function (m) { return m.serie >= 200; },
+        j250: function (m) { return m.serie >= 250; },
+        j300: function (m) { return m.serie >= 300; },
+        j365: function (m) { return m.serie >= 365; },
+        // Jours sans consommer au total depuis le debut, ecarts deduits.
+        tenus50: function (m) { return m.tenus >= 50; },
+        tenus100: function (m) { return m.tenus >= 100; },
+        tenus250: function (m) { return m.tenus >= 250; },
+        // Envies tenues (le bouton « Resister a l'envie »).
+        envie1: function (m) { return m.envies >= 1; },
+        envie10: function (m) { return m.envies >= 10; },
+        envie25: function (m) { return m.envies >= 25; },
+        envie50: function (m) { return m.envies >= 50; },
+        envie100: function (m) { return m.envies >= 100; },
+        // Journees differentes ou au moins un moment a ete note.
+        moment1: function (m) { return m.joursNotes >= 1; },
+        notes7: function (m) { return m.joursNotes >= 7; },
+        notes30: function (m) { return m.joursNotes >= 30; },
+        notes100: function (m) { return m.joursNotes >= 100; },
+        // Moments notes avec un petit mot ecrit.
+        plume: function (m) { return m.notesEcrites >= 10; },
+        // Journees avec un moment note avant midi / a partir de 18 h.
+        matin10: function (m) { return m.matins >= 10; },
+        soir20: function (m) { return m.soirs >= 20; },
+        // Une serie d'au moins 3 jours qui demarre apres un ecart.
+        toujours: function (m) { return m.serieApresEcart >= 3; },
+        // Journees avec un moment « difficile », sans ecart ce jour-la.
+        malgre1: function (m) { return m.durs >= 1; },
+        malgre10: function (m) { return m.durs >= 10; },
+        // Journees notees ou tous les moments ont ete « faciles ».
+        legeres10: function (m) { return m.legeres >= 10; },
+        // Au moins un export de sauvegarde.
+        abri: function (m) { return m.sauvegarde; },
+        // Meilleure serie au moins egale a l'objectif actuel.
+        objectif: function (m) { return m.objectifAtteint; }
+    };
 
     function stickerParId(id) {
         return TEXTES.stickers.liste.filter(function (def) {
@@ -3482,110 +3760,332 @@ afficherAccueilSiBesoin();
         })[0];
     }
 
-    // La liste des autocollants gagnes, d'apres les donnees.
-    function stickersDebloques() {
-        const gagnes = {};
-        const serie = meilleureSerieJours();
-        const envies = (JSON.parse(localStorage.getItem("historiqueEnvies")) || []).length;
-        const journal = lireJournal();
-
-        TEXTES.stickers.liste.forEach(function (def) {
-            if (def.nombre && serie >= def.nombre) {
-                gagnes[def.id] = true;
-            }
-        });
-
-        if (envies >= 1) gagnes.envie1 = true;
-        if (envies >= 10) gagnes.envie10 = true;
-        if (Object.keys(journal).length > 0) gagnes.moment1 = true;
-        if (localStorage.getItem("derniereSauvegarde")) gagnes.abri = true;
-        if (serieApresEcart() >= 3) gagnes.toujours = true;
-
-        return gagnes;
+    function lireListe(cle) {
+        try {
+            const liste = JSON.parse(localStorage.getItem(cle));
+            return Array.isArray(liste) ? liste : null;
+        } catch (erreur) {
+            return null;
+        }
     }
 
+    function reunir(a, b) {
+        return a.concat(b.filter(function (id) {
+            return a.indexOf(id) === -1;
+        }));
+    }
+
+    // Les badges que les donnees permettent de gagner, maintenant.
+    function badgesCalcules() {
+        const mesures = mesuresBadges();
+
+        return TEXTES.stickers.liste.filter(function (def) {
+            return REGLES_BADGES[def.id] && REGLES_BADGES[def.id](mesures);
+        }).map(function (def) {
+            return def.id;
+        });
+    }
+
+    // Les badges gagnes : ceux d'aujourd'hui, plus tous ceux deja gagnes un jour.
+    function badgesGagnes() {
+        const connus = TEXTES.stickers.liste.map(function (def) { return def.id; });
+        const gardes = (lireListe("stickersVus") || []).filter(function (id) {
+            return connus.indexOf(id) !== -1;
+        });
+
+        return reunir(gardes, badgesCalcules());
+    }
+
+    // ---------- Les niveaux ----------
+    // Un niveau tous les 5 badges : niveau 1 a 5 badges, 2 a 10, 3 a 15...
+
+    const BADGES_PAR_NIVEAU = 5;
+    const CADRES = ["graphite", "bronze", "argent", "or", "emeraude", "flamme", "holo"];
+
+    function niveauPour(nombreDeBadges) {
+        return Math.floor(nombreDeBadges / BADGES_PAR_NIVEAU);
+    }
+
+    function nomNiveau(niveau) {
+        const noms = TEXTES.niveaux.noms;
+        return noms[Math.min(niveau, noms.length - 1)];
+    }
+
+    function cadrePour(niveau) {
+        return CADRES[Math.min(niveau, CADRES.length - 1)];
+    }
+
+    function nomCadre(niveau) {
+        const cadres = TEXTES.niveaux.cadres;
+        return cadres[Math.min(niveau, cadres.length - 1)];
+    }
+
+    function cadreActuel() {
+        return cadrePour(niveauPour(badgesGagnes().length));
+    }
+
+    // ---------- Le dessin d'un badge ----------
+    //
+    // Une medaille hexagonale : un cadre epais (sa couleur suit le niveau),
+    // un coeur colore (sa couleur suit la famille du badge), un reflet, un
+    // petit eclat. Le chiffre ou le pictogramme est au centre exact (50, 50).
+    // Les couleurs viennent des variables CSS du haut du fichier.
+
+    const DESSINS = {
+        main: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5V4.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7.5-6.5 7.5-3 0-4.6-1.7-5.8-4.3L4.3 14a1.5 1.5 0 0 1 2.6-1.5L8 14"/>',
+        mains: '<path d="M6 11V7a1.2 1.2 0 0 1 2.4 0v3.5m0-4V5.2a1.2 1.2 0 0 1 2.4 0v5.3m0-4a1.2 1.2 0 0 1 2.4 0v5c0 3-1.8 5.6-4.9 5.6-2.2 0-3.4-1.3-4.3-3.2l-1.6-3a1.2 1.2 0 0 1 2-1.1L6 12"/><path d="M15.5 9.5l1.2-1.2M17.5 12h1.8M15.5 14.5l1.2 1.2"/>',
+        crayon: '<path d="M14.5 5.5l4 4L9 19H5v-4z"/><path d="M12.5 7.5l4 4"/>',
+        bouclier: '<path d="M12 3.5l7 2.8v5c0 4.4-3 7.9-7 9.2-4-1.3-7-4.8-7-9.2v-5z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/>',
+        soleil: '<circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6L7 7M17 17l1.4 1.4M5.6 18.4L7 17M17 7l1.4-1.4"/>',
+        lune: '<path d="M19 14.5A7.5 7.5 0 0 1 9.5 5a7.5 7.5 0 1 0 9.5 9.5z"/>',
+        boucle: '<path d="M4.5 12a7.5 7.5 0 0 1 13-5.1M19.5 12a7.5 7.5 0 0 1-13 5.1"/><path d="M17.5 3.5v3.6h-3.6M6.5 20.5v-3.6h3.6"/>',
+        montagne: '<path d="M3 19l6.5-11 4 6.5 2.5-3.5L21 19z"/><path d="M7.8 11l1.7 1.5 1.7-1.5"/>',
+        sourire: '<circle cx="12" cy="12" r="8.5"/><path d="M8.5 14a4 4 0 0 0 7 0M9 9.5h.01M15 9.5h.01"/>',
+        cible: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="4.5"/><path d="M12 12h.01"/>',
+        bulle: '<path d="M5 5.5h14a1.5 1.5 0 0 1 1.5 1.5v8a1.5 1.5 0 0 1-1.5 1.5H10l-4.5 3.5v-3.5H5A1.5 1.5 0 0 1 3.5 15V7A1.5 1.5 0 0 1 5 5.5z"/><path d="M7.5 10h9M7.5 13h6"/>',
+        cadenas: '<rect x="5" y="10.5" width="14" height="10" rx="2.5"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/>'
+    };
+
+    // Le decalage qui met chaque pictogramme au centre exact de sa grille de
+    // 24 (mesure sur son cadre reel) : sans lui, la main penche a gauche.
+    const RECENTRAGE = {
+        main: [1.45, 0.5], mains: [1.16, 1.45], crayon: [0.25, -0.25], lune: [0.3, -0.3],
+        montagne: [0, -1.5], bulle: [0, -0.75], cadenas: [0, -0.25]
+    };
+
+    function pictogramme(nom) {
+        const decalage = RECENTRAGE[nom];
+        return decalage
+            ? '<g transform="translate(' + decalage[0] + " " + decalage[1] + ')">' + DESSINS[nom] + "</g>"
+            : DESSINS[nom];
+    }
+
+    // Les familles dont le coeur est clair prennent une encre sombre.
+    const ENCRE_SOMBRE = { total: true, rythme: true };
+
+    const HEX_EXTERIEUR = "50,6 88.1,28 88.1,72 50,94 11.9,72 11.9,28";
+    const HEX_INTERIEUR = "50,17 78.6,33.5 78.6,66.5 50,83 21.4,66.5 21.4,33.5";
+
+    let numeroBadge = 0;
+
+    function degrade(id, type, prefixe) {
+        const attributs = type === "radial"
+            ? 'cx=".35" cy=".3" r=".85"'
+            : 'x1="0" y1="0" x2="1" y2="1"';
+        const balise = type === "radial" ? "radialGradient" : "linearGradient";
+
+        return "<" + balise + ' id="' + id + '" ' + attributs + ">" +
+            '<stop offset="0" style="stop-color:var(' + prefixe + '-a)"/>' +
+            '<stop offset=".55" style="stop-color:var(' + prefixe + '-b)"/>' +
+            '<stop offset="1" style="stop-color:var(' + prefixe + '-c)"/></' + balise + ">";
+    }
+
+    function dessinerBadge(def, debloque, cadre) {
+        const uid = "bd" + (numeroBadge++);
+        let svg = '<svg viewBox="0 0 100 100" aria-hidden="true">';
+
+        if (!debloque) {
+            svg += '<polygon points="' + HEX_EXTERIEUR + '" style="fill:var(--badge-verrou);stroke:var(--badge-verrou)" stroke-width="6" stroke-linejoin="round"/>' +
+                '<polygon points="' + HEX_INTERIEUR + '" style="fill:var(--badge-verrou-fond)" stroke="rgba(255,255,255,0.16)" stroke-width="1.5" stroke-dasharray="4 3" stroke-linejoin="round"/>' +
+                '<g transform="translate(35 35) scale(1.25)" fill="none" stroke="rgba(255,255,255,0.38)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+                pictogramme("cadenas") + "</g></svg>";
+            return svg;
+        }
+
+        const encre = ENCRE_SOMBRE[def.famille] ? "var(--badge-encre-sombre)" : "var(--badge-encre)";
+        const contour = ENCRE_SOMBRE[def.famille]
+            ? ""
+            : ' stroke="rgba(0,0,0,0.3)" stroke-width="3" paint-order="stroke" stroke-linejoin="round"';
+
+        svg += "<defs>" +
+            degrade(uid + "c", "lineaire", "--cadre-" + cadre) +
+            degrade(uid + "f", "radial", "--badge-" + def.famille) +
+            '<clipPath id="' + uid + 'r"><polygon points="' + HEX_INTERIEUR + '"/></clipPath></defs>';
+
+        // Le cadre, avec un fil de lumiere sur ses bords du haut.
+        svg += '<polygon points="' + HEX_EXTERIEUR + '" fill="url(#' + uid + 'c)" stroke="url(#' + uid + 'c)" stroke-width="6" stroke-linejoin="round"/>' +
+            '<polyline points="15.4,30 50,10 84.6,30" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>';
+
+        // Le coeur, son relief et son reflet.
+        svg += '<polygon points="' + HEX_INTERIEUR + '" fill="url(#' + uid + 'f)" stroke="rgba(0,0,0,0.35)" stroke-width="2" stroke-linejoin="round"/>' +
+            '<g clip-path="url(#' + uid + 'r)"><ellipse cx="36" cy="28" rx="30" ry="15" transform="rotate(-24 36 28)" fill="#FFFFFF" fill-opacity="0.2"/></g>';
+
+        if (def.nombre !== undefined) {
+            const texte = String(def.nombre);
+            const taille = texte.length >= 3 ? 22 : 28;
+            const y = def.petit ? 46 : 50;
+
+            svg += '<text x="50" y="' + y + '" dy="0.35em" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="' +
+                taille + '" style="fill:' + encre + '"' + contour + ">" + texte + "</text>";
+
+            if (def.petit) {
+                svg += '<text x="50" y="64" dy="0.35em" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="600" font-size="7.5" letter-spacing="0.6" style="fill:' +
+                    encre + '"' + contour + ">" + def.petit.toUpperCase() + "</text>";
+            }
+        } else {
+            svg += '<g transform="translate(31 31) scale(1.583)" fill="none" style="stroke:' + encre +
+                '" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round">' + pictogramme(def.dessin) + "</g>";
+        }
+
+        // Le petit eclat d'un badge gagne.
+        svg += '<path d="M81 8q1.5 6.5 8 8q-6.5 1.5-8 8q-1.5-6.5-8-8q6.5-1.5 8-8z" style="fill:var(--creme)" stroke="rgba(0,0,0,0.25)" stroke-width="0.8"/></svg>';
+
+        return svg;
+    }
+
+    // La medaille d'un niveau : son numero, dans son cadre.
+    function dessinerNiveau(niveau) {
+        return dessinerBadge({ famille: "serie", nombre: niveau, petit: "niveau" }, true, cadrePour(niveau));
+    }
+
+    // ---------- L'ecran Collection ----------
+
     function afficherCollection() {
-        const gagnes = stickersDebloques();
+        const gagnes = badgesGagnes();
+        const vue = lireListe("collectionVue") || gagnes;
         const liste = document.getElementById("collection");
         const total = TEXTES.stickers.liste.length;
-        const nombre = Object.keys(gagnes).length;
+        const nombre = gagnes.length;
+        const niveau = niveauPour(nombre);
+        const cadre = cadrePour(niveau);
+        const fait = nombre % BADGES_PAR_NIVEAU;
 
-        liste.innerHTML = "";
+        // Le bandeau du niveau.
+        document.getElementById("niveauMedaille").innerHTML = dessinerNiveau(niveau);
+        document.getElementById("niveauTitre").textContent = texteAvec(TEXTES.niveaux.titre, { n: niveau });
+        document.getElementById("niveauNom").textContent = nomNiveau(niveau);
+        document.getElementById("niveauPlein").style.width = (fait / BADGES_PAR_NIVEAU * 100) + "%";
 
-        TEXTES.stickers.liste.forEach(function (def) {
-            const debloque = Boolean(gagnes[def.id]);
-            const element = document.createElement("li");
-            element.className = "stickerCase" + (debloque ? " debloque" : "");
-
-            const dessin = document.createElement("div");
-            dessin.className = "stickerDessin";
-            dessin.innerHTML = dessinerSticker(def, debloque);
-
-            const nom = document.createElement("span");
-            nom.className = "stickerNom";
-            nom.textContent = def.nom;
-
-            element.appendChild(dessin);
-            element.appendChild(nom);
-
-            if (!debloque) {
-                const indice = document.createElement("span");
-                indice.className = "stickerIndice";
-                indice.textContent = def.indice;
-                element.appendChild(indice);
-            }
-
-            liste.appendChild(element);
-        });
+        const ligne = texteAvec(TEXTES.niveaux.avantSuivant, { fait: fait, suivant: niveau + 1 });
+        document.getElementById("niveauLigne").textContent = ligne;
+        document.getElementById("niveauBarre").setAttribute("aria-label", ligne);
 
         document.getElementById("collectionCompte").textContent =
             texteAvec(TEXTES.stickers.compte, { n: nombre, total: total });
         document.getElementById("collectionVide").textContent =
             nombre === 0 ? TEXTES.vides.collection : "";
 
-        // Le dernier palier gagne s'affiche a cote du compteur.
-        const paliers = TEXTES.stickers.liste.filter(function (def) {
-            return def.nombre && gagnes[def.id];
-        });
+        liste.innerHTML = "";
 
-        document.getElementById("heroSticker").innerHTML = paliers.length
-            ? dessinerSticker(paliers[paliers.length - 1], true)
-            : "";
+        TEXTES.stickers.liste.forEach(function (def) {
+            const debloque = gagnes.indexOf(def.id) !== -1;
+            const nouveau = debloque && vue.indexOf(def.id) === -1;
+            const element = document.createElement("li");
+            element.className = "badgeCase " + (debloque ? "debloque" : "verrouille") + (nouveau ? " nouveau" : "");
+            element.setAttribute("aria-label", debloque
+                ? def.nom + (nouveau ? " (nouveau)" : "")
+                : TEXTES.stickers.verrouille + " : " + def.nom + ". " + def.indice);
+
+            const medaille = document.createElement("div");
+            medaille.className = "badgeMedaille";
+            medaille.innerHTML = dessinerBadge(def, debloque, cadre);
+
+            if (nouveau) {
+                const pastille = document.createElement("span");
+                pastille.className = "badgeNouveau";
+                pastille.textContent = TEXTES.stickers.nouveau;
+                medaille.appendChild(pastille);
+            }
+
+            const nom = document.createElement("span");
+            nom.className = "badgeNom";
+            nom.textContent = def.nom;
+
+            element.appendChild(medaille);
+            element.appendChild(nom);
+
+            if (!debloque) {
+                const indice = document.createElement("span");
+                indice.className = "badgeIndice";
+                indice.textContent = def.indice;
+                element.appendChild(indice);
+            }
+
+            liste.appendChild(element);
+        });
     }
 
-    // Un autocollant gagne en dehors des paliers (premiere envie, premiere
-    // note, sauvegarde) a droit a un petit message calme, pas a une fete :
-    // il peut tomber en pleine envie.
+    // Une fois l'ecran Collection ouvert, les nouveaux badges sont « vus » :
+    // la pastille NEW disparaitra au prochain affichage.
+    function marquerCollectionVue() {
+        localStorage.setItem("collectionVue", JSON.stringify(badgesGagnes()));
+    }
+
+    // ---------- Gagner un badge, monter de niveau ----------
+
+    // Les paliers fetes (1, 3, 7… 365 jours) ont deja leur fete : leur
+    // badge n'a pas besoin d'un message en plus.
+    function badgeDejaFete(def) {
+        return def.famille === "serie" && Boolean(CELEBRATIONS[def.nombre]);
+    }
+
+    const ANCIENS_BADGES = ["j1", "j3", "j7", "j14", "j30", "j60", "j90", "j180", "j365",
+        "envie1", "envie10", "moment1", "abri", "toujours"];
+
     function verifierStickers() {
-        const gagnes = Object.keys(stickersDebloques());
-        const brut = localStorage.getItem("stickersVus");
+        const calcules = badgesCalcules();
+        const vus = lireListe("stickersVus");
 
-        // Premiere fois apres la mise a jour : tout ce qui est deja gagne est
-        // considere comme vu. Pas de pluie de messages pour les anciens.
-        if (brut === null) {
-            localStorage.setItem("stickersVus", JSON.stringify(gagnes));
+        // Migration de JZ-2 (et toute premiere ouverture) : on range ce que
+        // les donnees permettent deja, sans message. Rien de ce qui etait
+        // gagne n'est perdu. Les nouveaux badges gagnes d'un coup gardent
+        // leur pastille NEW, et le niveau atteint est fete une fois.
+        if (localStorage.getItem("badgesVersion") !== "2") {
+            const avant = vus || [];
+            const tous = reunir(avant, calcules);
+
+            localStorage.setItem("stickersVus", JSON.stringify(tous));
+
+            if (lireListe("collectionVue") === null) {
+                localStorage.setItem("collectionVue", JSON.stringify(vus === null
+                    ? tous
+                    : avant.filter(function (id) { return ANCIENS_BADGES.indexOf(id) !== -1; })));
+            }
+
+            if (localStorage.getItem("niveauVu") === null) {
+                localStorage.setItem("niveauVu", vus === null ? String(niveauPour(tous.length)) : "0");
+            }
+
+            localStorage.setItem("badgesVersion", "2");
+            verifierNiveau();
             return;
         }
 
-        const vus = JSON.parse(brut) || [];
-        const nouveaux = gagnes.filter(function (id) {
-            return vus.indexOf(id) === -1;
+        const nouveaux = calcules.filter(function (id) {
+            return (vus || []).indexOf(id) === -1;
         });
 
-        if (nouveaux.length === 0) {
+        if (nouveaux.length > 0) {
+            localStorage.setItem("stickersVus", JSON.stringify(reunir(vus || [], nouveaux)));
+
+            const aAnnoncer = nouveaux.filter(function (id) {
+                return !badgeDejaFete(stickerParId(id));
+            });
+
+            if (aAnnoncer.length > 0) {
+                montrerToast(stickerParId(aAnnoncer[0]));
+            }
+        }
+
+        verifierNiveau();
+    }
+
+    // Un niveau de plus : un petit ecran de felicitation, une seule fois.
+    function verifierNiveau() {
+        const niveau = niveauPour(badgesGagnes().length);
+        const dejaFete = parseInt(localStorage.getItem("niveauVu"), 10) || 0;
+
+        if (niveau <= dejaFete) {
             return;
         }
 
-        localStorage.setItem("stickersVus", JSON.stringify(vus.concat(nouveaux)));
+        localStorage.setItem("niveauVu", String(niveau));
 
-        // Les paliers ont deja leur fete : on ne les annonce pas deux fois.
-        const aAnnoncer = nouveaux.filter(function (id) {
-            return !stickerParId(id).nombre;
+        montrerFete({
+            titre: texteAvec(TEXTES.niveaux.feteTitre, { n: niveau }),
+            texte: texteAvec(TEXTES.niveaux.feteTexte, { nom: nomNiveau(niveau), cadre: nomCadre(niveau) }),
+            dessin: dessinerNiveau(niveau)
         });
-
-        if (aAnnoncer.length > 0) {
-            montrerToast(stickerParId(aAnnoncer[0]));
-        }
     }
 
     let minuterieToast = null;
@@ -3593,7 +4093,7 @@ afficherAccueilSiBesoin();
     function montrerToast(def) {
         const toast = document.getElementById("toast");
 
-        document.getElementById("toastSticker").innerHTML = dessinerSticker(def, true);
+        document.getElementById("toastSticker").innerHTML = dessinerBadge(def, true, cadreActuel());
         document.getElementById("toastTexte").textContent =
             texteAvec(TEXTES.nouveauSticker, { nom: def.nom });
 
@@ -3604,9 +4104,44 @@ afficherAccueilSiBesoin();
         }, 3200);
     }
 
+    // ---------- La pastille du compteur ----------
+    // Ce qui reste avant la prochaine etape : l'objectif s'il n'est pas
+    // encore atteint, sinon le prochain palier.
+    function afficherPastille(jours) {
+        const pastille = document.getElementById("heroObjectif");
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        const cible = objectif && objectif > jours ? objectif : prochainPalier(jours);
+
+        pastille.hidden = jours < 0;
+
+        if (jours < 0) {
+            return;
+        }
+
+        if (!cible) {
+            document.getElementById("pastilleHaut").textContent = "J" + jours;
+            document.getElementById("pastilleChiffre").textContent = "✓";
+            document.getElementById("pastilleChiffre").dataset.chiffres = "1";
+            document.getElementById("pastilleBas").textContent = TEXTES.pastille.fini;
+            pastille.style.setProperty("--avance", "100%");
+            pastille.setAttribute("aria-label", TEXTES.pastille.ditFini);
+            return;
+        }
+
+        const reste = cible - jours;
+
+        document.getElementById("pastilleHaut").textContent = texteAvec(TEXTES.pastille.haut, { j: jours, cible: cible });
+        document.getElementById("pastilleChiffre").textContent = reste;
+        document.getElementById("pastilleChiffre").dataset.chiffres = String(String(reste).length);
+        document.getElementById("pastilleBas").textContent = reste === 1 ? TEXTES.pastille.restant : TEXTES.pastille.restants;
+        pastille.style.setProperty("--avance", (Math.max(jours, 0) / cible * 100) + "%");
+        pastille.setAttribute("aria-label", texteAvec(TEXTES.pastille.dit, { j: jours, cible: cible, reste: reste }));
+    }
+
     // ---------- La fete ----------
 
-    const COULEURS_CONFETTIS = ["#46B377", "#F0883E", "#E9FFF1", "#7DDBA5", "#FF6FA5", "#D7F25C"];
+    const COULEURS_CONFETTIS = ["var(--vert-clair)", "var(--orange)", "var(--creme)", "var(--vert-pale)",
+        "var(--pop-rose)", "var(--pop-citron)", "var(--orange-clair)"];
 
     // Les confettis restent sur les bords (gauche, droite) : jamais sur le texte.
     function lancerConfettis() {
@@ -3627,7 +4162,10 @@ afficherAccueilSiBesoin();
 
     let minuterieFete = null;
     let feteEnAttente = null;
+    let fileFetes = [];
 
+    // fete = { titre, texte, dessin (le SVG du badge) }. Si une fete est deja
+    // a l'ecran (un palier et un niveau le meme jour), la suivante attend.
     function montrerFete(fete) {
         // Pendant l'ecran d'accueil, la fete attend qu'il se ferme : sinon
         // elle passerait derriere, sans que personne la voie.
@@ -3638,11 +4176,14 @@ afficherAccueilSiBesoin();
 
         const carte = document.getElementById("fete");
 
+        if (carte.classList.contains("visible")) {
+            fileFetes.push(fete);
+            return;
+        }
+
         document.getElementById("feteTitre").textContent = fete.titre;
         document.getElementById("feteTexte").textContent = fete.texte;
-        document.getElementById("feteSticker").innerHTML = fete.sticker
-            ? dessinerSticker(fete.sticker, true)
-            : "";
+        document.getElementById("feteSticker").innerHTML = fete.dessin || "";
 
         lancerConfettis();
 
@@ -3655,9 +4196,22 @@ afficherAccueilSiBesoin();
         minuterieFete = setTimeout(fermerFete, 2900);
     }
 
-    function fermerFete() {
+    // vider : pour un ecart, on range aussi les fetes qui attendaient.
+    function fermerFete(vider) {
         clearTimeout(minuterieFete);
         document.getElementById("fete").classList.remove("visible");
+
+        if (vider === true) {
+            fileFetes = [];
+            return;
+        }
+
+        if (fileFetes.length > 0) {
+            const suivante = fileFetes.shift();
+            setTimeout(function () {
+                montrerFete(suivante);
+            }, 450);
+        }
     }
 
     function feter(jours) {
@@ -3704,13 +4258,13 @@ afficherAccueilSiBesoin();
         // L'autocollant du palier, ou celui du plus haut palier gagne quand
         // c'est l'objectif personnel qui est atteint.
         const stickers = TEXTES.stickers.liste.filter(function (def) {
-            return def.nombre && def.nombre <= palier;
+            return def.famille === "serie" && def.nombre <= palier;
         });
 
         montrerFete({
             titre: fete.titre,
             texte: fete.texte,
-            sticker: stickers.length ? stickers[stickers.length - 1] : null
+            dessin: stickers.length ? dessinerBadge(stickers[stickers.length - 1], true, cadreActuel()) : ""
         });
     }
 
@@ -3767,6 +4321,7 @@ afficherAccueilSiBesoin();
         }
 
         document.getElementById("objectifLigne").textContent = texte;
+        afficherPastille(jours);
     }
 
     // Le chiffre change : il rebondit. Au chargement aussi, une fois.
@@ -3972,7 +4527,8 @@ afficherAccueilSiBesoin();
             document.getElementById("heroLabel").textContent =
                 restants === 1 ? TEXTES.compteur.avantUn : TEXTES.compteur.avantPlusieurs;
             document.getElementById("anneau").style.setProperty("--avance", "0%");
-            fermerFete();
+            afficherPastille(-1);
+            fermerFete(true);
 
             // Le plan reste affiche : savoir ce qui arrive fait partie de la
             // preparation. Toutes les etapes sont a venir.
@@ -3991,11 +4547,11 @@ afficherAccueilSiBesoin();
         afficherObjectif(jours);
         afficherPlan(jours);
         afficherSemaine(jours);
-        afficherCollection();
         majPastille(jours);
         deposerEtat(jours);
         feter(jours);
         verifierStickers();
+        afficherCollection();
     }
 
     // La cle PUBLIQUE VAPID. Elle est faite pour etre lue par tout le monde :
@@ -4294,8 +4850,18 @@ afficherAccueilSiBesoin();
 
     let ongletActuel = 0;
 
+    const ECRAN_COLLECTION = 3;
+
     function allumerOnglet(index) {
+        const precedent = ongletActuel;
         ongletActuel = index;
+
+        // En arrivant sur la Collection : les badges NEW s'animent une fois,
+        // puis sont marques comme vus.
+        if (index === ECRAN_COLLECTION && precedent !== ECRAN_COLLECTION) {
+            afficherCollection();
+            setTimeout(marquerCollectionVue, 1500);
+        }
 
         for (let i = 0; i < boutonsOnglets.length; i++) {
             const choisi = parseInt(boutonsOnglets[i].dataset.panneau, 10) === index;
@@ -4507,7 +5073,7 @@ afficherAccueilSiBesoin();
 
     // L'autocollant d'exemple de l'ecran de presentation.
     document.getElementById("introSticker").innerHTML =
-        dessinerSticker(stickerParId("j7"), true);
+        dessinerBadge(stickerParId("j7"), true, "bronze");
 
     const boutonsNiveau = document.querySelectorAll(".niveau");
     for (let i = 0; i < boutonsNiveau.length; i++) {
@@ -4562,8 +5128,8 @@ afficherAccueilSiBesoin();
         afficherBilanPeriode();
         afficherDepuisDebut();
         afficherConseilHeure();
-        afficherCollection();
         verifierStickers();
+        afficherCollection();
 
         // Le service worker doit savoir que la journee est notee : sinon la
         // notification de ce soir redemanderait une note deja faite.
@@ -4594,8 +5160,8 @@ afficherAccueilSiBesoin();
 
         afficherEnvies();
         afficherBilan();
-        afficherCollection();
         verifierStickers();
+        afficherCollection();
 
         // L'astuce doit etre sous les yeux, pas cachee sous la barre du bas.
         const panneauJour = document.getElementById("panJour");
@@ -4828,7 +5394,7 @@ afficherAccueilSiBesoin();
 
         // Un ecart remet les paliers a zero : on les refetera en les repassant.
         localStorage.setItem("paliersFetes", JSON.stringify([]));
-        fermerFete();
+        fermerFete(true);
 
         const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
         document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
@@ -4860,7 +5426,7 @@ afficherAccueilSiBesoin();
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
         "journal", "notesEcarts", "paliersFetes", "dateDebut",
         "avantDernierEcart", "derniereSauvegarde", "pastille", "heureMatin", "heureSoir",
-        "installReporte", "stickersVus"
+        "installReporte", "stickersVus", "collectionVue", "niveauVu", "badgesVersion"
     ];
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
@@ -5131,8 +5697,8 @@ afficherAccueilSiBesoin();
 
         localStorage.setItem("derniereSauvegarde", dateDuJour());
         afficherRappelSauvegarde();
-        afficherCollection();
         verifierStickers();
+        afficherCollection();
 
         document.getElementById("messageSauvegarde").textContent =
             TEXTES.reglages.exportPret;

@@ -99,7 +99,7 @@ const TEXTES = {
     vides: {
         carnet: "Ton carnet se remplira à partir de ton jour zéro. Pour l'instant, il t'attend.",
         bilanPeriode: "Note tes moments quelques jours : je te dirai <strong>à quelle heure</strong> c'est le plus dur pour toi.",
-        collection: "Pas encore d'autocollant. Le premier arrive vite : il suffit d'un jour.",
+        collection: "Pas encore de badge. Le premier arrive vite : il suffit d'un jour.",
         jourDetail: "Touche un carré pour revoir la journée."
     },
 
@@ -117,30 +117,87 @@ const TEXTES = {
     },
     objectifFete: { titre: "Objectif atteint", texte: "Tu t'étais donné {n} jours. Tu y es." },
     feteFermer: "Touche pour fermer",
-    nouveauSticker: "Nouvel autocollant : {nom}. Il t'attend dans ta collection.",
+    nouveauSticker: "Nouveau badge : {nom}. Il t'attend dans ta collection.",
 
-    // ---------- La collection d'autocollants ----------
-    // Chaque autocollant se gagne une fois et ne se perd plus.
+    // ---------- La collection de badges ----------
+    // Chaque badge se gagne une fois et ne se perd plus. Les conditions
+    // exactes sont dans index.html (REGLES_BADGES), a cote du calcul.
+    // famille : la couleur du badge. nombre : le chiffre au centre (avec un
+    // petit mot dessous si « petit » est donne). dessin : un pictogramme.
+    // Les 14 premiers identifiants ne doivent jamais changer : ils sont
+    // deja ranges sur les telephones.
     stickers: {
         titre: "Ta collection",
-        compte: "{n} sur {total}",
+        compte: "{n} badges sur {total}",
         verrouille: "À débloquer",
+        nouveau: "NEW",
         liste: [
-            { id: "j1", nombre: 1, mot: "JOUR", nom: "Premier jour", indice: "Tenir une journée." },
-            { id: "j3", nombre: 3, mot: "JOURS", nom: "Trois jours", indice: "Tenir trois jours d'affilée." },
-            { id: "j7", nombre: 7, mot: "JOURS", nom: "Première semaine", indice: "Une semaine d'affilée." },
-            { id: "j14", nombre: 14, mot: "JOURS", nom: "Deux semaines", indice: "Deux semaines d'affilée." },
-            { id: "j30", nombre: 30, mot: "JOURS", nom: "Un mois", indice: "Trente jours d'affilée." },
-            { id: "j60", nombre: 60, mot: "JOURS", nom: "Deux mois", indice: "Soixante jours d'affilée." },
-            { id: "j90", nombre: 90, mot: "JOURS", nom: "Trois mois", indice: "Quatre-vingt-dix jours d'affilée." },
-            { id: "j180", nombre: 180, mot: "JOURS", nom: "Six mois", indice: "Une demi-année d'affilée." },
-            { id: "j365", nombre: 365, mot: "JOURS", nom: "Un an", indice: "Une année entière." },
-            { id: "envie1", dessin: "main", mot: "TENU", nom: "Première envie tenue", indice: "Tenir face à une envie." },
-            { id: "envie10", dessin: "mains", mot: "×10", nom: "Dix envies tenues", indice: "Dix envies, dix fois non." },
-            { id: "moment1", dessin: "crayon", mot: "NOTÉ", nom: "Premier moment noté", indice: "Noter comment se passe ta journée." },
-            { id: "abri", dessin: "bouclier", mot: "À L'ABRI", nom: "Données à l'abri", indice: "Exporter une sauvegarde." },
-            { id: "toujours", dessin: "soleil", mot: "ENCORE", nom: "Toujours là", indice: "Repartir et tenir trois jours." }
+            { id: "j1", famille: "serie", nombre: 1, nom: "Premier jour", indice: "Tenir une journée." },
+            { id: "j3", famille: "serie", nombre: 3, nom: "Trois jours", indice: "Trois jours d'affilée." },
+            { id: "j7", famille: "serie", nombre: 7, nom: "Première semaine", indice: "Une semaine d'affilée." },
+            { id: "j14", famille: "serie", nombre: 14, nom: "Deux semaines", indice: "Deux semaines d'affilée." },
+            { id: "j21", famille: "serie", nombre: 21, nom: "Trois semaines", indice: "Vingt et un jours d'affilée." },
+            { id: "j30", famille: "serie", nombre: 30, nom: "Un mois", indice: "Trente jours d'affilée." },
+            { id: "j45", famille: "serie", nombre: 45, nom: "Mois et demi", indice: "Quarante-cinq jours d'affilée." },
+            { id: "j60", famille: "serie", nombre: 60, nom: "Deux mois", indice: "Soixante jours d'affilée." },
+            { id: "j90", famille: "serie", nombre: 90, nom: "Trois mois", indice: "Quatre-vingt-dix jours d'affilée." },
+            { id: "j100", famille: "serie", nombre: 100, nom: "Cent jours", indice: "Cent jours d'affilée." },
+            { id: "j150", famille: "serie", nombre: 150, nom: "Cent cinquante", indice: "Cent cinquante jours d'affilée." },
+            { id: "j180", famille: "serie", nombre: 180, nom: "Six mois", indice: "Une demi-année d'affilée." },
+            { id: "j200", famille: "serie", nombre: 200, nom: "Deux cents", indice: "Deux cents jours d'affilée." },
+            { id: "j250", famille: "serie", nombre: 250, nom: "Deux cent cinquante", indice: "Deux cent cinquante jours d'affilée." },
+            { id: "j300", famille: "serie", nombre: 300, nom: "Trois cents", indice: "Trois cents jours d'affilée." },
+            { id: "j365", famille: "serie", nombre: 365, nom: "Un an", indice: "Une année entière d'affilée." },
+
+            { id: "tenus50", famille: "total", nombre: 50, petit: "au total", nom: "Cinquante jours tenus", indice: "Cinquante jours sans consommer, écarts ou pas." },
+            { id: "tenus100", famille: "total", nombre: 100, petit: "au total", nom: "Cent jours tenus", indice: "Cent jours sans consommer au total." },
+            { id: "tenus250", famille: "total", nombre: 250, petit: "au total", nom: "Deux cent cinquante tenus", indice: "Deux cent cinquante jours sans consommer au total." },
+
+            { id: "envie1", famille: "envie", dessin: "main", nom: "Première envie tenue", indice: "Tenir face à une envie." },
+            { id: "envie10", famille: "envie", dessin: "mains", nom: "Dix envies tenues", indice: "Dix envies, dix fois non." },
+            { id: "envie25", famille: "envie", nombre: 25, petit: "envies", nom: "Vingt-cinq envies", indice: "Vingt-cinq envies tenues." },
+            { id: "envie50", famille: "envie", nombre: 50, petit: "envies", nom: "Cinquante envies", indice: "Cinquante envies tenues." },
+            { id: "envie100", famille: "envie", nombre: 100, petit: "envies", nom: "Cent envies", indice: "Cent envies tenues." },
+
+            { id: "moment1", famille: "journal", dessin: "crayon", nom: "Premier moment noté", indice: "Noter comment se passe ta journée." },
+            { id: "notes7", famille: "journal", nombre: 7, petit: "notées", nom: "Sept journées notées", indice: "Noter sept journées différentes." },
+            { id: "notes30", famille: "journal", nombre: 30, petit: "notées", nom: "Trente journées notées", indice: "Noter trente journées différentes." },
+            { id: "notes100", famille: "journal", nombre: 100, petit: "notées", nom: "Cent journées notées", indice: "Noter cent journées différentes." },
+            { id: "plume", famille: "journal", dessin: "bulle", nom: "Plume", indice: "Écrire un petit mot sur dix moments." },
+
+            { id: "matin10", famille: "rythme", dessin: "soleil", nom: "Lève-tôt", indice: "Noter un moment le matin, dix jours différents." },
+            { id: "soir20", famille: "rythme", dessin: "lune", nom: "Bilan du soir", indice: "Noter un moment le soir, vingt jours différents." },
+
+            { id: "toujours", famille: "effort", dessin: "boucle", nom: "Toujours là", indice: "Repartir après un écart et tenir trois jours." },
+            { id: "malgre1", famille: "effort", dessin: "montagne", nom: "Tenu malgré tout", indice: "Une journée difficile, sans craquer." },
+            { id: "malgre10", famille: "effort", nombre: 10, petit: "jours durs", nom: "Dix tempêtes", indice: "Dix journées difficiles, sans craquer." },
+            { id: "legeres10", famille: "effort", dessin: "sourire", nom: "Journées légères", indice: "Dix journées notées où tout a été facile." },
+
+            { id: "abri", famille: "divers", dessin: "bouclier", nom: "Données à l'abri", indice: "Exporter une sauvegarde." },
+            { id: "objectif", famille: "divers", dessin: "cible", nom: "Objectif atteint", indice: "Atteindre l'objectif que tu t'es donné." }
         ]
+    },
+
+    // ---------- Les niveaux de la collection ----------
+    // Un niveau tous les 5 badges. Chaque niveau change le cadre des badges.
+    niveaux: {
+        noms: ["Au départ", "Premiers pas", "Bon rythme", "Sur la lancée", "Solide", "Cap tenu", "Roc", "Phare", "Sommet", "Légende"],
+        cadres: ["graphite", "bronze", "argent", "or", "émeraude", "flamme", "holo"],
+        titre: "Niveau {n}",
+        avantSuivant: "{fait} / 5 badges avant le niveau\u00a0{suivant}",
+        feteTitre: "Niveau {n} !",
+        feteTexte: "{nom}. Nouveau cadre pour tes badges : {cadre}."
+    },
+
+    // ---------- La pastille a cote du compteur ----------
+    // Elle montre ce qui reste, pas un chiffre fixe.
+    pastille: {
+        haut: "J{j}/{cible}",
+        restants: "jours restants",
+        restant: "jour restant",
+        fini: "tout passé",
+        dit: "Jour {j} sur {cible} : encore {reste} jours.",
+        ditFini: "Tous les paliers sont passés."
     },
 
     // ---------- Les réglages : confirmations ----------
