@@ -260,6 +260,35 @@
         background: linear-gradient(90deg, var(--vert-clair), var(--flamme));
     }
 
+    /* Les images d'ambiance : en bandeau en haut d'une carte, jusqu'aux
+       bords, et fondues vers le bas pour que le titre s'y pose. Dimensions
+       fixes : la page ne saute pas quand elles arrivent. */
+    .ambiance {
+        display: block;
+        width: calc(100% + 40px);
+        max-width: none;
+        height: auto;
+        aspect-ratio: 2 / 1;
+        object-fit: cover;
+        margin: -22px -20px -36px;
+        border-radius: var(--rayon-l) var(--rayon-l) 0 0;
+        -webkit-mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+        mask-image: linear-gradient(180deg, #000 45%, transparent 100%);
+        pointer-events: none;
+    }
+
+    .ambiance + h2 {
+        position: relative;
+    }
+
+    .vide .ambiance {
+        width: 100%;
+        margin: 0 auto 8px;
+        border-radius: var(--rayon-l);
+        -webkit-mask-image: radial-gradient(75% 75% at 50% 45%, #000 50%, transparent 100%);
+        mask-image: radial-gradient(75% 75% at 50% 45%, #000 50%, transparent 100%);
+    }
+
     .legende {
         font-size: var(--t-moins1);
         line-height: 1.5;
@@ -2003,6 +2032,11 @@
             padding: 20px 16px;
         }
 
+        .ambiance {
+            width: calc(100% + 32px);
+            margin: -20px -16px -32px;
+        }
+
         #collection {
             gap: 16px 8px;
         }
@@ -2102,6 +2136,7 @@
             </section>
 
             <section class="carte" id="bilanCarte">
+                <img class="ambiance" src="images/ambiance-aujourdhui.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2>Ta journée</h2>
                 <p id="bilanQuestion"></p>
                 <ul id="momentsDuJour"></ul>
@@ -2125,11 +2160,15 @@
                 <p id="bilanDepuisDebut"></p>
                 <p class="legende">Les 4 dernières semaines. Touche un carré pour revoir la journée. La couleur suit le moment le plus dur : vert si tout a été facile, ambre si moyen, corail s'il y a eu un moment difficile, brique si tu as craqué.</p>
             </section>
-            <p id="carnetAttente" class="vide"></p>
+            <div id="carnetAttente" class="vide">
+                <img class="ambiance" src="images/ambiance-vide.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
+                <p id="carnetAttenteTexte"></p>
+            </div>
         </section>
 
         <section class="panneau" id="panReperes" aria-label="Repères">
             <section class="carte" id="planCarte">
+                <img class="ambiance" src="images/ambiance-reperes.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2>Ton plan</h2>
                 <ol id="planListe"></ol>
                 <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
@@ -2144,6 +2183,7 @@
 
         <section class="panneau" id="panCollection" aria-label="Collection">
             <section class="carte" id="collectionCarte">
+                <img class="ambiance" src="images/ambiance-collection.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2 id="collectionTitre"></h2>
                 <p id="collectionCompte"></p>
                 <p id="collectionVide" class="explication"></p>
@@ -2153,6 +2193,7 @@
 
         <section class="panneau" id="panReglages" aria-label="Réglages">
             <section class="carte" id="reglages">
+                <img class="ambiance" src="images/ambiance-reglages.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2>Réglages</h2>
 
                 <p class="explication">Tout s'enregistre tout seul : rien à valider.</p>
@@ -2421,7 +2462,7 @@
             btnEcartAnnuler: TEXTES.boutons.annuler,
             ecartQuandLabel: TEXTES.ecartQuand,
             ecartNoteLabel: TEXTES.ecartAvant,
-            carnetAttente: TEXTES.vides.carnet,
+            carnetAttenteTexte: TEXTES.vides.carnet,
             collectionTitre: TEXTES.stickers.titre,
             feteFermer: TEXTES.feteFermer
         };

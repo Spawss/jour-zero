@@ -38,7 +38,12 @@ const FICHIERS_APP = [
     "fonts/bricolage-grotesque-800.woff2",
     "fonts/outfit-400.woff2",
     "fonts/outfit-600.woff2",
-    "fonts/dm-mono-500.woff2"
+    "fonts/dm-mono-500.woff2",
+    "images/ambiance-aujourdhui.webp",
+    "images/ambiance-reperes.webp",
+    "images/ambiance-collection.webp",
+    "images/ambiance-reglages.webp",
+    "images/ambiance-vide.webp"
 ];
 
 self.addEventListener("install", function (evenement) {
