@@ -606,18 +606,18 @@
        orange, ombre verte decalee. Elle flotte doucement. */
     #heroObjectif {
         position: absolute;
-        right: -2px;
-        top: -6px;
-        width: 118px;
-        height: 118px;
+        left: -34px;
+        bottom: -4px;
+        width: 92px;
+        height: 92px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 2px;
+        gap: 1px;
         text-align: center;
-        transform: rotate(8deg);
-        filter: drop-shadow(4px 5px 0 var(--vert)) drop-shadow(0 16px 18px rgba(0, 0, 0, 0.55));
+        transform: rotate(-8deg);
+        filter: drop-shadow(3px 4px 0 var(--vert)) drop-shadow(0 16px 18px rgba(0, 0, 0, 0.55));
     }
 
     .pastilleForme {
@@ -645,7 +645,7 @@
     #pastilleChiffre {
         font-family: var(--police-titre);
         font-weight: 800;
-        font-size: var(--t-4);
+        font-size: var(--t-2);
         line-height: 0.9;
         letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
@@ -653,7 +653,7 @@
     }
 
     #pastilleChiffre[data-chiffres="3"] {
-        font-size: var(--t-3);
+        font-size: var(--t-1);
     }
 
     /* Le bas du cercle est etroit : le mot passe sur deux lignes. */
@@ -2232,8 +2232,8 @@
     }
 
     @keyframes flotte {
-        0%, 100% { transform: rotate(8deg) translateY(0); }
-        50% { transform: rotate(3deg) translateY(-4px); }
+        0%, 100% { transform: rotate(-8deg) translateY(0); }
+        50% { transform: rotate(-3deg) translateY(-4px); }
     }
 
     @keyframes rebond {
@@ -2290,17 +2290,17 @@
         }
 
         #heroObjectif {
-            width: 106px;
-            height: 106px;
-            right: -6px;
+            width: 82px;
+            height: 82px;
+            left: -28px;
         }
 
         #pastilleChiffre {
-            font-size: var(--t-3);
+            font-size: var(--t-1);
         }
 
         #pastilleChiffre[data-chiffres="3"] {
-            font-size: var(--t-2);
+            font-size: var(--t-0);
         }
 
         #niveauMedaille {
@@ -2367,25 +2367,26 @@
 
             <section id="heroCompteur">
                 <div id="halo"></div>
-                <div id="anneau"><div id="anneauDedans"><span id="compteur">0</span></div></div>
+                <div id="anneau"><div id="anneauDedans"><span id="compteur">0</span></div>
+                    <div id="heroObjectif" role="img">
+                        <svg class="pastilleForme" viewBox="0 0 120 120" aria-hidden="true">
+                            <defs>
+                                <linearGradient id="pastilleDegrade" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--orange-clair)"/><stop offset=".55" style="stop-color:var(--orange)"/><stop offset="1" style="stop-color:var(--orange-fonce)"/></linearGradient>
+                                <radialGradient id="pastilleCoeur" cx=".5" cy=".35" r=".7"><stop offset="0" style="stop-color:var(--vert-nuit)"/><stop offset="1" style="stop-color:var(--fond)"/></radialGradient>
+                            </defs>
+                            <polygon points="60.0,2.0 70.2,8.5 82.2,6.4 89.2,16.3 101.0,19.0 103.7,30.8 113.6,37.8 111.5,49.8 118.0,60.0 111.5,70.2 113.6,82.2 103.7,89.2 101.0,101.0 89.2,103.7 82.2,113.6 70.2,111.5 60.0,118.0 49.8,111.5 37.8,113.6 30.8,103.7 19.0,101.0 16.3,89.2 6.4,82.2 8.5,70.2 2.0,60.0 8.5,49.8 6.4,37.8 16.3,30.8 19.0,19.0 30.8,16.3 37.8,6.4 49.8,8.5" fill="url(#pastilleDegrade)" style="stroke:var(--creme)" stroke-width="3" stroke-linejoin="round"/>
+                            <ellipse cx="38" cy="24" rx="24" ry="8" transform="rotate(-28 38 24)" fill="#FFFFFF" fill-opacity="0.32"/>
+                            <circle cx="60" cy="60" r="43" fill="url(#pastilleCoeur)" style="stroke:var(--orange-encre)" stroke-width="2"/>
+                            <circle cx="60" cy="60" r="39.5" fill="none" stroke="rgba(240, 136, 62, 0.22)" stroke-width="4"/>
+                            <circle id="pastilleProgres" cx="60" cy="60" r="39.5" fill="none" style="stroke:var(--orange)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 60 60)"/>
+                        </svg>
+                        <span id="pastilleHaut" aria-hidden="true"></span>
+                        <strong id="pastilleChiffre" aria-hidden="true"></strong>
+                        <span id="pastilleBas" aria-hidden="true"></span>
+                    </div>
+                </div>
                 <p id="heroLabel"></p>
                 <p id="motivationLigne"></p>
-                <div id="heroObjectif" role="img">
-                    <svg class="pastilleForme" viewBox="0 0 120 120" aria-hidden="true">
-                        <defs>
-                            <linearGradient id="pastilleDegrade" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--orange-clair)"/><stop offset=".55" style="stop-color:var(--orange)"/><stop offset="1" style="stop-color:var(--orange-fonce)"/></linearGradient>
-                            <radialGradient id="pastilleCoeur" cx=".5" cy=".35" r=".7"><stop offset="0" style="stop-color:var(--vert-nuit)"/><stop offset="1" style="stop-color:var(--fond)"/></radialGradient>
-                        </defs>
-                        <polygon points="60.0,2.0 70.2,8.5 82.2,6.4 89.2,16.3 101.0,19.0 103.7,30.8 113.6,37.8 111.5,49.8 118.0,60.0 111.5,70.2 113.6,82.2 103.7,89.2 101.0,101.0 89.2,103.7 82.2,113.6 70.2,111.5 60.0,118.0 49.8,111.5 37.8,113.6 30.8,103.7 19.0,101.0 16.3,89.2 6.4,82.2 8.5,70.2 2.0,60.0 8.5,49.8 6.4,37.8 16.3,30.8 19.0,19.0 30.8,16.3 37.8,6.4 49.8,8.5" fill="url(#pastilleDegrade)" style="stroke:var(--creme)" stroke-width="3" stroke-linejoin="round"/>
-                        <ellipse cx="38" cy="24" rx="24" ry="8" transform="rotate(-28 38 24)" fill="#FFFFFF" fill-opacity="0.32"/>
-                        <circle cx="60" cy="60" r="43" fill="url(#pastilleCoeur)" style="stroke:var(--orange-encre)" stroke-width="2"/>
-                        <circle cx="60" cy="60" r="39.5" fill="none" stroke="rgba(240, 136, 62, 0.22)" stroke-width="4"/>
-                        <circle id="pastilleProgres" cx="60" cy="60" r="39.5" fill="none" style="stroke:var(--orange)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 60 60)"/>
-                    </svg>
-                    <span id="pastilleHaut" aria-hidden="true"></span>
-                    <strong id="pastilleChiffre" aria-hidden="true"></strong>
-                    <span id="pastilleBas" aria-hidden="true"></span>
-                </div>
             </section>
 
             <section class="carte" id="palierCarte">

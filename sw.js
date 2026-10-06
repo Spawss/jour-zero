@@ -24,7 +24,7 @@ const ASTUCES = TEXTES.notifications.astuces;
 // ce qui suit a la prochaine ouverture ; l'ancienne copie est alors effacee.
 // Le rangement de l'etat (RANGEMENT_ETAT) n'est jamais touche : c'est lui qui
 // permet de composer les notifications.
-const VERSION_APP = "jour-zero-app-v4";
+const VERSION_APP = "jour-zero-app-v5";
 const FICHIERS_APP = [
     "./",
     "index.html",
