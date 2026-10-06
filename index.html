@@ -4,152 +4,288 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Jour Zéro</title>
-    <meta name="theme-color" content="#0D1310">
+    <meta name="color-scheme" content="dark">
+    <meta name="theme-color" content="#070B09">
     <link rel="manifest" href="manifest.json">
-<link rel="apple-touch-icon" href="icone-180.png">
-<meta name="apple-mobile-web-app-title" content="Jour Zéro">
+    <link rel="apple-touch-icon" href="icone-180.png">
+    <meta name="apple-mobile-web-app-title" content="Jour Zéro">
     <link rel="icon" href="jour-zero-mark.svg">
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Anton&family=Permanent+Marker&family=Space+Mono:wght@400;700&display=swap">
+    <link rel="preload" href="fonts/outfit-400.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="fonts/bricolage-grotesque-800.woff2" as="font" type="font/woff2" crossorigin>
 </head>
 <style>
+    /* ---------- Les polices ----------
+       Hebergees ici, dans fonts/ (licence SIL OFL, voir fonts/OFL.txt), et
+       gardees par le service worker : l'app n'appelle plus aucun serveur de
+       polices, et elle s'affiche pareil hors ligne. */
+
+    @font-face { font-family: "Bricolage Grotesque"; font-weight: 800; font-display: swap; src: url("fonts/bricolage-grotesque-800.woff2") format("woff2"); }
+    @font-face { font-family: "Outfit"; font-weight: 400; font-display: swap; src: url("fonts/outfit-400.woff2") format("woff2"); }
+    @font-face { font-family: "Outfit"; font-weight: 600; font-display: swap; src: url("fonts/outfit-600.woff2") format("woff2"); }
+    @font-face { font-family: "DM Mono"; font-weight: 500; font-display: swap; src: url("fonts/dm-mono-500.woff2") format("woff2"); }
+
+    /* ---------- La palette et les mesures ----------
+       Tout passe par ces variables : pour changer une couleur de l'app, c'est
+       ici et nulle part ailleurs. Le vert est celui de Jour Zero depuis le
+       debut (#2F7D52) ; la flamme orange reste l'accent ; les couleurs vives
+       ne servent qu'en touches (autocollants, confettis). */
+
+    :root {
+        color-scheme: dark;
+
+        --vert: #2F7D52;
+        --vert-clair: #46B377;
+        --vert-pale: #7DDBA5;
+        --vert-nuit: #0B1A12;
+        --flamme: #F0883E;
+        --flamme-pale: #F6C9A6;
+        --flamme-encre: #23110A;
+
+        /* Les touches pop : jamais en grand, jamais a la place du vert. */
+        --pop-rose: #FF6FA5;
+        --pop-bleu: #5B8CFF;
+        --pop-citron: #D7F25C;
+
+        --fond: #070B09;
+        --fond-boite: #0C1510;
+        --texte: #F2F7F3;
+        --texte2: #B5C7BC;
+        --texte3: #8FA396;
+        --verre: rgba(255, 255, 255, 0.07);
+        --verre-fort: rgba(255, 255, 255, 0.11);
+        --bord: rgba(255, 255, 255, 0.14);
+        --bord-fort: rgba(255, 255, 255, 0.26);
+        --champ: rgba(0, 0, 0, 0.3);
+        --ombre: 0 18px 40px -24px rgba(0, 0, 0, 0.8);
+
+        /* Les couleurs qui ont un sens : niveaux du bilan, envie, ecart. */
+        --niveau-facile: #46B377;
+        --niveau-moyen: #D9A441;
+        --niveau-difficile: #E8705E;
+        --envie: #7DDBA5;
+        --ecart: #D9906F;
+        --ecart-case: #A85A3B;
+        --ecart-doux: rgba(240, 136, 62, 0.18);
+        --case-avant: rgba(255, 255, 255, 0.05);
+        --alerte: #E6B65C;
+
+        /* Echelle de tailles, ratio 1,25 a partir de 16 px. */
+        --t-moins2: 0.64rem;
+        --t-moins1: 0.8rem;
+        --t-0: 1rem;
+        --t-1: 1.25rem;
+        --t-2: 1.563rem;
+        --t-3: 1.953rem;
+        --t-4: 2.441rem;
+        --t-5: 3.052rem;
+        --t-6: 3.815rem;
+        --t-7: 4.768rem;
+        --t-8: 5.96rem;
+
+        --police-titre: "Bricolage Grotesque", "Arial Rounded MT Bold", "Avenir Next", system-ui, sans-serif;
+        --police-texte: "Outfit", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+        --police-chiffres: "DM Mono", ui-monospace, "SF Mono", Menlo, monospace;
+
+        --rayon-l: 28px;
+        --rayon-m: 20px;
+        --rayon-s: 14px;
+        --pilule: 999px;
+        --toucher: 48px;
+        --marge: 16px;
+        --barre-bas: calc(96px + env(safe-area-inset-bottom));
+    }
+
     * {
         box-sizing: border-box;
     }
-
-    body {
-        background-color: #0D1310;
-        color: #FFFFFF;
-        font-family: 'Space Mono', monospace;
-        font-size: 14px;
-        line-height: 1.6;
-        margin: 0;
-        padding: 0;
-    }
-
-    h1, h2 {
-        font-family: 'Anton', Impact, sans-serif;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    /* ---------- Bandeau d'installation ----------
-       Il ne ressemble pas aux autres cartes : c'est un avertissement, pas une
-       section de l'app. D'ou la bordure doree et le fond plus clair. */
-
-    #bandeauInstall {
-        display: none;
-        background-color: #1C1A12;
-        border: 1px solid #4A3F1C;
-        border-radius: 20px;
-        padding: 20px 20px 16px;
-        margin-bottom: 20px;
-    }
-
-    #installTitre {
-        font-family: 'Anton', Impact, sans-serif;
-        font-weight: 400;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 15px;
-        color: #D9A441;
-        margin: 0 0 8px;
-    }
-
-    #installPourquoi {
-        font-size: 12px;
-        line-height: 1.6;
-        color: #C9BFA0;
-        margin: 0 0 14px;
-    }
-
-    #installEtapes {
-        margin: 0 0 14px;
-        padding-left: 20px;
-        font-size: 12.5px;
-        line-height: 1.75;
-        color: #FFFFFF;
-    }
-
-    #installEtapes li {
-        margin-bottom: 4px;
-    }
-
-    #installEtapes b {
-        color: #D9A441;
-        font-weight: 700;
-    }
-
-    /* Le carre avec la fleche : le bouton Partager d'iOS, dessine en CSS
-       plutot qu'en image, pour ne rien avoir a telecharger. */
-    .iconePartager {
-        display: inline-block;
-        width: 13px;
-        height: 15px;
-        vertical-align: -3px;
-        margin: 0 1px;
-        border: 1.5px solid #D9A441;
-        border-top: none;
-        border-radius: 3px;
-        position: relative;
-    }
-
-    .iconePartager::before {
-        content: "";
-        position: absolute;
-        left: 50%;
-        top: -6px;
-        width: 1.5px;
-        height: 9px;
-        background-color: #D9A441;
-        transform: translateX(-50%);
-    }
-
-    .iconePartager::after {
-        content: "";
-        position: absolute;
-        left: 50%;
-        top: -6px;
-        width: 5px;
-        height: 5px;
-        border-left: 1.5px solid #D9A441;
-        border-top: 1.5px solid #D9A441;
-        transform: translateX(-50%) rotate(45deg);
-    }
-
-    #btnInstallNatif {
-        display: none;
-        width: 100%;
-        background: linear-gradient(120deg, #D9A441 0%, #A87B22 100%);
-        color: #14110A;
-        border: none;
-        font-weight: 700;
-        margin-bottom: 6px;
-    }
-
-    #btnInstallPlusTard {
-        width: 100%;
-        background: none;
-        border: none;
-        color: #8A8068;
-        font-weight: 400;
-        font-size: 11.5px;
-        padding: 6px;
-    }
-
-    /* ---------- Les quatre ecrans ----------
-       L'app ne defile plus vers le bas sur une seule longue page : elle a
-       quatre ecrans cote a cote, et on passe de l'un a l'autre du doigt.
-       Le defilement horizontal est confie au navigateur (scroll-snap) plutot
-       qu'ecrit a la main : c'est lui qui sait departager un glissement
-       lateral d'un defilement vertical, et il le fait mieux que nous. */
 
     html, body {
         height: 100%;
         overflow: hidden;
     }
 
+    /* La grande lueur verte en haut, une touche de flamme a droite, et un
+       grain tres leger par-dessus pour que le fond ne soit pas plat. */
+    body {
+        margin: 0;
+        padding: 0;
+        color: var(--texte);
+        font-family: var(--police-texte);
+        font-size: var(--t-0);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -webkit-tap-highlight-color: transparent;
+        background:
+            radial-gradient(120% 55% at 50% -8%, rgba(47, 125, 82, 0.9), rgba(47, 125, 82, 0.22) 45%, transparent 70%),
+            radial-gradient(70% 40% at 108% 72%, rgba(240, 136, 62, 0.24), transparent 70%),
+            var(--fond);
+    }
+
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        opacity: 0.08;
+        pointer-events: none;
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23g)'/%3E%3C/svg%3E");
+    }
+
+    h1, h2, h3 {
+        font-family: var(--police-titre);
+        font-weight: 800;
+    }
+
+    strong, b {
+        font-weight: 600;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--flamme);
+        outline-offset: 3px;
+    }
+
+    /* ---------- Les boutons ----------
+       Gros et ronds : au moins 48 px de haut, on les touche sans viser. */
+
+    button {
+        min-height: var(--toucher);
+        background-color: var(--verre);
+        color: var(--texte);
+        border: 1px solid var(--bord);
+        border-radius: var(--pilule);
+        padding: 12px 20px;
+        font-family: var(--police-texte);
+        font-size: var(--t-0);
+        font-weight: 600;
+        line-height: 1.2;
+        cursor: pointer;
+        transition: transform 0.15s ease, background-color 0.2s ease, border-color 0.2s ease;
+    }
+
+    button:active {
+        transform: scale(0.97);
+    }
+
+    button:disabled {
+        opacity: 0.5;
+        cursor: default;
+    }
+
+    /* Du vert de Jour Zero vers un vert plus profond : le texte blanc garde
+       au moins 4,5:1 partout sur le bouton. */
+    .boutonPrincipal {
+        border: none;
+        background: linear-gradient(135deg, var(--vert), #24653F);
+        color: #FFFFFF;
+        box-shadow: 0 14px 30px -12px rgba(70, 179, 119, 0.7);
+    }
+
+    .boutonDiscret {
+        background: none;
+        border: none;
+        color: var(--texte2);
+        font-weight: 400;
+        font-size: var(--t-moins1);
+    }
+
+    input,
+    select,
+    textarea {
+        width: 100%;
+        min-height: var(--toucher);
+        font-family: var(--police-texte);
+        font-size: var(--t-0);
+        background-color: var(--champ);
+        color: var(--texte);
+        border: 1px solid var(--bord);
+        border-radius: var(--rayon-s);
+        padding: 12px 14px;
+    }
+
+    textarea {
+        line-height: 1.45;
+        resize: vertical;
+    }
+
+    input[type="date"] {
+        font-family: var(--police-chiffres);
+    }
+
+    input[type="checkbox"] {
+        width: 22px;
+        min-height: 22px;
+        height: 22px;
+        accent-color: var(--vert-clair);
+    }
+
+    ::placeholder {
+        color: var(--texte3);
+    }
+
+    /* ---------- Les cartes ----------
+       Du verre depoli pose sur la lueur : tres arrondi, bord clair et fin. */
+
+    .carte {
+        position: relative;
+        background-color: var(--verre);
+        border: 1px solid var(--bord);
+        border-radius: var(--rayon-l);
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        box-shadow: var(--ombre);
+        padding: 22px 20px;
+        margin-bottom: 14px;
+    }
+
+    /* Les titres : en majuscules, gros, avec un trait vert-flamme dessous. */
+    .carte h2,
+    .titreSection {
+        font-size: var(--t-1);
+        line-height: 1.1;
+        text-transform: uppercase;
+        letter-spacing: 0.02em;
+        color: var(--texte);
+        margin: 0 0 18px;
+    }
+
+    .carte h2::after,
+    .titreSection::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 4px;
+        margin-top: 8px;
+        border-radius: var(--pilule);
+        background: linear-gradient(90deg, var(--vert-clair), var(--flamme));
+    }
+
+    .legende {
+        font-size: var(--t-moins1);
+        line-height: 1.5;
+        color: var(--texte3);
+        margin: 16px 0 0;
+    }
+
+    .explication {
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte2);
+        margin: 0 0 14px;
+    }
+
+    .alerte {
+        color: var(--alerte) !important;
+    }
+
+    /* ---------- La page et les cinq ecrans ----------
+       Les ecrans sont cote a cote et on passe de l'un a l'autre du doigt.
+       Le defilement horizontal est confie au navigateur (scroll-snap) : c'est
+       lui qui sait departager un glissement lateral d'un defilement vertical. */
+
     #page {
+        position: relative;
+        z-index: 1;
         max-width: 440px;
         margin: 0 auto;
         height: 100%;
@@ -174,8 +310,8 @@
         display: none;
     }
 
-    /* Chaque ecran occupe toute la largeur et defile verticalement chez lui.
-       Sans « flex-shrink: 0 » ils se tasseraient tous les quatre a l'ecran. */
+    /* Sans « flex-shrink: 0 » les cinq ecrans se tasseraient a l'ecran. Le
+       bas laisse la place a la barre d'onglets, qui flotte par-dessus. */
     .panneau {
         flex: 0 0 100%;
         width: 100%;
@@ -184,305 +320,462 @@
         overflow-y: auto;
         -webkit-overflow-scrolling: touch;
         overscroll-behavior-y: contain;
-        padding-top: 0;
-        padding-bottom: 28px;
-        padding-left: max(18px, env(safe-area-inset-left));
-        padding-right: max(18px, env(safe-area-inset-right));
+        padding-top: 6px;
+        padding-bottom: calc(var(--barre-bas) + 20px);
+        padding-left: max(var(--marge), env(safe-area-inset-left));
+        padding-right: max(var(--marge), env(safe-area-inset-right));
+    }
+
+    .vide {
+        font-size: var(--t-0);
+        line-height: 1.55;
+        color: var(--texte2);
+        text-align: center;
+        padding: 36px 16px;
     }
 
     #carnetAttente {
         display: none;
-        font-size: 12.5px;
-        color: #8FA396;
-        text-align: center;
-        padding: 40px 10px;
-        line-height: 1.7;
-    }
-
-    /* ---------- La barre du bas ----------
-       « padding-bottom: env(safe-area-inset-bottom) » laisse la place a la
-       barre d'accueil de l'iPhone. Sans ca, le dernier onglet passe dessous
-       et devient difficile a toucher. */
-
-    #barreOnglets {
-        display: flex;
-        border-top: 1px solid #1F2D25;
-        background: linear-gradient(180deg, #131D18 0%, #0A100D 100%);
-        padding-bottom: max(4px, env(safe-area-inset-bottom));
-        padding-left: env(safe-area-inset-left);
-        padding-right: env(safe-area-inset-right);
-        flex-shrink: 0;
-    }
-
-    .ongletBouton {
-        position: relative;
-        flex: 1;
-        background: none;
-        border: none;
-        border-radius: 0;
-        padding: 11px 2px 8px;
-        margin: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 4px;
-        color: #566A5F;
-        font-family: 'Space Mono', monospace;
-        font-size: 9.5px;
-        letter-spacing: 0.3px;
-        cursor: pointer;
-        transition: color 0.2s ease;
-        -webkit-tap-highlight-color: transparent;
-    }
-
-    /* Le trait orange accroche au-dessus de l'onglet choisi. Il est toujours
-       la, simplement ecrase a zero : c'est ce qui permet de l'etirer en
-       douceur au lieu de le faire apparaitre d'un coup. */
-    .ongletBouton::before {
-        content: "";
-        position: absolute;
-        top: -1px;
-        left: 50%;
-        width: 30px;
-        height: 3px;
-        border-radius: 0 0 3px 3px;
-        background-color: #F0883E;
-        transform: translateX(-50%) scaleX(0);
-        transition: transform 0.24s cubic-bezier(0.34, 1.3, 0.64, 1);
-    }
-
-    .ongletBouton.actif::before {
-        transform: translateX(-50%) scaleX(1);
-    }
-
-    .ongletBouton svg {
-        width: 22px;
-        height: 22px;
-        display: block;
-        transition: transform 0.24s cubic-bezier(0.34, 1.3, 0.64, 1), filter 0.2s ease;
-    }
-
-    .ongletBouton.actif {
-        color: #F0883E;
-    }
-
-    .ongletBouton.actif span {
-        font-weight: 700;
-    }
-
-    /* Une lueur, pas une ombre : l'icone choisie doit sembler allumee. */
-    .ongletBouton.actif svg {
-        transform: translateY(-1.5px);
-        filter: drop-shadow(0 0 7px rgba(240, 136, 62, 0.5));
     }
 
     /* ---------- En-tete ---------- */
 
-    /* L'en-tete reste affiche au-dessus des quatre ecrans : il ne peut plus
-       prendre un tiers de la hauteur comme sur l'ancienne page unique. Le
-       logo et le nom passent donc cote a cote, sur une seule ligne. */
     #entete {
         display: flex;
         align-items: center;
-        justify-content: center;
         gap: 10px;
-        padding: 12px 18px 10px;
+        padding: 10px var(--marge) 8px;
         flex-shrink: 0;
     }
 
     #logoMark {
-        width: 62px;
+        width: 52px;
         display: block;
         flex-shrink: 0;
     }
 
     #logo {
-        font-family: 'Permanent Marker', cursive;
-        font-size: 21px;
-        font-weight: 400;
-        text-transform: none;
-        letter-spacing: 0.5px;
-        color: #FFFFFF;
+        font-size: var(--t-1);
+        line-height: 1;
+        color: var(--texte);
         margin: 0;
         cursor: pointer;
+        white-space: nowrap;
     }
 
     #logoPoint {
-        color: #F0883E;
+        color: var(--flamme);
     }
 
-    /* La phrase d'accroche disparait : elle disait ce que l'app fait, et
-       maintenant les quatre onglets du bas le montrent. */
     #tagline {
         display: none;
     }
 
+    #dateJour {
+        margin-left: auto;
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        color: var(--texte);
+        padding: 8px 12px;
+        border-radius: var(--pilule);
+        background-color: var(--verre);
+        border: 1px solid var(--bord);
+        white-space: nowrap;
+    }
 
-    /* ---------- La carte du compteur ---------- */
+    #btnReglages {
+        flex-shrink: 0;
+        width: var(--toucher);
+        padding: 0;
+        display: grid;
+        place-items: center;
+        color: var(--texte2);
+    }
+
+    #btnReglages.actif {
+        color: #FFFFFF;
+        border-color: var(--bord-fort);
+    }
+
+    #btnReglages svg {
+        width: 22px;
+        height: 22px;
+    }
+
+    /* ---------- La bande de la semaine ----------
+       Jours tenus en vert plein, aujourd'hui en blanc avec un halo, jours a
+       venir en creux. Un jour d'ecart est doux, jamais rouge. */
+
+    #semaine {
+        display: grid;
+        grid-template-columns: repeat(7, minmax(0, 1fr));
+        gap: 6px;
+        list-style: none;
+        margin: 4px 0 6px;
+        padding: 0;
+    }
+
+    #semaine li {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        min-width: 0;
+    }
+
+    #semaine small {
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        color: var(--texte2);
+    }
+
+    .rond {
+        width: 100%;
+        max-width: 40px;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        color: var(--texte2);
+        border: 1.5px dashed rgba(255, 255, 255, 0.28);
+    }
+
+    .rond.tenu {
+        background-color: var(--vert);
+        border: 0;
+        color: #FFFFFF;
+    }
+
+    .rond.doux {
+        background-color: var(--ecart-doux);
+        border: 0;
+        color: var(--flamme-pale);
+    }
+
+    .rond.vide {
+        border: 1.5px solid rgba(255, 255, 255, 0.1);
+        padding: 0;
+    }
+
+    .rond.auj {
+        background-color: #FFFFFF;
+        color: #0E2A1B;
+        border: 0;
+        font-weight: 500;
+        box-shadow: 0 0 0 4px rgba(70, 179, 119, 0.45), 0 0 22px rgba(70, 179, 119, 0.7);
+    }
+
+    /* ---------- Le compteur ----------
+       Le heros de l'ecran : un gros chiffre dans un anneau qui se remplit
+       vers le prochain palier, et un halo qui respire doucement. */
 
     #heroCompteur {
-        background: linear-gradient(160deg, #2F7D52 0%, #14432C 55%, #0F1E16 100%);
-        border-radius: 24px;
-        padding: 34px 24px 28px;
+        position: relative;
+        display: grid;
+        justify-items: center;
         text-align: center;
-        margin-bottom: 12px;
+        padding: 22px 0 20px;
+    }
+
+    #halo {
+        position: absolute;
+        top: 2px;
+        width: 230px;
+        height: 230px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(70, 179, 119, 0.55), rgba(47, 125, 82, 0.15) 55%, transparent 70%);
+        pointer-events: none;
+    }
+
+    #anneau {
+        --avance: 0%;
+        position: relative;
+        width: 200px;
+        height: 200px;
+        border-radius: 50%;
+        padding: 10px;
+        background: conic-gradient(var(--vert-clair) 0 var(--avance), rgba(255, 255, 255, 0.1) var(--avance) 100%);
+    }
+
+    #anneauDedans {
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: var(--vert-nuit);
+        display: grid;
+        place-content: center;
     }
 
     #compteur {
         display: block;
-        font-size: 64px;
-        font-weight: 700;
-        line-height: 1;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-8);
+        line-height: 0.9;
+        letter-spacing: -0.03em;
         color: #FFFFFF;
+        font-variant-numeric: tabular-nums;
     }
 
-    #objectifZone {
-        display: none;
-        margin-top: 20px;
+    #compteur[data-chiffres="3"] {
+        font-size: var(--t-6);
     }
 
-    #objectifBarre {
-        height: 6px;
-        border-radius: 3px;
-        background-color: rgba(255, 255, 255, 0.18);
-        overflow: hidden;
-    }
-
-    #objectifJauge {
-        height: 100%;
-        width: 0;
-        border-radius: 3px;
-        background-color: #F0883E;
-        transition: width 0.7s cubic-bezier(.16, 1, .3, 1);
-    }
-
-    #objectifLigne {
-        font-size: 11.5px;
-        color: #D9EBDF;
-        margin: 9px 0 0;
-        letter-spacing: 0.3px;
-    }
-
-    #motivationLigne {
-        display: none;
-        font-size: 11.5px;
-        color: #A8CDB6;
-        margin: 14px 0 0;
-        letter-spacing: 0.3px;
-    }
-
-    #planListe {
-        list-style: none;
-        margin: 0;
-        padding: 0;
-    }
-
-    .palier {
-        position: relative;
-        padding: 0 0 18px 24px;
-        border-left: 2px solid rgba(255, 255, 255, 0.10);
-    }
-
-    .palier:last-child {
-        padding-bottom: 0;
-        border-left-color: transparent;
-    }
-
-    .palier::before {
-        content: "";
-        position: absolute;
-        left: -7px;
-        top: 2px;
-        width: 12px;
-        height: 12px;
-        border-radius: 50%;
-        background-color: #0D1310;
-        border: 2px solid rgba(255, 255, 255, 0.20);
-    }
-
-    .palier.fait::before {
-        background-color: #2F7D52;
-        border-color: #2F7D52;
-    }
-
-    .palier.encours::before {
-        background-color: #F0883E;
-        border-color: #F0883E;
-        box-shadow: 0 0 0 4px rgba(240, 136, 62, 0.18);
-    }
-
-    .palierTitre {
-        font-size: 12px;
-        color: #FFFFFF;
-        letter-spacing: 0.4px;
-        margin: 0 0 4px;
-    }
-
-    .palier.fait .palierTitre::after {
-        content: " \2713";
-        color: #2F7D52;
-    }
-
-    .palier.encours .palierTitre {
-        color: #F0883E;
-    }
-
-    .palier.avenir .palierTitre {
-        color: #7E9187;
-    }
-
-    .palierTexte {
-        font-size: 11.5px;
-        line-height: 1.55;
-        color: #D9EBDF;
-        margin: 0;
-    }
-
-    .palier.avenir .palierTexte {
-        color: #6E8177;
+    #compteur[data-chiffres="4"] {
+        font-size: var(--t-5);
     }
 
     #heroLabel {
-        font-size: 12px;
-        letter-spacing: 0.5px;
-        color: #D9EBDF;
-        margin: 10px 0 0;
+        position: relative;
+        font-size: var(--t-1);
+        font-weight: 600;
+        line-height: 1.2;
+        color: var(--texte);
+        margin: 14px 0 0;
     }
 
-    /* ---------- Avant le jour J ---------- */
+    #motivationLigne {
+        position: relative;
+        display: none;
+        font-size: var(--t-moins1);
+        color: var(--texte);
+        margin: 6px 0 0;
+    }
 
-    #preparationCarte {
+    #heroSticker {
+        position: absolute;
+        right: 0;
+        top: 4px;
+        width: 76px;
+        transform: rotate(10deg);
+        filter: drop-shadow(0 8px 14px rgba(0, 0, 0, 0.45));
+    }
+
+    #heroSticker:empty {
         display: none;
     }
 
-    #preparationIntro {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #D9EBDF;
-        margin: 0 0 16px;
+    #heroSticker svg,
+    .stickerCase svg,
+    #feteSticker svg {
+        display: block;
+        width: 100%;
+        height: auto;
     }
 
-    #preparationListe {
-        margin: 0 0 4px;
-        padding-left: 20px;
+    /* ---------- Vers le prochain palier ----------
+       La partie restante est hachuree : on voit le chemin, pas le vide. */
+
+    #palierCarte {
+        padding: 18px 20px;
     }
 
-    #preparationListe li {
-        font-size: 12px;
-        line-height: 1.6;
-        color: #C9D6CD;
+    #palierLigne {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 12px;
+        margin: 0 0 12px;
+        font-weight: 600;
+    }
+
+    #palierCompte {
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        font-weight: 500;
+        color: var(--texte);
+        white-space: nowrap;
+    }
+
+    .barre {
+        position: relative;
+        height: 18px;
+        border-radius: var(--pilule);
+        overflow: hidden;
+        background:
+            repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.16) 0 6px, transparent 6px 12px),
+            rgba(255, 255, 255, 0.05);
+    }
+
+    #palierPlein {
+        position: absolute;
+        inset: 0 auto 0 0;
+        width: 0;
+        border-radius: var(--pilule);
+        background: linear-gradient(90deg, var(--vert), var(--vert-clair));
+        transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    #objectifLigne {
+        font-size: var(--t-moins1);
+        color: var(--texte2);
+        margin: 12px 0 0;
+    }
+
+    #objectifLigne:empty {
+        display: none;
+    }
+
+    /* ---------- Les trois chiffres ---------- */
+
+    #stats {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    .stat {
+        margin: 0;
+        padding: 16px 10px;
+        border-radius: var(--rayon-m);
+        text-align: center;
+    }
+
+    .statValeur {
+        display: block;
+        font-family: var(--police-chiffres);
+        font-weight: 500;
+        font-size: var(--t-1);
+        line-height: 1.1;
+        color: #FFFFFF;
+        font-variant-numeric: tabular-nums;
+    }
+
+    .statLabel {
+        display: block;
+        font-size: var(--t-moins1);
+        line-height: 1.3;
+        color: var(--texte2);
+        margin-top: 6px;
+    }
+
+    /* ---------- Les deux boutons du quotidien ---------- */
+
+    #actions {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        margin-bottom: 14px;
+    }
+
+    #actions > button {
+        width: 100%;
+    }
+
+    #btnEnvie {
+        min-height: 60px;
+        font-size: var(--t-1);
+    }
+
+    /* « J'ai craque » : un vrai bouton, mais en contour, sans couleur
+       d'alarme. Present sans etre attirant. */
+    #btnEcart {
+        background: transparent;
+        color: var(--texte2);
+    }
+
+    /* L'astuce du moment se lit en pleine envie : grosse, courte, calme.
+       Aucune animation ici. */
+    #astuceDuMoment,
+    #messageEcart {
+        font-size: var(--t-1);
+        font-weight: 600;
+        line-height: 1.3;
+        margin: 2px 0 0;
+        padding: 18px 20px;
+        border-radius: var(--rayon-m);
+        background-color: var(--verre);
+        border: 1px solid var(--bord);
+    }
+
+    #astuceDuMoment {
+        border-left: 4px solid var(--vert-clair);
+    }
+
+    #messageEcart {
+        color: var(--texte);
+        border-left: 4px solid var(--flamme-pale);
+    }
+
+    #astuceDuMoment:empty,
+    #messageEcart:empty {
+        display: none;
+    }
+
+    #ecartZone {
+        display: none;
+        margin: 4px 0 0;
+    }
+
+    #ecartZone label {
+        display: block;
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        color: var(--texte2);
+        margin-bottom: 8px;
+    }
+
+    #ecartQuand {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-bottom: 16px;
+    }
+
+    .ecartJour.choisi {
+        border-color: var(--flamme-pale);
+        background-color: var(--ecart-doux);
+    }
+
+    #ecartNote {
         margin-bottom: 12px;
     }
 
-    #preparationListe strong {
-        color: #FFFFFF;
+    #btnEcartNote {
+        width: 100%;
+    }
+
+    #btnEcartAnnuler {
+        width: 100%;
+        margin-top: 4px;
+    }
+
+    /* ---------- L'astuce du jour ---------- */
+
+    .astuce {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .pastille {
+        flex: none;
+        padding: 6px 10px;
+        border-radius: var(--pilule);
+        background-color: var(--flamme);
+        color: var(--flamme-encre);
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        line-height: 1;
+        transform: rotate(-4deg);
+        white-space: nowrap;
+    }
+
+    #astuceDuJour {
+        margin: 0;
+        font-size: var(--t-1);
+        font-weight: 600;
+        line-height: 1.3;
     }
 
     /* ---------- Le bilan de la journee ---------- */
 
     #bilanQuestion {
-        font-size: 13.5px;
-        color: #FFFFFF;
+        font-size: var(--t-0);
+        color: var(--texte);
         margin: 0 0 14px;
     }
 
@@ -494,34 +787,43 @@
 
     #momentsDuJour li {
         position: relative;
-        font-size: 11.5px;
+        font-size: var(--t-moins1);
         line-height: 1.5;
-        color: #A8CDB6;
-        padding: 7px 34px 7px 12px;
-        border-left: 2px solid rgba(255, 255, 255, 0.12);
+        color: var(--texte2);
+        min-height: var(--toucher);
+        padding: 12px 52px 12px 14px;
+        margin-bottom: 6px;
+        border-radius: var(--rayon-s);
+        background-color: var(--champ);
     }
 
     .momentRetirer {
         position: absolute;
         right: 0;
-        top: 2px;
+        top: 0;
+        width: var(--toucher);
+        height: var(--toucher);
+        min-height: var(--toucher);
+        padding: 0;
         border: none;
         background: transparent;
-        color: #6E8177;
-        font-size: 16px;
-        line-height: 1;
-        padding: 6px 10px;
-        cursor: pointer;
+        color: var(--texte3);
+        font-size: var(--t-1);
+        font-weight: 400;
     }
 
     #momentsDuJour .momentHeure {
-        color: #FFFFFF;
-        font-weight: 700;
+        font-family: var(--police-chiffres);
+        color: var(--texte);
+    }
+
+    #momentsDuJour .momentNiveau {
+        font-weight: 600;
     }
 
     #momentsDuJour .momentNote {
         display: block;
-        color: #8FA396;
+        color: var(--texte3);
         font-style: italic;
     }
 
@@ -533,40 +835,21 @@
     }
 
     .niveau {
-        padding: 12px 4px;
-        font-size: 12px;
+        padding: 10px 4px;
+        font-size: var(--t-moins1);
     }
 
-    .niveau[data-niveau="facile"] {
-        color: #46B377;
-    }
-
-    .niveau[data-niveau="moyen"] {
-        color: #D9A441;
-    }
-
-    .niveau[data-niveau="difficile"] {
-        color: #E05C4B;
-    }
+    .niveau[data-niveau="facile"] { color: var(--niveau-facile); }
+    .niveau[data-niveau="moyen"] { color: var(--niveau-moyen); }
+    .niveau[data-niveau="difficile"] { color: var(--niveau-difficile); }
 
     /* Choisi : le contour prend la couleur du niveau, pas une couleur a part. */
     .niveau.choisi {
         border-color: currentColor;
-        background-color: rgba(255, 255, 255, 0.05);
+        background-color: var(--verre-fort);
     }
 
     #bilanNote {
-        width: 100%;
-        box-sizing: border-box;
-        background-color: #0D1310;
-        color: #E6F0E9;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 12px;
-        padding: 11px;
-        font-family: 'Space Mono', monospace;
-        font-size: 12px;
-        line-height: 1.5;
-        resize: vertical;
         margin-bottom: 12px;
     }
 
@@ -574,187 +857,41 @@
         width: 100%;
     }
 
-    #astuceDuJour {
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: #8FA396;
-        border-top: 1px solid rgba(255, 255, 255, 0.07);
-        margin: 16px 0 0;
-        padding-top: 14px;
-    }
-
     #bilanMessage {
-        font-size: 12px;
-        color: #6FBF8E;
+        font-size: var(--t-moins1);
+        color: var(--vert-pale);
         margin: 10px 0 0;
         text-align: center;
-        min-height: 16px;
+        min-height: 18px;
     }
 
-    /* ---------- Les trois chiffres ---------- */
+    /* ---------- Avant le jour J ---------- */
 
-    #stats {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 10px;
-        margin-bottom: 24px;
-    }
-
-    .stat {
-        background-color: #152019;
-        border-radius: 16px;
-        padding: 16px 8px;
-        text-align: center;
-    }
-
-    .statValeur {
-        display: block;
-        font-size: 19px;
-        font-weight: 700;
-        color: #FFFFFF;
-        line-height: 1.2;
-    }
-
-    .statLabel {
-        display: block;
-        font-size: 10.5px;
-        line-height: 1.4;
-        color: #8FA396;
-        margin-top: 8px;
-    }
-
-    /* ---------- Les deux boutons du quotidien ---------- */
-
-    #actions {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        margin-bottom: 26px;
-    }
-
-    button {
-        background-color: transparent;
-        color: #C9D6CD;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 16px;
-        padding: 15px;
-        font-family: 'Space Mono', monospace;
-        font-size: 13px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-    #actions button {
-        width: 100%;
-    }
-
-    #btnEnvie {
-        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
-        color: #FFFFFF;
-        border: none;
-    }
-
-    /* Le brique des cases "ecart" du carnet : meme couleur, meme sens.
-       Un vrai bouton, mais en contour : present sans etre attirant. */
-    #btnEcart {
-        border-color: rgba(140, 70, 45, 0.6);
-        color: #A8674A;
-    }
-
-    #ecartZone {
+    #preparationCarte {
         display: none;
-        margin-top: 6px;
-        border: 1px solid rgba(140, 70, 45, 0.4);
-        border-radius: 16px;
-        padding: 16px;
     }
 
-    #ecartQuand {
-        display: grid;
-        grid-template-columns: 1fr 1fr;
-        gap: 8px;
-        margin-bottom: 14px;
-    }
-
-    .ecartJour {
-        padding: 11px 4px;
-        font-size: 12px;
-        color: #C2795A;
-    }
-
-    .ecartJour.choisi {
-        border-color: #C2795A;
-        background-color: rgba(168, 90, 59, 0.16);
-    }
-
-    #btnEcartAnnuler {
-        border: none;
-        color: #6E8177;
-        font-size: 12px;
-        font-weight: 400;
-        padding: 10px;
-        margin-top: 2px;
-    }
-
-    #ecartZone label {
-        display: block;
-        font-size: 12px;
-        color: #C2795A;
-        margin-bottom: 8px;
-    }
-
-    #ecartNote {
-        width: 100%;
-        background-color: #0D1310;
-        color: #E6F0E9;
-        border: 1px solid rgba(168, 90, 59, 0.45);
-        border-radius: 12px;
-        padding: 11px;
-        font-family: 'Space Mono', monospace;
-        font-size: 12px;
-        line-height: 1.5;
-        resize: vertical;
-        margin-bottom: 10px;
-    }
-
-    #astuceDuMoment,
-    #messageEcart {
-        font-size: 12.5px;
-        line-height: 1.6;
-        margin: 2px 0 0;
-        text-align: center;
-    }
-
-    #astuceDuMoment {
-        color: #F0883E;
-    }
-
-    #messageEcart {
-        color: #C2795A;
-    }
-
-    /* ---------- Les blocs du bas ---------- */
-
-    .carte {
-        background-color: #152019;
-        border-radius: 20px;
-        padding: 22px 20px;
-        margin-bottom: 14px;
-    }
-
-    .carte h2 {
-        font-size: 15px;
-        color: #FFFFFF;
+    #preparationIntro {
+        color: var(--texte2);
         margin: 0 0 16px;
     }
 
-    .legende {
-        font-size: 11px;
-        color: #5E6B62;
-        margin: 14px 0 0;
+    #preparationListe {
+        margin: 0;
+        padding-left: 20px;
     }
 
-    /* Le carnet : trois rangees de dix, plutot qu'une longue ligne */
+    #preparationListe li {
+        color: var(--texte2);
+        margin-bottom: 12px;
+    }
+
+    #preparationListe strong {
+        color: var(--texte);
+    }
+
+    /* ---------- Le carnet ---------- */
+
     #carnet {
         display: grid;
         grid-template-columns: repeat(7, minmax(0, 1fr));
@@ -762,52 +899,20 @@
     }
 
     .jour-case {
-        display: block;
-        width: auto;
-        height: auto;
         aspect-ratio: 1;
-        margin: 0;
-        border-radius: 5px;
+        border-radius: 9px;
         cursor: pointer;
     }
 
     .jour-case.choisi {
-        outline: 2px solid #F0883E;
+        outline: 2px solid var(--flamme);
         outline-offset: 2px;
     }
 
-    #bilanPeriode {
-        display: none;
-        font-size: 12px;
-        line-height: 1.6;
-        color: #D9EBDF;
-        background-color: rgba(47, 125, 82, 0.16);
-        border-radius: 12px;
-        padding: 12px 14px;
-        margin: 16px 0 0;
-    }
-
-    #bilanPeriode strong {
-        color: #F0883E;
-    }
-
-    #bilanDepuisDebut {
-        display: none;
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: #8FA396;
-        margin: 10px 0 0;
-    }
-
-    #bilanDepuisDebut strong {
-        color: #D9EBDF;
-        font-weight: 700;
-    }
-
     #detailJour {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #C9D6CD;
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte2);
         margin: 16px 0 0;
         min-height: 20px;
     }
@@ -817,270 +922,138 @@
     }
 
     .detailEntete {
-        margin-bottom: 6px !important;
+        color: var(--texte);
+        margin-bottom: 8px !important;
     }
 
     .detailLigne {
-        padding-left: 10px;
-        border-left: 2px solid rgba(255, 255, 255, 0.10);
-        padding-top: 3px;
-        padding-bottom: 3px;
+        padding: 4px 0 4px 12px;
+        border-left: 2px solid var(--bord);
     }
 
     .detailHeure {
-        color: #FFFFFF;
-        font-weight: 700;
+        font-family: var(--police-chiffres);
+        color: var(--texte);
     }
 
     .detailNote {
         display: block;
-        color: #8FA396;
+        color: var(--texte3);
         font-style: italic;
     }
 
-    /* ---------- Le palier franchi ---------- */
-
-    #fete {
-        display: none;
-        background: linear-gradient(120deg, #F0883E 0%, #C25F23 100%);
-        border-radius: 20px;
-        padding: 22px 20px;
-        margin-bottom: 12px;
-        text-align: center;
-    }
-
-    #feteTitre {
-        font-family: 'Anton', Impact, sans-serif;
-        font-size: 24px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-        color: #FFFFFF;
-        margin: 0 0 6px;
-    }
-
-    #feteTexte {
-        font-size: 12.5px;
-        line-height: 1.55;
-        color: #2A1405;
-        margin: 0 0 16px;
-    }
-
-    #btnFeteFermer {
-        background-color: rgba(0, 0, 0, 0.28);
-        border: none;
-        color: #FFFFFF;
-        padding: 11px 26px;
-    }
-
-    /* ---------- La note d'ecart ---------- */
-
-    /* ---------- Reglages ---------- */
-
-    .explication {
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: #8FA396;
-        margin: 0 0 12px;
-    }
-
-    .etape {
-        position: relative;
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: #C9D6CD;
-        margin: 0 0 10px;
-        padding-left: 26px;
-    }
-
-    .etape strong {
-        color: #FFFFFF;
-    }
-
-    .etapeNumero {
-        position: absolute;
-        left: 0;
-        top: 1px;
-        width: 18px;
-        height: 18px;
-        border-radius: 50%;
-        background-color: rgba(47, 125, 82, 0.35);
-        color: #6FBF8E;
-        font-size: 10.5px;
-        font-weight: 700;
-        line-height: 18px;
-        text-align: center;
-    }
-
-    /* Bloc technique : invisible tant qu'on ne l'a pas reveille. */
-    #blocAbonnement {
-        display: none;
-        border-top: 1px solid rgba(255, 255, 255, 0.08);
-        margin-bottom: 22px;
-        padding-top: 14px;
-    }
-
-    #zoneAbonnement {
-        display: none;
-    }
-
-    #messageAbonnement {
-        font-size: 11.5px;
-        line-height: 1.5;
-        color: #8FA396;
-        margin: 0 0 22px;
-    }
-
-    #messageAbonnement.alerte {
-        color: #D9A441;
-    }
-
+    #bilanPeriode,
     #conseilHeure {
         display: none;
-        font-size: 11.5px;
-        line-height: 1.6;
-        color: #A8CDB6;
-        background-color: rgba(47, 125, 82, 0.16);
-        border-radius: 12px;
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte);
+        background-color: rgba(47, 125, 82, 0.2);
+        border-radius: var(--rayon-s);
         padding: 12px 14px;
-        margin: -12px 0 22px;
+        margin: 16px 0 0;
     }
 
+    #bilanPeriode strong,
     #conseilHeure strong {
-        color: #F0883E;
+        color: var(--flamme);
     }
 
-    #messageReglages {
-        font-size: 11.5px;
-        color: #6FBF8E;
-        margin: -12px 0 22px;
-        min-height: 16px;
-    }
-
-    #messageReglages.alerte {
-        color: #D9A441;
-    }
-
-    #messageNotifications {
-        font-size: 11.5px;
-        line-height: 1.5;
-        color: #6FBF8E;
-        margin: 10px 0 18px;
-        min-height: 16px;
-    }
-
-    #messageNotifications.alerte {
-        color: #D9A441;
-    }
-
-    #reglages label.checkboxLabel {
-        display: flex;
-        align-items: center;
-        font-size: 12px;
-        color: #C9D6CD;
-        margin-bottom: 22px;
-    }
-
-    #reglages label.checkboxLabel input {
-        width: auto;
-        margin-right: 10px;
-    }
-
-    #rappelSauvegarde {
+    #bilanDepuisDebut {
         display: none;
-        font-size: 11.5px;
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte2);
+        margin: 12px 0 0;
+    }
+
+    #bilanDepuisDebut strong {
+        color: var(--texte);
+    }
+
+    /* ---------- Les reperes ---------- */
+
+    #planListe {
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .palier {
+        position: relative;
+        padding: 0 0 20px 26px;
+        border-left: 2px solid var(--bord);
+        margin-left: 7px;
+    }
+
+    .palier:last-child {
+        padding-bottom: 0;
+        border-left-color: transparent;
+    }
+
+    .palier::before {
+        content: "";
+        position: absolute;
+        left: -9px;
+        top: 2px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background-color: var(--fond);
+        border: 2px solid var(--bord-fort);
+    }
+
+    .palier.fait::before {
+        background-color: var(--vert-clair);
+        border-color: var(--vert-clair);
+    }
+
+    .palier.encours::before {
+        background-color: var(--flamme);
+        border-color: var(--flamme);
+        box-shadow: 0 0 0 5px rgba(240, 136, 62, 0.2);
+    }
+
+    .palierTitre {
+        font-weight: 600;
+        color: var(--texte);
+        margin: 0 0 4px;
+    }
+
+    .palier.fait .palierTitre::after {
+        content: " \2713";
+        color: var(--vert-clair);
+    }
+
+    .palier.encours .palierTitre {
+        color: var(--flamme);
+    }
+
+    .palier.avenir .palierTitre {
+        color: var(--texte2);
+    }
+
+    .palierTexte {
+        font-size: var(--t-moins1);
         line-height: 1.5;
-        color: #8FA396;
-        margin: 10px 0 0;
+        color: var(--texte2);
+        margin: 0;
     }
 
-    #rappelSauvegarde.alerte {
-        color: #D9A441;
-    }
-
-    /* Note : l'ancien systeme replier/deplier (plan, astuces, reglages)
-       a disparu avec le passage aux quatre ecrans du 2026-09-14. Ses styles
-       (.repliable, #planResume, .titreReplie) ont ete retires avec lui. */
-
-    #reglages label {
-        display: block;
-        font-size: 12px;
-        color: #8FA396;
-        margin-bottom: 6px;
-    }
-
-    #reglages .champ {
-        display: flex;
-        gap: 8px;
-        margin-bottom: 18px;
-    }
-
-    #reglages .champ:last-child {
-        margin-bottom: 0;
-    }
-
-    #reglages select {
-        width: 100%;
-        background-color: #0D1310;
-        color: #E6F0E9;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 12px;
-        padding: 12px 11px;
-        font-family: 'Space Mono', monospace;
-        font-size: 12px;
-        margin-bottom: 22px;
-    }
-
-    #reglages input {
-        flex-grow: 1;
-        min-width: 0;
-    }
-
-    #reglages textarea {
-        width: 100%;
-        font-family: 'Space Mono', monospace;
-        font-size: 11px;
-        line-height: 1.5;
-        background-color: #0D1310;
-        color: #8FA396;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 10px;
-        padding: 10px;
-        resize: vertical;
-        margin-bottom: 10px;
-    }
-
-    #messageSauvegarde {
-        font-size: 12px;
-        color: #F0883E;
-        margin: 4px 0 0;
-        min-height: 18px;
-    }
-
-    input,
-    select {
-        font-family: 'Space Mono', monospace;
-        font-size: 13px;
-        background-color: #0D1310;
-        color: #FFFFFF;
-        border: 1px solid rgba(255, 255, 255, 0.14);
-        border-radius: 10px;
-        padding: 10px;
-    }
-
-    /* ---------- Astuces ---------- */
-
-    #astucesBloc {
-        text-align: left;
+    .palier.avenir .palierTexte {
+        color: var(--texte3);
     }
 
     #astucesBloc h3 {
-        font-family: 'Anton', Impact, sans-serif;
-        font-weight: 400;
+        font-size: var(--t-0);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
-        font-size: 14px;
-        color: #FFFFFF;
-        margin: 26px 0 12px;
+        letter-spacing: 0.03em;
+        color: var(--vert-pale);
+        margin: 24px 0 12px;
+    }
+
+    #astucesBloc h3:first-child {
+        margin-top: 0;
     }
 
     #astucesBloc ul {
@@ -1090,59 +1063,532 @@
     }
 
     #astucesBloc li {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #C9D6CD;
-        margin-bottom: 14px;
+        position: relative;
+        color: var(--texte);
+        padding-left: 20px;
+        margin-bottom: 12px;
     }
 
     #astucesBloc li::before {
         content: "";
+        position: absolute;
+        left: 0;
+        top: 0.55em;
+        width: 9px;
+        height: 9px;
+        border-radius: 3px;
+        background-color: var(--vert-clair);
+        transform: rotate(12deg);
+    }
+
+    /* ---------- La collection d'autocollants ---------- */
+
+    #collectionCompte {
         display: inline-block;
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        color: var(--flamme-encre);
+        background-color: var(--pop-citron);
+        border-radius: var(--pilule);
+        padding: 6px 12px;
+        margin: -4px 0 18px;
+        transform: rotate(-3deg);
+    }
+
+    #collection {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 18px 12px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+
+    .stickerCase {
+        text-align: center;
+        min-width: 0;
+    }
+
+    .stickerCase .stickerDessin {
+        width: 100%;
+        max-width: 96px;
+        margin: 0 auto 8px;
+    }
+
+    .stickerCase.debloque .stickerDessin {
+        filter: drop-shadow(0 8px 12px rgba(0, 0, 0, 0.4));
+    }
+
+    /* Une petite rotation differente pour chacun : des autocollants poses a
+       la main, pas une grille d'icones. */
+    .stickerCase.debloque:nth-child(3n+1) .stickerDessin { transform: rotate(-6deg); }
+    .stickerCase.debloque:nth-child(3n+2) .stickerDessin { transform: rotate(4deg); }
+    .stickerCase.debloque:nth-child(3n) .stickerDessin { transform: rotate(-2deg); }
+
+    .stickerNom {
+        display: block;
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        line-height: 1.25;
+        color: var(--texte);
+    }
+
+    .stickerIndice {
+        display: block;
+        font-size: var(--t-moins1);
+        line-height: 1.3;
+        color: var(--texte3);
+        margin-top: 2px;
+    }
+
+    #collectionVide:empty {
+        display: none;
+    }
+
+    /* ---------- Reglages ---------- */
+
+    #reglages label {
+        display: block;
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        color: var(--texte2);
+        margin-bottom: 8px;
+    }
+
+    #reglages .champ {
+        display: flex;
+        gap: 8px;
+        margin-bottom: 20px;
+    }
+
+    #reglages .champ:last-child {
+        margin-bottom: 0;
+    }
+
+    #reglages .champ button {
+        flex: 1;
+    }
+
+    #reglages select {
+        margin-bottom: 20px;
+    }
+
+    #reglages textarea {
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        color: var(--texte2);
+        margin-bottom: 10px;
+    }
+
+    #messageReglages,
+    #messageNotifications,
+    #messageAbonnement,
+    #rappelSauvegarde {
+        font-size: var(--t-moins1);
+        line-height: 1.5;
+        color: var(--vert-pale);
+        margin: -10px 0 20px;
+        min-height: 18px;
+    }
+
+    #messageNotifications {
+        margin: 0 0 18px;
+    }
+
+    #messageAbonnement {
+        color: var(--texte2);
+        margin: 0 0 20px;
+    }
+
+    #rappelSauvegarde {
+        display: none;
+        color: var(--texte2);
+        margin: 10px 0 0;
+    }
+
+    #messageSauvegarde {
+        font-size: var(--t-moins1);
+        color: var(--flamme-pale);
+        margin: 4px 0 0;
+        min-height: 18px;
+    }
+
+    #conseilHeure {
+        margin: -8px 0 20px;
+    }
+
+    .etape {
+        position: relative;
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte2);
+        margin: 0 0 12px;
+        padding-left: 32px;
+    }
+
+    .etape strong {
+        color: var(--texte);
+    }
+
+    .etapeNumero {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background-color: var(--vert);
+        color: #FFFFFF;
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins1);
+        line-height: 22px;
+        text-align: center;
+    }
+
+    /* Bloc technique : invisible tant qu'on ne l'a pas reveille. */
+    #blocAbonnement {
+        display: none;
+        border-top: 1px solid var(--bord);
+        margin-bottom: 22px;
+        padding-top: 14px;
+    }
+
+    #zoneAbonnement {
+        display: none;
+    }
+
+    #reglages label.checkboxLabel {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    /* ---------- La barre d'onglets ----------
+       Une pilule de verre qui flotte en bas, avec au centre le bouton rond
+       de l'action principale : resister a l'envie. */
+
+    #barreOnglets {
+        position: fixed;
+        z-index: 20;
+        left: 50%;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        width: min(408px, calc(100% - 24px));
+        display: grid;
+        grid-template-columns: 1fr 1fr 68px 1fr 1fr;
+        align-items: center;
+        padding: 6px;
+        border-radius: var(--pilule);
+        background-color: rgba(16, 24, 19, 0.78);
+        border: 1px solid var(--bord);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        box-shadow: 0 16px 36px -14px rgba(0, 0, 0, 0.9);
+    }
+
+    .ongletBouton {
+        min-width: 0;
+        min-height: 54px;
+        padding: 4px 0;
+        border: none;
+        border-radius: var(--pilule);
+        background: none;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        color: var(--texte2);
+        font-size: var(--t-moins2);
+        font-weight: 600;
+        line-height: 1;
+        transition: color 0.2s ease;
+    }
+
+    .ongletBouton svg {
+        width: 22px;
+        height: 22px;
+        transition: transform 0.24s cubic-bezier(0.34, 1.3, 0.64, 1), filter 0.2s ease;
+    }
+
+    .ongletBouton span {
+        max-width: 100%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .ongletBouton.actif {
+        color: #FFFFFF;
+    }
+
+    /* Une lueur, pas une ombre : l'icone choisie doit sembler allumee. */
+    .ongletBouton.actif svg {
+        transform: translateY(-1px);
+        filter: drop-shadow(0 0 7px rgba(125, 219, 165, 0.7));
+    }
+
+    #ongletResister {
+        justify-self: center;
+        width: 60px;
+        height: 60px;
+        min-height: 60px;
+        padding: 0;
+        border: none;
+        border-radius: 50%;
+        display: grid;
+        place-items: center;
+        color: #FFFFFF;
+        background: radial-gradient(circle at 35% 30%, #5CC48A, var(--vert));
+        box-shadow: 0 0 0 5px rgba(47, 125, 82, 0.3), 0 10px 26px rgba(47, 125, 82, 0.6);
+    }
+
+    #ongletResister svg {
+        width: 28px;
+        height: 28px;
+    }
+
+    /* ---------- La fete d'un palier ----------
+       Courte (moins de 3 secondes), elle se ferme d'un toucher et ne bloque
+       rien : pas de fond qui couvre l'app, juste une carte posee en haut. */
+
+    #fete {
+        display: none;
+        position: fixed;
+        z-index: 30;
+        left: 50%;
+        top: calc(env(safe-area-inset-top) + 70px);
+        transform: translateX(-50%);
+        width: min(408px, calc(100% - 32px));
+        overflow: hidden;
+        text-align: center;
+        padding: 22px 20px 16px;
+        border-radius: var(--rayon-l);
+        border: 1px solid var(--bord-fort);
+        background: linear-gradient(160deg, rgba(47, 125, 82, 0.92), rgba(12, 26, 18, 0.95));
+        -webkit-backdrop-filter: blur(18px);
+        backdrop-filter: blur(18px);
+        box-shadow: 0 24px 60px -20px rgba(0, 0, 0, 0.9), 0 0 60px -10px rgba(70, 179, 119, 0.5);
+        cursor: pointer;
+    }
+
+    #fete.visible {
+        display: block;
+    }
+
+    #feteSticker {
+        position: relative;
+        z-index: 1;
+        display: block;
+        width: 96px;
+        margin: 0 auto;
+        transform: rotate(-6deg);
+    }
+
+    #feteTitre {
+        position: relative;
+        z-index: 1;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-3);
+        line-height: 1;
+        color: #FFFFFF;
+        margin: 8px 0 6px;
+    }
+
+    /* Le texte reste au centre ; les confettis ont les deux marges. */
+    #feteTexte {
+        position: relative;
+        z-index: 1;
+        max-width: 74%;
+        color: var(--texte);
+        margin: 0 auto;
+    }
+
+    #feteFermer {
+        position: relative;
+        z-index: 1;
+        display: block;
+        font-size: var(--t-moins2);
+        color: var(--texte2);
+        margin: 12px 0 0;
+    }
+
+    .confettis {
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .confettis i {
+        position: absolute;
         width: 8px;
-        height: 8px;
+        height: 14px;
         border-radius: 2px;
-        background-color: #2F7D52;
-        margin-right: 10px;
-        vertical-align: middle;
+        opacity: 0.9;
     }
 
-    #astucesSource {
-        font-size: 11px;
-        color: #5E6B62;
-        margin-top: 26px;
+    /* ---------- Le petit message du bas ----------
+       Pour un autocollant gagne en dehors d'un palier. Calme : il glisse,
+       reste un instant et s'en va. */
+
+    #toast {
+        position: fixed;
+        z-index: 25;
+        left: 50%;
+        bottom: calc(var(--barre-bas) + 10px);
+        transform: translateX(-50%);
+        width: min(380px, calc(100% - 40px));
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 10px 16px 10px 10px;
+        border-radius: var(--rayon-m);
+        background-color: rgba(16, 24, 19, 0.92);
+        border: 1px solid var(--bord);
+        -webkit-backdrop-filter: blur(16px);
+        backdrop-filter: blur(16px);
+        font-size: var(--t-moins1);
+        line-height: 1.4;
+        visibility: hidden;
+        opacity: 0;
+        transition: opacity 0.3s ease, visibility 0.3s;
     }
 
-    /* ---------- Ecran d'accueil ---------- */
+    #toast.visible {
+        visibility: visible;
+        opacity: 1;
+    }
+
+    #toastSticker {
+        flex: none;
+        width: 44px;
+    }
+
+    /* ---------- Bandeau d'installation ----------
+       Un avertissement, pas une section de l'app : bord flamme. */
+
+    #bandeauInstall {
+        display: none;
+        border-color: rgba(240, 136, 62, 0.45);
+    }
+
+    #installTitre {
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-1);
+        line-height: 1.15;
+        text-transform: uppercase;
+        color: var(--flamme-pale);
+        margin: 0 0 8px;
+    }
+
+    #installPourquoi {
+        font-size: var(--t-moins1);
+        color: var(--texte2);
+        margin: 0 0 14px;
+    }
+
+    #installEtapes,
+    #accueilInstallEtapes {
+        margin: 0 0 16px;
+        padding-left: 22px;
+        line-height: 1.7;
+        color: var(--texte);
+    }
+
+    #installEtapes b,
+    #accueilInstallEtapes b {
+        color: var(--flamme-pale);
+    }
+
+    /* Le carre avec la fleche : le bouton Partager d'iOS, dessine en CSS
+       plutot qu'en image, pour ne rien avoir a telecharger. */
+    .iconePartager {
+        display: inline-block;
+        width: 13px;
+        height: 15px;
+        vertical-align: -3px;
+        margin: 0 1px;
+        border: 1.5px solid var(--flamme-pale);
+        border-top: none;
+        border-radius: 3px;
+        position: relative;
+    }
+
+    .iconePartager::before {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -6px;
+        width: 1.5px;
+        height: 9px;
+        background-color: var(--flamme-pale);
+        transform: translateX(-50%);
+    }
+
+    .iconePartager::after {
+        content: "";
+        position: absolute;
+        left: 50%;
+        top: -6px;
+        width: 5px;
+        height: 5px;
+        border-left: 1.5px solid var(--flamme-pale);
+        border-top: 1.5px solid var(--flamme-pale);
+        transform: translateX(-50%) rotate(45deg);
+    }
+
+    .boutonInstall {
+        display: none;
+        width: 100%;
+        border: none;
+        background: linear-gradient(135deg, #F5A25F, var(--flamme));
+        color: var(--flamme-encre);
+        margin-bottom: 6px;
+    }
+
+    #btnInstallPlusTard,
+    #btnAccueilInstallPlusTard {
+        width: 100%;
+    }
+
+    /* ---------- L'ecran d'accueil ---------- */
 
     #accueilOverlay {
         position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background-color: rgba(0, 0, 0, 0.6);
+        z-index: 40;
+        inset: 0;
+        background-color: rgba(4, 7, 5, 0.72);
+        -webkit-backdrop-filter: blur(8px);
+        backdrop-filter: blur(8px);
         display: flex;
         justify-content: center;
         /* flex-start + margin auto sur la boite : centre quand c'est court,
            et ca defile quand c'est plus haut que l'ecran. */
         align-items: flex-start;
         overflow-y: auto;
-        padding-top: max(18px, env(safe-area-inset-top));
-        padding-bottom: max(18px, env(safe-area-inset-bottom));
-        padding-left: max(18px, env(safe-area-inset-left));
-        padding-right: max(18px, env(safe-area-inset-right));
+        padding-top: max(var(--marge), env(safe-area-inset-top));
+        padding-bottom: max(var(--marge), env(safe-area-inset-bottom));
+        padding-left: max(var(--marge), env(safe-area-inset-left));
+        padding-right: max(var(--marge), env(safe-area-inset-right));
     }
 
     #accueilBoite {
+        position: relative;
         margin: auto;
-        background-color: #152019;
-        color: #FFFFFF;
-        padding: 28px 24px;
-        border-radius: 20px;
-        max-width: 400px;
+        overflow: hidden;
+        background:
+            radial-gradient(90% 40% at 50% 0%, rgba(47, 125, 82, 0.35), transparent 70%),
+            var(--fond-boite);
+        border: 1px solid var(--bord);
+        color: var(--texte);
+        padding: 26px 22px;
+        border-radius: var(--rayon-l);
+        max-width: 408px;
         width: 100%;
-        text-align: left;
+        box-shadow: 0 30px 70px -30px rgba(0, 0, 0, 0.9);
     }
 
     #accueilIntro,
@@ -1151,186 +1597,130 @@
         display: none;
     }
 
-    /* Le bandeau dore du premier ecran : meme forme que celui de l'intro,
-       debordant jusqu'aux bords de la boite. */
-    #installTete {
-        background: linear-gradient(160deg, #F0883E 0%, #B85420 55%, #3A1B0C 100%);
-        margin: -28px -24px 20px;
-        padding: 26px 24px 22px;
-        border-radius: 20px 20px 0 0;
+    /* Les bandeaux du haut debordent jusqu'aux bords de la boite. */
+    #installTete,
+    #introTete {
+        margin: -26px -22px 22px;
+        padding: 28px 22px 24px;
         text-align: center;
     }
 
+    #installTete {
+        background: linear-gradient(160deg, #F5A25F 0%, #C9632A 55%, #3A1B0C 100%);
+    }
+
     #installTeteTitre {
-        font-family: 'Anton', Impact, sans-serif;
-        text-transform: uppercase;
-        letter-spacing: 1px;
-        font-size: 12px;
-        color: #FFE2CB;
-        margin: 0 0 6px;
+        display: inline-block;
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        color: var(--flamme-encre);
+        background-color: var(--flamme-pale);
+        border-radius: var(--pilule);
+        padding: 5px 12px;
+        margin: 0 0 10px;
+        transform: rotate(-3deg);
     }
 
     #installTeteTexte {
-        font-size: 14px;
-        line-height: 1.5;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-2);
+        line-height: 1.1;
         color: #FFFFFF;
         margin: 0;
     }
 
     #accueilInstallPourquoi {
-        font-size: 12.5px;
-        line-height: 1.65;
-        color: #C9D6CD;
+        color: var(--texte2);
         margin: 0 0 16px;
     }
 
-    #accueilInstallEtapes {
-        margin: 0 0 20px;
-        padding-left: 20px;
-        font-size: 13px;
-        line-height: 1.8;
-        color: #FFFFFF;
-    }
-
-    #accueilInstallEtapes b {
-        color: #D9A441;
-        font-weight: 700;
-    }
-
-    #btnAccueilInstallNatif {
-        display: none;
-        width: 100%;
-        background: linear-gradient(120deg, #D9A441 0%, #A87B22 100%);
-        color: #14110A;
-        border: none;
-        font-weight: 700;
-        margin-bottom: 8px;
-    }
-
-    #btnAccueilInstallPlusTard {
-        width: 100%;
-        background: none;
-        border: none;
-        color: #8FA396;
-        font-weight: 400;
-        font-size: 12px;
-    }
-
-    #accueilNotifications p {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #D9EBDF;
-        margin: 0 0 12px;
-    }
-
-    #accueilNotifications .notifPetit {
-        font-size: 11px;
-        color: #8FA396;
-        margin-bottom: 20px;
-    }
-
-    #btnActiverRappels {
-        width: 100%;
-        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
-        color: #FFFFFF;
-        border: none;
-        margin-bottom: 8px;
-    }
-
-    #btnPlusTard {
-        width: 100%;
-        border: none;
-        color: #8FA396;
-        font-weight: 400;
-        font-size: 12px;
-    }
-
-    /* Le bandeau du premier ecran : meme degrade que la carte du compteur,
-       deborde jusqu'aux bords de la boite grace aux marges negatives. */
     #introTete {
-        background: linear-gradient(160deg, #2F7D52 0%, #14432C 55%, #0F1E16 100%);
-        margin: -28px -24px 22px;
-        padding: 30px 24px 26px;
-        border-radius: 20px 20px 0 0;
-        border-bottom: 2px solid #F0883E;
-        text-align: center;
+        background:
+            radial-gradient(70% 70% at 50% 20%, rgba(70, 179, 119, 0.55), transparent 70%),
+            linear-gradient(170deg, #2F7D52 0%, #14432C 60%, #0C1510 100%);
+        border-bottom: 1px solid var(--bord);
     }
 
     #introLogo {
         width: 88px;
         display: block;
-        margin: 0 auto 14px;
+        margin: 0 auto 12px;
     }
 
     #introTitre {
-        font-family: 'Permanent Marker', cursive;
-        font-size: 30px;
-        line-height: 1.1;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-4);
+        line-height: 1;
         color: #FFFFFF;
-        margin: 0 0 8px;
+        margin: 0 0 10px;
     }
 
     #introPoint {
-        color: #F0883E;
+        color: var(--flamme);
     }
 
     #introAccroche {
-        font-size: 12.5px;
-        line-height: 1.6;
-        color: #D9EBDF;
+        color: var(--texte);
         margin: 0;
     }
 
-    /* Trois rangees : un morceau de l'app a gauche, une phrase a droite.
+    /* Un morceau de l'app a gauche, une phrase a droite.
        Montrer vaut mieux que decrire. */
     .apercuRang {
         display: flex;
-        align-items: flex-start;
+        align-items: center;
         gap: 14px;
-        margin-bottom: 18px;
+        margin-bottom: 16px;
     }
 
     .apercuVisuel {
-        width: 84px;
+        width: 80px;
         flex: none;
         display: flex;
         justify-content: center;
     }
 
     .apercuTexte {
-        font-size: 12px;
-        line-height: 1.55;
-        color: #C9D6CD;
+        font-size: var(--t-moins1);
+        line-height: 1.5;
+        color: var(--texte2);
         margin: 0;
     }
 
     .apercuTexte strong {
         display: block;
-        color: #FFFFFF;
+        font-size: var(--t-0);
+        color: var(--texte);
     }
 
     .miniCompteur {
-        width: 76px;
-        height: 54px;
-        border-radius: 12px;
-        background: linear-gradient(160deg, #2F7D52 0%, #14432C 100%);
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        width: 58px;
+        height: 58px;
+        border-radius: 50%;
+        padding: 5px;
+        background: conic-gradient(var(--vert-clair) 0 75%, rgba(255, 255, 255, 0.12) 75% 100%);
     }
 
     .miniCompteur span {
-        font-size: 26px;
-        font-weight: 700;
+        width: 100%;
+        height: 100%;
+        border-radius: 50%;
+        background-color: var(--vert-nuit);
+        display: grid;
+        place-items: center;
+        font-family: var(--police-titre);
+        font-weight: 800;
+        font-size: var(--t-1);
         color: #FFFFFF;
-        line-height: 1;
     }
 
     .miniNiveaux {
         display: flex;
         flex-direction: column;
         gap: 6px;
-        width: 76px;
+        width: 72px;
     }
 
     .miniPastille {
@@ -1341,43 +1731,46 @@
     .miniBouton {
         width: 76px;
         padding: 9px 4px;
-        border-radius: 10px;
-        font-size: 9.5px;
-        font-weight: 700;
+        border-radius: var(--pilule);
+        font-size: var(--t-moins2);
+        font-weight: 600;
         text-align: center;
         white-space: nowrap;
     }
 
     .miniVert {
-        background: linear-gradient(120deg, #2F7D52 0%, #1E5738 100%);
+        background: linear-gradient(135deg, var(--vert), #24653F);
         color: #FFFFFF;
     }
 
-    .miniBrique {
-        border: 1px solid rgba(140, 70, 45, 0.6);
-        color: #A8674A;
+    .miniContour {
+        border: 1px solid var(--bord-fort);
+        color: var(--texte2);
     }
 
-    /* La barre du bas en miniature : quatre traits, le premier allume. */
     .miniBarre {
         display: flex;
-        gap: 5px;
-        align-items: flex-end;
+        gap: 4px;
+        align-items: center;
         width: 76px;
-        border-top: 1px solid #2A3B32;
-        padding-top: 10px;
+        padding: 6px;
+        border-radius: var(--pilule);
+        border: 1px solid var(--bord);
+        background-color: var(--verre);
     }
 
     .miniBarre i {
         flex: 1;
-        height: 5px;
+        height: 6px;
         border-radius: 3px;
-        background-color: #33453B;
+        background-color: rgba(255, 255, 255, 0.2);
     }
 
     .miniBarre .miniOngletActif {
-        height: 11px;
-        background-color: #46B377;
+        flex: 0 0 18px;
+        height: 18px;
+        border-radius: 50%;
+        background-color: var(--vert-clair);
     }
 
     .miniCarnet {
@@ -1392,63 +1785,228 @@
         border-radius: 3px;
     }
 
+    .miniSticker {
+        width: 58px;
+        transform: rotate(-8deg);
+    }
+
     #introConfidentialite {
-        font-size: 12px;
-        line-height: 1.6;
-        color: #D9EBDF;
-        background-color: rgba(47, 125, 82, 0.16);
-        border-radius: 12px;
+        font-size: var(--t-moins1);
+        line-height: 1.55;
+        color: var(--texte);
+        background-color: rgba(47, 125, 82, 0.2);
+        border-radius: var(--rayon-s);
         padding: 12px 14px;
-        margin: 0 0 12px;
+        margin: 4px 0 12px;
     }
 
     #introReserve {
-        font-size: 11px;
-        line-height: 1.55;
-        color: #8FA396;
+        font-size: var(--t-moins1);
+        line-height: 1.5;
+        color: var(--texte3);
         margin: 0 0 18px;
     }
 
-    #btnCommencer {
+    #btnCommencer,
+    #btnCreerCompte,
+    #btnActiverRappels,
+    #btnPlusTard {
         width: 100%;
     }
 
     #accueilBoite h2 {
-        font-size: 16px;
-        margin: 0 0 6px;
+        font-size: var(--t-2);
+        line-height: 1.1;
+        text-transform: uppercase;
+        margin: 0 0 8px;
+    }
+
+    #accueilBoite h2::after {
+        content: "";
+        display: block;
+        width: 40px;
+        height: 4px;
+        margin-top: 8px;
+        border-radius: var(--pilule);
+        background: linear-gradient(90deg, var(--vert-clair), var(--flamme));
+    }
+
+    #accueilFormulaire > p,
+    #accueilNotifications p {
+        color: var(--texte2);
+        margin: 0 0 12px;
+    }
+
+    #accueilNotifications .notifPetit {
+        font-size: var(--t-moins1);
+        color: var(--texte3);
+        margin-bottom: 20px;
     }
 
     #accueilBoite label {
         display: block;
         margin-top: 16px;
-        font-size: 12px;
-        color: #8FA396;
+        font-size: var(--t-moins1);
+        font-weight: 600;
+        color: var(--texte2);
     }
 
     #accueilBoite select,
     #accueilBoite input {
-        width: 100%;
         margin-top: 6px;
     }
 
     #accueilBoite input[type="checkbox"] {
-        width: auto;
         margin-top: 0;
-        margin-right: 8px;
     }
 
     #accueilBoite label.checkboxLabel {
         display: flex;
         align-items: center;
-        font-weight: normal;
-        color: #C9D6CD;
+        gap: 10px;
+        font-weight: 400;
+        color: var(--texte);
+        min-height: var(--toucher);
+    }
+
+    #objectifBloc {
+        display: grid;
+        grid-template-columns: 1fr 1.4fr;
+        column-gap: 8px;
+    }
+
+    #objectifBloc label {
+        grid-column: 1 / -1;
     }
 
     #btnCreerCompte {
-        width: 100%;
         margin-top: 22px;
     }
 
+    #btnActiverRappels {
+        margin-bottom: 8px;
+    }
+
+    /* ---------- Le mouvement ----------
+       Tout ce qui bouge passe ici. Avec « reduire les animations » active
+       sur le telephone, rien ne bouge : le chiffre, le halo et les confettis
+       restent immobiles. */
+
+    @media (prefers-reduced-motion: no-preference) {
+        #halo {
+            animation: respire 3.6s ease-in-out infinite;
+        }
+
+        #compteur.rebond {
+            animation: rebond 0.9s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+        }
+
+        #fete.visible {
+            animation: apparait 0.35s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+        }
+
+        #fete.visible .confettis i {
+            animation: confetti 2.2s ease-out both;
+        }
+
+        #fete.visible #feteSticker {
+            animation: colle 0.6s 0.1s cubic-bezier(0.2, 1.6, 0.4, 1) both;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        *,
+        *::before,
+        *::after {
+            transition-duration: 0.01ms !important;
+        }
+    }
+
+    @keyframes respire {
+        0%, 100% { opacity: 0.55; transform: scale(1); }
+        50% { opacity: 0.9; transform: scale(1.06); }
+    }
+
+    @keyframes rebond {
+        from { transform: scale(0.7); opacity: 0; }
+        to { transform: none; opacity: 1; }
+    }
+
+    @keyframes apparait {
+        from { transform: translateX(-50%) translateY(-12px) scale(0.92); opacity: 0; }
+        to { transform: translateX(-50%); opacity: 1; }
+    }
+
+    @keyframes colle {
+        from { transform: rotate(-30deg) scale(0.4); }
+        to { transform: rotate(-6deg) scale(1); }
+    }
+
+    @keyframes confetti {
+        from { transform: translateY(-30px) rotate(0); opacity: 0; }
+        15% { opacity: 1; }
+        to { transform: translateY(18px) rotate(220deg); opacity: 1; }
+    }
+
+    /* ---------- Les petits ecrans (iPhone SE, 320 px) ----------
+       On garde l'essentiel lisible : la date du haut et les mots sous les
+       icones s'effacent, les chiffres raccourcissent. */
+
+    @media (max-width: 359px) {
+        :root {
+            --marge: 12px;
+        }
+
+        #dateJour {
+            display: none;
+        }
+
+        #logo {
+            margin-right: auto;
+        }
+
+        #anneau {
+            width: 180px;
+            height: 180px;
+        }
+
+        #halo {
+            width: 200px;
+            height: 200px;
+        }
+
+        #heroSticker {
+            width: 62px;
+        }
+
+        .statValeur {
+            font-size: var(--t-0);
+        }
+
+        .stat {
+            padding: 14px 6px;
+        }
+
+        .ongletBouton span {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            overflow: hidden;
+            clip: rect(0 0 0 0);
+        }
+
+        #barreOnglets {
+            grid-template-columns: 1fr 1fr 64px 1fr 1fr;
+        }
+
+        .carte {
+            padding: 20px 16px;
+        }
+
+        #collection {
+            gap: 16px 8px;
+        }
+    }
 </style>
 <body>
 <div id="page">
@@ -1457,263 +2015,249 @@
         <img id="logoMark" src="jour-zero-banniere.svg" alt="">
         <h1 id="logo">Jour Zéro<span id="logoPoint">.</span></h1>
         <p id="tagline">Ton suivi, jour après jour.</p>
+        <span id="dateJour"></span>
+        <button id="btnReglages" type="button" aria-label="Réglages"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 7h9M18 7h1M5 17h1M10 17h9"/><circle cx="16" cy="7" r="2.2"/><circle cx="8" cy="17" r="2.2"/></svg></button>
     </header>
 
     <div id="onglets">
 
-        <section class="panneau" id="panJour">
-        <section id="bandeauInstall">
-        <p id="installTitre"></p>
-        <p id="installPourquoi"></p>
-        <ol id="installEtapes"></ol>
-        <button id="btnInstallNatif">Installer l'application</button>
-        <button id="btnInstallPlusTard">Plus tard</button>
-    </section>
+        <section class="panneau" id="panJour" aria-label="Aujourd'hui">
+            <section class="carte" id="bandeauInstall">
+                <p id="installTitre"></p>
+                <p id="installPourquoi"></p>
+                <ol id="installEtapes"></ol>
+                <button id="btnInstallNatif" class="boutonInstall">Installer l'application</button>
+                <button id="btnInstallPlusTard" class="boutonDiscret">Plus tard</button>
+            </section>
 
-        <section id="fete">
-        <p id="feteTitre"></p>
-        <p id="feteTexte"></p>
-        <button id="btnFeteFermer">Continuer</button>
-    </section>
+            <ol id="semaine" aria-label="Cette semaine"></ol>
 
-        <section id="heroCompteur">
-        <span id="compteur">0</span>
-        <p id="heroLabel">jours sans consommation</p>
-        <div id="objectifZone">
-            <div id="objectifBarre"><div id="objectifJauge"></div></div>
-            <p id="objectifLigne"></p>
-        </div>
-        <p id="motivationLigne"></p>
-    </section>
+            <section id="heroCompteur">
+                <div id="halo"></div>
+                <div id="anneau"><div id="anneauDedans"><span id="compteur">0</span></div></div>
+                <p id="heroLabel"></p>
+                <p id="motivationLigne"></p>
+                <span id="heroSticker" aria-hidden="true"></span>
+            </section>
 
-        <section id="stats">
-        <div class="stat">
-            <span class="statValeur"><span id="argentEconomise">0</span></span>
-            <span class="statLabel">CHF économisés</span>
-        </div>
-        <div class="stat">
-            <span class="statValeur"><span id="compteurEnvies">0</span></span>
-            <span class="statLabel">envies résistées</span>
-        </div>
-        <div class="stat">
-            <span class="statValeur"><span id="meilleureSerie">0</span></span>
-            <span class="statLabel">meilleure série</span>
-        </div>
-    </section>
+            <section class="carte" id="palierCarte">
+                <p id="palierLigne"><span id="palierTexte"></span><span id="palierCompte"></span></p>
+                <div class="barre" role="img" id="palierBarre"><div id="palierPlein"></div></div>
+                <p id="objectifLigne"></p>
+            </section>
 
-        <section id="actions">
-        <button id="btnEnvie">Résister à l'envie</button>
-        <p id="astuceDuMoment"></p>
+            <section id="stats">
+                <div class="carte stat">
+                    <span class="statValeur" id="argentEconomise">0</span>
+                    <span class="statLabel" id="statArgent"></span>
+                </div>
+                <div class="carte stat">
+                    <span class="statValeur" id="compteurEnvies">0</span>
+                    <span class="statLabel" id="statEnvies"></span>
+                </div>
+                <div class="carte stat">
+                    <span class="statValeur" id="meilleureSerie">0</span>
+                    <span class="statLabel" id="statSerie"></span>
+                </div>
+            </section>
 
-        <button id="btnEcart">J'ai craqué</button>
-        <p id="messageEcart"></p>
+            <section id="actions">
+                <button id="btnEnvie" class="boutonPrincipal"></button>
+                <p id="astuceDuMoment" aria-live="polite"></p>
 
-        <div id="ecartZone">
-            <label>C'était quand ?</label>
-            <div id="ecartQuand">
-                <button class="ecartJour choisi" data-jour="0">Aujourd'hui</button>
-                <button class="ecartJour" data-jour="1">Hier</button>
-            </div>
+                <button id="btnEcart"></button>
+                <p id="messageEcart" aria-live="polite"></p>
 
-            <label for="ecartNote">Qu'est-ce qui s'est passé juste avant ?</label>
-            <textarea id="ecartNote" rows="2" placeholder="Où tu étais, avec qui, ce qui a déclenché."></textarea>
+                <div id="ecartZone" class="carte">
+                    <label id="ecartQuandLabel"></label>
+                    <div id="ecartQuand">
+                        <button class="ecartJour choisi" data-jour="0">Aujourd'hui</button>
+                        <button class="ecartJour" data-jour="1">Hier</button>
+                    </div>
 
-            <button id="btnEcartNote">Confirmer</button>
-            <button id="btnEcartAnnuler">Annuler</button>
-        </div>
-    </section>
+                    <label for="ecartNote" id="ecartNoteLabel"></label>
+                    <textarea id="ecartNote" rows="2"></textarea>
 
-        <section class="carte" id="preparationCarte">
-        <h2>D'ici là</h2>
-        <p id="preparationIntro">Tu n'as rien à noter pour l'instant. Mais ces quelques jours ne sont pas du temps mort : c'est là que l'arrêt se prépare.</p>
-        <ol id="preparationListe">
-            <li><strong>Écris pourquoi tu arrêtes.</strong> Santé, argent, permis, sommeil. Cette liste te servira les jours durs, quand les raisons deviennent floues.</li>
-            <li><strong>Préviens quelqu'un.</strong> Arrêter à deux tient mieux que tout seul. Une personne au courant, c'est déjà une personne à qui écrire un soir difficile.</li>
-            <li><strong>Repère tes situations à risque.</strong> Quels moments, quels endroits, quelles personnes. Et décide dès maintenant quoi faire à la place.</li>
-            <li><strong>Prévois de quoi t'occuper.</strong> Sport, cuisine, marcher, n'importe quoi qui prend les mains. Les premiers jours, l'ennui est le pire ennemi.</li>
-            <li><strong>Les premiers jours, évite les fumeurs et l'alcool.</strong> Ce n'est pas pour toujours, juste le temps que ça se tasse.</li>
-        </ol>
-        <p class="legende">Conseils tirés de Stop-Cannabis.ch.</p>
-    </section>
+                    <button id="btnEcartNote"></button>
+                    <button id="btnEcartAnnuler" class="boutonDiscret"></button>
+                </div>
+            </section>
 
-        <section class="carte" id="bilanCarte">
-        <h2>Aujourd'hui</h2>
-        <p id="bilanQuestion">Comment s'est passée ta journée ?</p>
-        <ul id="momentsDuJour"></ul>
-        <div id="bilanNiveaux">
-            <button class="niveau" data-niveau="facile">Facile</button>
-            <button class="niveau" data-niveau="moyen">Moyen</button>
-            <button class="niveau" data-niveau="difficile">Difficile</button>
-        </div>
-        <textarea id="bilanNote" rows="2" placeholder="Un mot sur ce moment, si tu veux."></textarea>
-        <button id="btnBilan">Noter ce moment</button>
-        <p id="astuceDuJour"></p>
-        <p id="bilanMessage"></p>
-    </section>
+            <section class="carte astuce" id="astuceCarte">
+                <span class="pastille">Astuce</span>
+                <p id="astuceDuJour"></p>
+            </section>
+
+            <section class="carte" id="preparationCarte">
+                <h2>D'ici là</h2>
+                <p id="preparationIntro">Rien à noter pour l'instant. Mais ces quelques jours ne sont pas du temps mort : c'est là que l'arrêt se prépare.</p>
+                <ol id="preparationListe">
+                    <li><strong>Écris pourquoi tu arrêtes.</strong> Santé, argent, permis, sommeil. Cette liste te servira les jours durs, quand les raisons deviennent floues.</li>
+                    <li><strong>Préviens quelqu'un.</strong> Arrêter à deux tient mieux que tout seul. Une personne au courant, c'est déjà quelqu'un à qui écrire un soir difficile.</li>
+                    <li><strong>Repère tes situations à risque.</strong> Quels moments, quels endroits, quelles personnes. Et décide dès maintenant quoi faire à la place.</li>
+                    <li><strong>Prévois de quoi t'occuper.</strong> Sport, cuisine, marcher, n'importe quoi qui prend les mains. Les premiers jours, l'ennui est le pire ennemi.</li>
+                    <li><strong>Les premiers jours, évite les fumeurs et l'alcool.</strong> Pas pour toujours, juste le temps que ça se tasse.</li>
+                </ol>
+                <p class="legende">Conseils tirés de Stop-Cannabis.ch.</p>
+            </section>
+
+            <section class="carte" id="bilanCarte">
+                <h2>Ta journée</h2>
+                <p id="bilanQuestion"></p>
+                <ul id="momentsDuJour"></ul>
+                <div id="bilanNiveaux">
+                    <button class="niveau" data-niveau="facile">Facile</button>
+                    <button class="niveau" data-niveau="moyen">Moyen</button>
+                    <button class="niveau" data-niveau="difficile">Difficile</button>
+                </div>
+                <textarea id="bilanNote" rows="2"></textarea>
+                <button id="btnBilan"></button>
+                <p id="bilanMessage" aria-live="polite"></p>
+            </section>
         </section>
 
-        <section class="panneau" id="panCarnet">
-        <section class="carte" id="carnetCarte">
-        <h2>Carnet de suivi</h2>
-        <div id="carnet"></div>
-        <p id="detailJour"></p>
-        <p id="bilanPeriode"></p>
-        <p id="bilanDepuisDebut"></p>
-        <p class="legende">Les 4 dernières semaines. Touche un carré pour voir la journée. La couleur suit le moment le plus dur de la journée : vert si tout a été facile, ambre si moyen, rouge s'il y a eu un moment difficile, brique si tu as craqué.</p>
-    </section>
-        <p id="carnetAttente">Ton carnet se remplira à partir de ton jour zéro.</p>
+        <section class="panneau" id="panCarnet" aria-label="Carnet">
+            <section class="carte" id="carnetCarte">
+                <h2>Ton carnet</h2>
+                <div id="carnet"></div>
+                <p id="detailJour"></p>
+                <p id="bilanPeriode"></p>
+                <p id="bilanDepuisDebut"></p>
+                <p class="legende">Les 4 dernières semaines. Touche un carré pour revoir la journée. La couleur suit le moment le plus dur : vert si tout a été facile, ambre si moyen, corail s'il y a eu un moment difficile, brique si tu as craqué.</p>
+            </section>
+            <p id="carnetAttente" class="vide"></p>
         </section>
 
-        <section class="panneau" id="panReperes">
-        <section class="carte" id="planCarte">
-        <h2>Ton plan</h2>
-        <ol id="planListe"></ol>
-        <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
-    </section>
+        <section class="panneau" id="panReperes" aria-label="Repères">
+            <section class="carte" id="planCarte">
+                <h2>Ton plan</h2>
+                <ol id="planListe"></ol>
+                <p class="legende">Repères issus de Stop-Cannabis.ch. Chacun vit l'arrêt à sa manière : ce sont des ordres de grandeur, pas une règle.</p>
+            </section>
 
-        <section class="carte" id="astucesCarte">
-        <h2>Les astuces</h2>
-
-        <div id="astucesBloc">
-
-            <h3>Quand l'envie monte</h3>
-            <ul>
-                <li>Une envie dure rarement plus d'un quart d'heure. Tiens une heure, pas toute ta vie.</li>
-                <li>Change de pièce, change de rue. L'envie est souvent accrochée à un endroit.</li>
-                <li>Occupe tes mains. Ça marche mieux que d'essayer de ne pas y penser.</li>
-                <li>Avoir envie n'est pas avoir craqué. La ressentir ne veut pas dire que t'as échoué.</li>
-            </ul>
-
-            <h3>Avec les potes qui fument</h3>
-            <ul>
-                <li>Décide avant d'y aller. Sur place, c'est trop tard pour réfléchir.</li>
-                <li>Les premières semaines, évite si tu peux. C'est pas de la faiblesse, c'est de la stratégie.</li>
-                <li>Dis-le à un seul pote du groupe. T'as un allié au lieu d'être seul contre l'ambiance.</li>
-                <li>L'alcool fait tomber tes défenses avant le cannabis. Surveille-le en premier.</li>
-            </ul>
-
-            <h3>Les premiers jours</h3>
-            <ul>
-                <li>Le plus dur tombe vers le 4e-6e jour, puis ça redescend. C'est de la chimie, pas de la volonté.</li>
-                <li>Sommeil pourri, irritabilité, rêves bizarres : c'est le sevrage, pas toi qui changes de personnalité.</li>
-                <li>Un jour à la fois. Ne compte pas ceux qui restent.</li>
-            </ul>
-
-            <h3>Au quotidien</h3>
-            <ul>
-                <li>Bouge. La fatigue physique remplace celle que t'allais chercher dans le joint.</li>
-                <li>Vide la maison. Ce qui traîne finit toujours par servir.</li>
-                <li>Regarde ce que t'économises. Le chiffre fait plus d'effet que les bonnes intentions.</li>
-                <li>Si tu remplaces par la cigarette, tu changes juste de dépendance.</li>
-            </ul>
-
-            <h3>Quand ça suffit pas</h3>
-            <ul>
-                <li>Demander de l'aide n'est pas un échec. En Suisse, Stop-Cannabis.ch et ton médecin sont gratuits et confidentiels.</li>
-            </ul>
-
-            <p id="astucesSource">Conseils adaptés de Stop-Cannabis.ch et de Drogues Info Service.</p>
-
-        </div>
-    </section>
+            <section class="carte" id="astucesCarte">
+                <h2>Les astuces</h2>
+                <div id="astucesBloc"></div>
+                <p class="legende">Conseils adaptés de Stop-Cannabis.ch et de Drogues Info Service.</p>
+            </section>
         </section>
 
-        <section class="panneau" id="panReglages">
-        <section class="carte" id="reglages">
-        <h2>Réglages</h2>
+        <section class="panneau" id="panCollection" aria-label="Collection">
+            <section class="carte" id="collectionCarte">
+                <h2 id="collectionTitre"></h2>
+                <p id="collectionCompte"></p>
+                <p id="collectionVide" class="explication"></p>
+                <ul id="collection"></ul>
+            </section>
+        </section>
 
-        <p class="explication">Tout s'enregistre tout seul : il n'y a rien à valider.</p>
+        <section class="panneau" id="panReglages" aria-label="Réglages">
+            <section class="carte" id="reglages">
+                <h2>Réglages</h2>
 
-        <label for="dateArretInput">Ma date d'arrêt</label>
-        <div class="champ">
-            <input type="date" id="dateArretInput">
-        </div>
+                <p class="explication">Tout s'enregistre tout seul : rien à valider.</p>
 
-        <label for="depenseInput">Dépense habituelle par semaine (CHF)</label>
-        <div class="champ">
-            <input type="number" id="depenseInput" min="0" step="0.5">
-        </div>
+                <label for="dateArretInput">Ma date d'arrêt</label>
+                <div class="champ">
+                    <input type="date" id="dateArretInput">
+                </div>
 
-        <label for="objectifReglageInput">Mon objectif (en jours) — laisse vide si tu n'en veux pas</label>
-        <div class="champ">
-            <input type="number" id="objectifReglageInput" min="1" placeholder="Aucun objectif">
-        </div>
+                <label for="depenseInput">Dépense habituelle par semaine (CHF)</label>
+                <div class="champ">
+                    <input type="number" id="depenseInput" min="0" step="0.5" inputmode="decimal">
+                </div>
 
-        <p id="messageReglages"></p>
+                <label for="objectifReglageInput">Mon objectif (en jours) — laisse vide si tu n'en veux pas</label>
+                <div class="champ">
+                    <input type="number" id="objectifReglageInput" min="1" placeholder="Aucun objectif" inputmode="numeric">
+                </div>
 
-        <label>Notifications</label>
-        <p class="explication">Un rappel quotidien pour venir noter ta journée. Il faut que Jour Zéro soit installé sur ton écran d'accueil — c'est le cas.</p>
-        <div class="champ">
-            <button id="btnNotifications">Activer les notifications</button>
-        </div>
-        <p id="messageNotifications"></p>
+                <p id="messageReglages"></p>
 
-        <div id="blocAbonnement">
-            <p class="explication">Réservé à la mise en place du serveur de rappels.</p>
-            <div class="champ">
-                <button id="btnAbonnement">Préparer l'abonnement</button>
-                <button id="btnTestNotif">Notification de test</button>
-            </div>
-            <textarea id="zoneAbonnement" rows="3" placeholder="L'adresse de ton téléphone apparaîtra ici."></textarea>
-            <p id="messageAbonnement"></p>
-        </div>
+                <label>Notifications</label>
+                <p class="explication">Un rappel par jour pour venir noter ta journée. Il faut que Jour Zéro soit installé sur ton écran d'accueil.</p>
+                <div class="champ">
+                    <button id="btnNotifications">Activer les notifications</button>
+                </div>
+                <p id="messageNotifications"></p>
 
-        <label for="heureMatinInput">Rappel du matin — pour lancer la journée</label>
-        <select id="heureMatinInput">
-            <option value="non">Aucun</option>
-            <option value="7">07:00</option>
-            <option value="8">08:00</option>
-            <option value="9">09:00</option>
-            <option value="10">10:00</option>
-            <option value="12">12:00</option>
-        </select>
+                <div id="blocAbonnement">
+                    <p class="explication">Réservé à la mise en place du serveur de rappels.</p>
+                    <div class="champ">
+                        <button id="btnAbonnement">Préparer l'abonnement</button>
+                        <button id="btnTestNotif">Notification de test</button>
+                    </div>
+                    <textarea id="zoneAbonnement" rows="3" placeholder="L'adresse de ton téléphone apparaîtra ici."></textarea>
+                    <p id="messageAbonnement"></p>
+                </div>
 
-        <label for="heureSoirInput">Rappel du soir — pour noter ta journée</label>
-        <select id="heureSoirInput">
-            <option value="non">Aucun</option>
-            <option value="15">15:00</option>
-            <option value="17">17:00</option>
-            <option value="18">18:00</option>
-            <option value="19">19:00</option>
-            <option value="20">20:00</option>
-            <option value="21">21:00</option>
-            <option value="22">22:00</option>
-        </select>
-        <p id="conseilHeure"></p>
+                <label for="heureMatinInput">Rappel du matin — pour lancer la journée</label>
+                <select id="heureMatinInput">
+                    <option value="non">Aucun</option>
+                    <option value="7">07:00</option>
+                    <option value="8">08:00</option>
+                    <option value="9">09:00</option>
+                    <option value="10">10:00</option>
+                    <option value="12">12:00</option>
+                </select>
 
-        <label for="pastilleInput">Pastille sur l'icône de l'app</label>
-        <select id="pastilleInput">
-            <option value="faits">Mes jours sans consommer</option>
-            <option value="restants">Les jours qui restent avant mon objectif</option>
-            <option value="non">Rien</option>
-        </select>
+                <label for="heureSoirInput">Rappel du soir — pour noter ta journée</label>
+                <select id="heureSoirInput">
+                    <option value="non">Aucun</option>
+                    <option value="15">15:00</option>
+                    <option value="17">17:00</option>
+                    <option value="18">18:00</option>
+                    <option value="19">19:00</option>
+                    <option value="20">20:00</option>
+                    <option value="21">21:00</option>
+                    <option value="22">22:00</option>
+                </select>
+                <p id="conseilHeure"></p>
 
-        <label for="zoneSauvegarde">Sauvegarde et transfert</label>
-        <p class="explication">Tes données ne vivent que dans ce navigateur. Il n'y a pas de compte, donc personne ne peut te les rendre si tu les perds.</p>
+                <label for="pastilleInput">Pastille sur l'icône de l'app</label>
+                <select id="pastilleInput">
+                    <option value="faits">Mes jours sans consommer</option>
+                    <option value="restants">Les jours qui restent avant mon objectif</option>
+                    <option value="non">Rien</option>
+                </select>
 
-        <p class="etape"><span class="etapeNumero">1</span> Pour les mettre à l'abri, touche <strong>Exporter</strong> : un code apparaît dans le cadre. Copie-le et envoie-le-toi par message ou par mail.</p>
-        <p class="etape"><span class="etapeNumero">2</span> Pour les remettre ici — nouveau téléphone, ou passage du Mac au mobile — colle ce code dans le cadre et touche <strong>Importer</strong>.</p>
+                <label for="zoneSauvegarde">Sauvegarde et transfert</label>
+                <p class="explication">Tes données ne vivent que dans ce navigateur. Pas de compte, donc personne ne peut te les rendre si tu les perds.</p>
 
-        <textarea id="zoneSauvegarde" rows="3" placeholder="Le code apparaît ici après Exporter. Ou colle ici celui que tu t'es envoyé."></textarea>
-        <div class="champ">
-            <button id="btnExporter">Exporter</button>
-            <button id="btnImporter">Importer</button>
-        </div>
-        <p id="messageSauvegarde"></p>
-        <p id="rappelSauvegarde"></p>
-    </section>
+                <p class="etape"><span class="etapeNumero">1</span> Pour les mettre à l'abri, touche <strong>Exporter</strong> : un code apparaît dans le cadre. Copie-le et envoie-le-toi par message ou par mail.</p>
+                <p class="etape"><span class="etapeNumero">2</span> Pour les remettre ici — nouveau téléphone, ou passage du Mac au mobile — colle ce code dans le cadre et touche <strong>Importer</strong>.</p>
+
+                <textarea id="zoneSauvegarde" rows="3" placeholder="Le code apparaît ici après Exporter. Ou colle ici celui que tu t'es envoyé."></textarea>
+                <div class="champ">
+                    <button id="btnExporter">Exporter</button>
+                    <button id="btnImporter">Importer</button>
+                </div>
+                <p id="messageSauvegarde"></p>
+                <p id="rappelSauvegarde"></p>
+            </section>
         </section>
 
     </div>
 
-    <nav id="barreOnglets">
-        <button class="ongletBouton" data-panneau="0"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3.4" y="3.4" width="17.2" height="17.2" rx="5.4"/><path d="M8.3 12.2l2.6 2.7 4.9-5.5"/></svg><span>Aujourd'hui</span></button>
-        <button class="ongletBouton" data-panneau="1"><svg viewBox="0 0 24 24" fill="currentColor"><rect x="2.4" y="5.4" width="3.3" height="3.3" rx="1.1"/><rect x="7.5" y="5.4" width="3.3" height="3.3" rx="1.1"/><rect x="12.6" y="5.4" width="3.3" height="3.3" rx="1.1"/><rect x="17.7" y="5.4" width="3.3" height="3.3" rx="1.1"/><rect x="2.4" y="10.4" width="3.3" height="3.3" rx="1.1"/><rect x="7.5" y="10.4" width="3.3" height="3.3" rx="1.1"/><rect x="12.6" y="10.4" width="3.3" height="3.3" rx="1.1"/><rect x="17.7" y="10.4" width="3.3" height="3.3" rx="1.1"/><rect x="2.4" y="15.4" width="3.3" height="3.3" rx="1.1"/><rect x="7.5" y="15.4" width="3.3" height="3.3" rx="1.1"/><rect x="12.6" y="15.4" width="3.3" height="3.3" rx="1.1" opacity="0.35"/><rect x="17.7" y="15.4" width="3.3" height="3.3" rx="1.1" opacity="0.35"/></svg><span>Carnet</span></button>
-        <button class="ongletBouton" data-panneau="2"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><circle cx="6.2" cy="5.9" r="2.1" fill="currentColor" stroke="none"/><circle cx="6.2" cy="12" r="2.1" fill="currentColor" stroke="none"/><circle cx="6.2" cy="18.1" r="2.1"/><path d="M6.2 8.3v1.4M6.2 14.4v1.4"/><path d="M11.4 5.9h9M11.4 12h9M11.4 18.1h5.8"/></svg><span>Repères</span></button>
-        <button class="ongletBouton" data-panneau="3"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M3.4 7.4h7.2M16.4 7.4h4.2M3.4 16.6h3.2M12.4 16.6h8.2"/><circle cx="13.5" cy="7.4" r="2.5"/><circle cx="9.5" cy="16.6" r="2.5"/></svg><span>Réglages</span></button>
+    <nav id="barreOnglets" aria-label="Écrans">
+        <button class="ongletBouton" data-panneau="0" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="4.5" width="17" height="16" rx="4"/><path d="M8 3v3M16 3v3M8.5 13.5l2.5 2.5 5-5"/></svg><span>Aujourd'hui</span></button>
+        <button class="ongletBouton" data-panneau="1" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="2"/><rect x="14" y="4" width="6" height="6" rx="2"/><rect x="4" y="14" width="6" height="6" rx="2"/><rect x="14" y="14" width="6" height="6" rx="2" fill="currentColor"/></svg><span>Carnet</span></button>
+        <button id="ongletResister" type="button" aria-label="Résister à l'envie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5V4.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7.5-6.5 7.5-3 0-4.6-1.7-5.8-4.3L4.3 14a1.5 1.5 0 0 1 2.6-1.5L8 14"/></svg></button>
+        <button class="ongletBouton" data-panneau="2" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V6M5 6c3-2 5 2 8 0s5-2 6 0v8c-1-2-3-2-6 0s-5-2-8 0"/></svg><span>Repères</span></button>
+        <button class="ongletBouton" data-panneau="3" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l1.3 2.8 3 .4-2.2 2.1.6 3-2.7-1.5-2.7 1.5.6-3-2.2-2.1 3-.4z"/></svg><span>Collection</span></button>
     </nav>
 
 </div>
+
+<section id="fete" role="status" aria-live="polite">
+    <div class="confettis" id="feteConfettis" aria-hidden="true"></div>
+    <span id="feteSticker" aria-hidden="true"></span>
+    <p id="feteTitre"></p>
+    <p id="feteTexte"></p>
+    <span id="feteFermer"></span>
+</section>
+
+<div id="toast" role="status" aria-live="polite"><span id="toastSticker" aria-hidden="true"></span><span id="toastTexte"></span></div>
 
 <div id="accueilOverlay">
     <div id="accueilBoite">
@@ -1727,8 +2271,8 @@
             <p id="accueilInstallPourquoi"></p>
             <ol id="accueilInstallEtapes"></ol>
 
-            <button id="btnAccueilInstallNatif">Installer l'application</button>
-            <button id="btnAccueilInstallPlusTard">Continuer sans installer</button>
+            <button id="btnAccueilInstallNatif" class="boutonInstall">Installer l'application</button>
+            <button id="btnAccueilInstallPlusTard" class="boutonDiscret">Continuer sans installer</button>
         </div>
 
         <div id="accueilIntro">
@@ -1736,7 +2280,7 @@
             <div id="introTete">
                 <img id="introLogo" src="jour-zero-mark.svg" alt="">
                 <p id="introTitre">Jour Zéro<span id="introPoint">.</span></p>
-                <p id="introAccroche">Un compteur, un carnet, des repères.<br>Rien d'autre.</p>
+                <p id="introAccroche">Un compteur, un carnet, des repères.<br>Et quelques autocollants.</p>
             </div>
 
             <div class="apercuRang">
@@ -1750,15 +2294,15 @@
                 <div class="apercuVisuel">
                     <div class="miniBouton miniVert">Résister</div>
                 </div>
-                <p class="apercuTexte"><strong>Quand l'envie monte, tu as un bouton.</strong> Il te donne quoi faire, maintenant.</p>
+                <p class="apercuTexte"><strong>L'envie monte ? Un bouton.</strong> Il te dit quoi faire, là, maintenant.</p>
             </div>
 
             <div class="apercuRang">
                 <div class="apercuVisuel">
                     <div class="miniNiveaux">
-                        <span class="miniPastille" style="background-color:#46B377"></span>
-                        <span class="miniPastille" style="background-color:#D9A441"></span>
-                        <span class="miniPastille" style="background-color:#E05C4B"></span>
+                        <span class="miniPastille" style="background-color:var(--niveau-facile)"></span>
+                        <span class="miniPastille" style="background-color:var(--niveau-moyen)"></span>
+                        <span class="miniPastille" style="background-color:var(--niveau-difficile)"></span>
                     </div>
                 </div>
                 <p class="apercuTexte"><strong>Tu dis comment ça va.</strong> Facile, moyen, difficile. Une touche.</p>
@@ -1766,7 +2310,7 @@
 
             <div class="apercuRang">
                 <div class="apercuVisuel">
-                    <div class="miniBouton miniBrique">J'ai craqué</div>
+                    <div class="miniBouton miniContour">J'ai craqué</div>
                 </div>
                 <p class="apercuTexte"><strong>Si tu craques, tu le notes.</strong> Le compteur repart, sans reproche.</p>
             </div>
@@ -1774,8 +2318,8 @@
             <div class="apercuRang">
                 <div class="apercuVisuel">
                     <div class="miniCarnet">
-                        <i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i><i style="background-color:#E05C4B"></i><i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i>
-                        <i style="background-color:#E05C4B"></i><i style="background-color:#46B377"></i><i style="background-color:#C2795A"></i><i style="background-color:#D9A441"></i><i style="background-color:#46B377"></i><i style="background-color:#46B377"></i><i style="background-color:#D9A441"></i>
+                        <i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--niveau-moyen)"></i><i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--niveau-difficile)"></i><i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--niveau-moyen)"></i><i style="background-color:var(--niveau-facile)"></i>
+                        <i style="background-color:var(--niveau-difficile)"></i><i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--ecart-case)"></i><i style="background-color:var(--niveau-moyen)"></i><i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--niveau-facile)"></i><i style="background-color:var(--niveau-moyen)"></i>
                     </div>
                 </div>
                 <p class="apercuTexte"><strong>Jour Zéro finit par te connaître.</strong> Il repère à quelle heure c'est dur, et te prévient avant.</p>
@@ -1783,28 +2327,35 @@
 
             <div class="apercuRang">
                 <div class="apercuVisuel">
+                    <span class="miniSticker" id="introSticker"></span>
+                </div>
+                <p class="apercuTexte"><strong>Chaque palier a son autocollant.</strong> Un jour, trois, une semaine… La collection se remplit toute seule.</p>
+            </div>
+
+            <div class="apercuRang">
+                <div class="apercuVisuel">
                     <div class="miniBarre">
-                        <i class="miniOngletActif"></i><i></i><i></i><i></i>
+                        <i></i><i></i><i class="miniOngletActif"></i><i></i><i></i>
                     </div>
                 </div>
-                <p class="apercuTexte"><strong>Quatre écrans, pas un.</strong> Glisse du doigt, ou touche la barre du bas.</p>
+                <p class="apercuTexte"><strong>Cinq écrans, pas un.</strong> Glisse du doigt, ou touche la barre du bas.</p>
             </div>
 
             <p id="introConfidentialite">Pas de compte, aucun serveur. Tout reste sur cet appareil.</p>
 
             <p id="introReserve">Jour Zéro ne remplace pas un soignant. Pour en parler : Stop-Cannabis.ch.</p>
 
-            <button id="btnCommencer">Commencer</button>
+            <button id="btnCommencer" class="boutonPrincipal">C'est parti</button>
         </div>
 
         <div id="accueilFormulaire">
-        <h2>On te connaît un peu ?</h2>
-        <p>Quelques questions pour personnaliser ton suivi.</p>
+        <h2>On fait connaissance ?</h2>
+        <p>Quelques questions pour que le suivi te ressemble.</p>
 
-        <label for="prenomInput">Ton prénom (facultatif) :</label>
+        <label for="prenomInput">Ton prénom (facultatif)</label>
         <input type="text" id="prenomInput" placeholder="Comment on t'appelle ?">
 
-        <label for="motivationInput">Ta motivation principale :</label>
+        <label for="motivationInput">Ta motivation principale</label>
         <select id="motivationInput">
             <option value="permis">Récupérer mon permis</option>
             <option value="sante">Ma santé</option>
@@ -1813,16 +2364,16 @@
             <option value="autre">Autre raison</option>
         </select>
 
-        <label for="dateArretAccueil">Depuis quand t'as arrêté ?</label>
+        <label for="dateArretAccueil">Depuis quand tu as arrêté ?</label>
         <input type="date" id="dateArretAccueil">
 
-        <label for="depenseAccueil">Ce que tu dépensais par semaine (CHF) :</label>
-        <input type="number" id="depenseAccueil" min="0" step="0.5" placeholder="0">
+        <label for="depenseAccueil">Ce que tu dépensais par semaine (CHF)</label>
+        <input type="number" id="depenseAccueil" min="0" step="0.5" placeholder="0" inputmode="decimal">
 
         <div id="objectifBloc">
-            <label for="objectifInput">Mon objectif :</label>
-            <input type="number" id="objectifInput" min="1" value="30">
-            <select id="objectifUniteInput">
+            <label for="objectifInput">Mon objectif</label>
+            <input type="number" id="objectifInput" min="1" value="30" inputmode="numeric">
+            <select id="objectifUniteInput" aria-label="Unité de l'objectif">
                 <option value="jours">jour(s)</option>
                 <option value="semaines">semaine(s)</option>
                 <option value="mois">mois</option>
@@ -1835,41 +2386,78 @@
             J'arrête complètement, pas de date de fin
         </label>
 
-        <button id="btnCreerCompte">Continuer</button>
+        <button id="btnCreerCompte" class="boutonPrincipal">Continuer</button>
         </div>
 
         <div id="accueilNotifications">
             <h2>Un rappel par jour ?</h2>
-            <p>Deux rappels par jour : un le matin pour lancer la journée, un le soir pour la noter.</p>
+            <p>Deux petits rappels : un le matin pour lancer la journée, un le soir pour la noter.</p>
             <p>C'est souvent ce qui fait la différence entre une app qu'on ouvre trois jours et une app qui sert vraiment.</p>
-            <p class="notifPetit">Tu peux changer les heures, ou n'en garder qu'un seul, dans les réglages.</p>
+            <p class="notifPetit">Tu peux changer les heures, ou n'en garder qu'un, dans les réglages.</p>
 
-            <button id="btnActiverRappels">Activer les rappels</button>
-            <button id="btnPlusTard">Plus tard</button>
+            <button id="btnActiverRappels" class="boutonPrincipal">Activer les rappels</button>
+            <button id="btnPlusTard" class="boutonDiscret">Plus tard</button>
         </div>
 
     </div>
 </div>
+<script src="textes.js"></script>
 <script>
 
-    const messagesEcart = [
-        "Un écart n'efface pas ce que t'as tenu avant.",
-        "Ça arrive. Ce qui compte, c'est l'heure qui vient.",
-        "Note ce qui s'est passé juste avant. C'est là qu'est l'info utile.",
-        "Demain matin t'es déjà à un jour.",
-        "T'as pas tout perdu. T'as juste un jour à refaire."
-    ];
+    // Les textes vivent dans textes.js : on les relit et on les change la-bas.
+    const messagesEcart = TEXTES.messagesEcart;
+    const astucesEnvie = TEXTES.astucesEnvie;
 
-    const astucesEnvie = [
-        "Une envie dure rarement plus d'un quart d'heure. Tiens une heure, pas toute ta vie.",
-        "Change de pièce, change de rue. L'envie est souvent accrochée à un endroit.",
-        "Occupe tes mains. Ça marche mieux que d'essayer de ne pas y penser.",
-        "Avoir envie n'est pas avoir craqué.",
-        "Bois un grand verre d'eau et respire lentement. Ça passe.",
-        "Un jour à la fois. Ne compte pas ceux qui restent.",
-        "Sors marcher dix minutes. L'envie tiendra rarement le trajet.",
-        "Regarde ton compteur. C'est ça que tu protèges là, maintenant."
-    ];
+    // Les textes fixes de la page, poses une fois au chargement.
+    function poserTextes() {
+        const fixes = {
+            statArgent: TEXTES.stats.argent,
+            statEnvies: TEXTES.stats.envies,
+            statSerie: TEXTES.stats.serie,
+            btnEnvie: TEXTES.boutons.envie,
+            btnEcart: TEXTES.boutons.ecart,
+            btnBilan: TEXTES.boutons.noter,
+            btnEcartNote: TEXTES.boutons.confirmer,
+            btnEcartAnnuler: TEXTES.boutons.annuler,
+            ecartQuandLabel: TEXTES.ecartQuand,
+            ecartNoteLabel: TEXTES.ecartAvant,
+            carnetAttente: TEXTES.vides.carnet,
+            collectionTitre: TEXTES.stickers.titre,
+            feteFermer: TEXTES.feteFermer
+        };
+
+        for (const id in fixes) {
+            document.getElementById(id).textContent = fixes[id];
+        }
+
+        document.getElementById("ecartNote").placeholder = TEXTES.ecartAvantAide;
+        document.getElementById("bilanNote").placeholder = TEXTES.bilan.noteAide;
+
+        // Les astuces de l'ecran Reperes, rubrique par rubrique.
+        const bloc = document.getElementById("astucesBloc");
+
+        TEXTES.astuces.forEach(function (rubrique) {
+            const titre = document.createElement("h3");
+            titre.textContent = rubrique.titre;
+            bloc.appendChild(titre);
+
+            const liste = document.createElement("ul");
+
+            rubrique.liste.forEach(function (phrase) {
+                const element = document.createElement("li");
+                element.textContent = phrase;
+                liste.appendChild(element);
+            });
+
+            bloc.appendChild(liste);
+        });
+
+        // La date du jour, en haut : « lun. 5 oct. ».
+        document.getElementById("dateJour").textContent =
+            new Date().toLocaleDateString("fr-CH", { weekday: "short", day: "numeric", month: "short" });
+    }
+
+    poserTextes();
 
     function afficherAccueilSiBesoin() {
     const compteCree = localStorage.getItem("compteCree");
@@ -1896,7 +2484,7 @@ afficherAccueilSiBesoin();
         }
 
         if (!derniere) {
-            ligne.textContent = "Tu n'as jamais exporté tes données. Un copier-coller gardé quelque part, et tu ne risques plus de tout perdre.";
+            ligne.textContent = TEXTES.reglages.sauvegardeJamais;
             ligne.className = "alerte";
             ligne.style.display = "block";
             return;
@@ -1905,11 +2493,11 @@ afficherAccueilSiBesoin();
         const jours = ecartEnJours(derniere, dateDuJour());
 
         if (jours === 0) {
-            ligne.textContent = "Dernière sauvegarde aujourd'hui.";
+            ligne.textContent = TEXTES.reglages.sauvegardeAujourdhui;
         } else if (jours === 1) {
-            ligne.textContent = "Dernière sauvegarde hier.";
+            ligne.textContent = TEXTES.reglages.sauvegardeHier;
         } else {
-            ligne.textContent = "Dernière sauvegarde il y a " + jours + " jours.";
+            ligne.textContent = texteAvec(TEXTES.reglages.sauvegardeIlYa, { n: jours });
         }
 
         ligne.className = jours > 30 ? "alerte" : "";
@@ -1921,14 +2509,14 @@ afficherAccueilSiBesoin();
         const bouton = document.getElementById("btnNotifications");
 
         if (!("Notification" in window)) {
-            message.textContent = "Ce navigateur ne sait pas afficher de notifications.";
+            message.textContent = TEXTES.reglages.notifImpossible;
             message.className = "alerte";
             bouton.disabled = true;
             return;
         }
 
         if (Notification.permission === "granted") {
-            message.textContent = "Notifications autorisées sur cet appareil.";
+            message.textContent = TEXTES.reglages.notifAutorisees;
             message.className = "";
             // Plus rien a activer : le bouton n'a plus de raison d'etre la.
             bouton.style.display = "none";
@@ -1938,7 +2526,7 @@ afficherAccueilSiBesoin();
         bouton.style.display = "block";
 
         if (Notification.permission === "denied") {
-            message.textContent = "Tu as refusé les notifications. Pour revenir en arrière : Réglages iOS → Jour Zéro → Notifications.";
+            message.textContent = TEXTES.reglages.notifRefusees;
             message.className = "alerte";
             bouton.disabled = true;
             return;
@@ -1989,12 +2577,7 @@ afficherAccueilSiBesoin();
         });
     }
 
-    const RAISONS = {
-        permis: "Pour récupérer ton permis.",
-        sante: "Pour ta santé.",
-        argent: "Pour l'argent.",
-        sommeil: "Pour mieux dormir."
-    };
+    const RAISONS = TEXTES.raisons;
 
     // Reprend le prenom et la motivation donnes a l'inscription.
     function personnaliser() {
@@ -2005,16 +2588,16 @@ afficherAccueilSiBesoin();
         // suit l'heure : a 9h du matin, demander comment la journee s'est
         // passee n'a pas de sens.
         const heure = new Date().getHours();
-        let salut = "Salut";
-        let question = "comment ça se passe jusqu'ici ?";
+        let moment = TEXTES.salut.aprem;
 
         if (heure < 12) {
-            salut = "Bonjour";
-            question = "la journée s'annonce comment ?";
+            moment = TEXTES.salut.matin;
         } else if (heure >= 18) {
-            salut = "Bonsoir";
-            question = "comment s'est passée ta journée ?";
+            moment = TEXTES.salut.soir;
         }
+
+        const salut = moment.mot;
+        const question = moment.question;
 
         if (prenom) {
             document.getElementById("bilanQuestion").textContent =
@@ -2076,7 +2659,7 @@ afficherAccueilSiBesoin();
 
     // Un moment d'avant les heures n'en a pas : il valait pour la journee.
     function quand(moment) {
-        return moment.heure || "sur la journée";
+        return moment.heure || TEXTES.bilan.surLaJournee;
     }
 
     function heureCourante() {
@@ -2116,10 +2699,12 @@ afficherAccueilSiBesoin();
         return dateLocale(new Date());
     }
 
+    // Les couleurs renvoient aux variables CSS : la palette reste au meme
+    // endroit, en haut du fichier.
     const NIVEAUX = {
-        facile: { mot: "facile", court: "facile", couleur: "#46B377", poids: 1 },
-        moyen: { mot: "moyenne", court: "moyen", couleur: "#D9A441", poids: 2 },
-        difficile: { mot: "difficile", court: "difficile", couleur: "#E05C4B", poids: 3 }
+        facile: { mot: "facile", court: "facile", couleur: "var(--niveau-facile)", poids: 1 },
+        moyen: { mot: "moyenne", court: "moyen", couleur: "var(--niveau-moyen)", poids: 2 },
+        difficile: { mot: "difficile", court: "difficile", couleur: "var(--niveau-difficile)", poids: 3 }
     };
 
     let niveauChoisi = null;
@@ -2201,7 +2786,7 @@ afficherAccueilSiBesoin();
 
         localStorage.removeItem("avantDernierEcart");
 
-        document.getElementById("messageEcart").textContent = "Écart annulé.";
+        document.getElementById("messageEcart").textContent = TEXTES.ecartAnnule;
     }
 
     function rafraichirTout() {
@@ -2248,8 +2833,8 @@ afficherAccueilSiBesoin();
                 nature: "envie",
                 reference: envies[i],
                 heure: heureDe(envies[i]),
-                texte: "envie résistée",
-                couleur: "#6FBF8E",
+                texte: TEXTES.bilan.envieResistee,
+                couleur: "var(--envie)",
                 note: ""
             });
         }
@@ -2279,8 +2864,8 @@ afficherAccueilSiBesoin();
                 reference: annulable ? ecarts[i] : null,
                 // Le prefixe fait aussi office de tri : il passe apres les heures.
                 heure: hier ? "hier " + heureDe(ecarts[i]) : heureDe(ecarts[i]),
-                texte: "consommation",
-                couleur: "#C2795A",
+                texte: TEXTES.bilan.consommation,
+                couleur: "var(--ecart)",
                 note: notes[jourEcart] || ""
             });
         }
@@ -2299,7 +2884,7 @@ afficherAccueilSiBesoin();
 
             const heure = document.createElement("span");
             heure.className = "momentHeure";
-            heure.textContent = entrees[i].heure || "sur la journée";
+            heure.textContent = entrees[i].heure || TEXTES.bilan.surLaJournee;
 
             const quoi = document.createElement("span");
             quoi.className = "momentNiveau";
@@ -2398,8 +2983,8 @@ afficherAccueilSiBesoin();
         for (let i = 0; i < envies.length; i++) {
             evenements.push({
                 heure: heureDe(envies[i]),
-                texte: "envie résistée",
-                couleur: "#6FBF8E",
+                texte: TEXTES.bilan.envieResistee,
+                couleur: "var(--envie)",
                 note: ""
             });
         }
@@ -2407,8 +2992,8 @@ afficherAccueilSiBesoin();
         for (let i = 0; i < ecarts.length; i++) {
             evenements.push({
                 heure: heureDe(ecarts[i]),
-                texte: "consommation",
-                couleur: "#C2795A",
+                texte: TEXTES.bilan.consommation,
+                couleur: "var(--ecart)",
                 note: notesEcarts[jourTexte] || ""
             });
         }
@@ -2421,7 +3006,7 @@ afficherAccueilSiBesoin();
 
             const heure = document.createElement("span");
             heure.className = "detailHeure";
-            heure.textContent = evenements[i].heure || "sur la journée";
+            heure.textContent = evenements[i].heure || TEXTES.bilan.surLaJournee;
 
             const quoi = document.createElement("span");
             quoi.style.color = evenements[i].couleur;
@@ -2590,8 +3175,7 @@ afficherAccueilSiBesoin();
         }
 
         if (total < 5 && envies < 5) {
-            ligne.innerHTML = "Note tes moments quelques jours : je te dirai " +
-                "<strong>à quelle heure</strong> c'est le plus dur pour toi.";
+            ligne.innerHTML = TEXTES.vides.bilanPeriode;
             ligne.style.display = "block";
             return;
         }
@@ -2608,7 +3192,7 @@ afficherAccueilSiBesoin();
         }
 
         if (envies > 0) {
-            let phrase = envies + (envies > 1 ? " envies résistées" : " envie résistée");
+            let phrase = envies + (envies > 1 ? " envies tenues" : " envie tenue");
 
             const creneau = creneauDominant(creneauxEnvies, envies);
             phrase += creneau ? ", surtout <strong>" + creneau + "</strong>." : ".";
@@ -2682,9 +3266,9 @@ afficherAccueilSiBesoin();
 
             if (dateArret && jourTexte < dateArret) {
                 // Avant l'arret : ces jours-la ne comptent pas comme tenus.
-                carre.style.backgroundColor = "#18231D";
+                carre.style.backgroundColor = "var(--case-avant)";
             } else if (joursEcarts.includes(jourTexte)) {
-                carre.style.backgroundColor = "#A85A3B";
+                carre.style.backgroundColor = "var(--ecart-case)";
             } else {
                 const moments = journal[jourTexte];
 
@@ -2692,7 +3276,7 @@ afficherAccueilSiBesoin();
                     carre.style.backgroundColor =
                         NIVEAUX[momentLePlusDur(moments).niveau].couleur;
                 } else {
-                    carre.style.backgroundColor = "#2F7D52";
+                    carre.style.backgroundColor = "var(--vert)";
                 }
             }
 
@@ -2779,15 +3363,261 @@ afficherAccueilSiBesoin();
         }
     }
 
-    const CELEBRATIONS = {
-        7:   { titre: "Une semaine",   texte: "Sept jours. Le plus dur du sevrage est derrière toi." },
-        14:  { titre: "Deux semaines", texte: "Le sommeil et l'humeur reviennent en général maintenant." },
-        30:  { titre: "Un mois",       texte: "Un mois complet. Ce n'est plus un essai, c'est une habitude." },
-        60:  { titre: "Deux mois",     texte: "Soixante jours. Regarde ton carnet : tu as traversé des journées difficiles." },
-        90:  { titre: "Trois mois",    texte: "Trois mois. À ce stade, c'est ta nouvelle normale." },
-        180: { titre: "Six mois",      texte: "Six mois. Il n'y a plus grand-chose à ajouter." },
-        365: { titre: "Un an",         texte: "Un an. Jour zéro, c'était il y a trois cent soixante-cinq jours." }
+    // Les paliers fetes : 1, 3, 7, 14, 30, 60, 90, 180 et 365 jours.
+    const CELEBRATIONS = TEXTES.celebrations;
+
+    // ---------- Les autocollants ----------
+    //
+    // Chaque autocollant se deduit des donnees deja la : la meilleure serie,
+    // les envies, le journal, la derniere sauvegarde. Rien de nouveau a
+    // stocker pour savoir lequel est gagne, et une personne qui a deja 40
+    // jours les retrouve tous des la mise a jour. Seule la liste de ceux
+    // deja « vus » est rangee (stickersVus), pour ne fêter chacun qu'une fois.
+
+    const TEINTES = {
+        vert: ["#5FC08A", "#2F7D52", "#163F28", "#FFFFFF"],
+        flamme: ["#F7A462", "#D9702A", "#7A3410", "#FFFFFF"],
+        rose: ["#FF8DB8", "#E0548A", "#7A1C45", "#FFFFFF"],
+        bleu: ["#8EADFF", "#4A72E0", "#1E2F6E", "#FFFFFF"],
+        citron: ["#F4FFB8", "#D7F25C", "#7A8C1E", "#1A2008"]
     };
+
+    const TEINTE_STICKER = {
+        envie1: "flamme", envie10: "rose", moment1: "bleu", abri: "citron", toujours: "flamme"
+    };
+
+    const DESSINS = {
+        main: '<path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5V4.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7.5-6.5 7.5-3 0-4.6-1.7-5.8-4.3L4.3 14a1.5 1.5 0 0 1 2.6-1.5L8 14"/>',
+        mains: '<path d="M6 11V7a1.2 1.2 0 0 1 2.4 0v3.5m0-4V5.2a1.2 1.2 0 0 1 2.4 0v5.3m0-4a1.2 1.2 0 0 1 2.4 0v5c0 3-1.8 5.6-4.9 5.6-2.2 0-3.4-1.3-4.3-3.2l-1.6-3a1.2 1.2 0 0 1 2-1.1L6 12"/><path d="M15.5 9.5l1.2-1.2M17.5 12h1.8M15.5 14.5l1.2 1.2"/>',
+        crayon: '<path d="M14.5 5.5l4 4L9 19H5v-4z"/><path d="M12.5 7.5l4 4"/>',
+        bouclier: '<path d="M12 3.5l7 2.8v5c0 4.4-3 7.9-7 9.2-4-1.3-7-4.8-7-9.2v-5z"/><path d="M8.8 12.2l2.2 2.2 4.3-4.6"/>',
+        soleil: '<path d="M4 17h16M7.5 17a4.5 4.5 0 0 1 9 0"/><path d="M12 8.5v-2M6.6 10.6l-1.4-1.4M17.4 10.6l1.4-1.4M3.5 14h1.5M19 14h1.5"/>'
+    };
+
+    let numeroSticker = 0;
+
+    // Un autocollant en SVG : un medaillon arrondi, bord clair, une petite
+    // etoile flamme collee en haut. Verrouille, il n'en reste que la silhouette.
+    function dessinerSticker(def, debloque) {
+        const uid = "st" + (numeroSticker++);
+        const teinte = TEINTES[TEINTE_STICKER[def.id] || "vert"];
+        const encre = debloque ? teinte[3] : "rgba(255,255,255,0.22)";
+        // Un fin contour sombre sous le texte blanc : lisible meme sur le reflet.
+        const contour = debloque && teinte[3] === "#FFFFFF"
+            ? ' stroke="rgba(0,0,0,0.35)" stroke-width="3" paint-order="stroke" stroke-linejoin="round"'
+            : "";
+        let svg = '<svg viewBox="0 0 100 100" aria-hidden="true">';
+
+        if (debloque) {
+            svg += '<defs><radialGradient id="' + uid + '" cx=".35" cy=".3" r=".8">' +
+                '<stop offset="0" stop-color="' + teinte[0] + '"/>' +
+                '<stop offset=".6" stop-color="' + teinte[1] + '"/>' +
+                '<stop offset="1" stop-color="' + teinte[2] + '"/></radialGradient></defs>' +
+                '<circle cx="50" cy="50" r="44" fill="url(#' + uid + ')" stroke="#F2FFF6" stroke-width="3.5"/>' +
+                '<path d="M80 6l3.6 7.2 7.8-1.8-3 7.2 7.2 4.2-7.2 3.6 2.4 7.8-7.8-1.8-3 7.2-3-7.2-7.8 1.8 2.4-7.8-7.2-3.6 7.2-4.2-3-7.2 7.8 1.8z" fill="' +
+                (def.id === "j365" ? "#D7F25C" : "#F0883E") + '" stroke="#0B1A12" stroke-width="1.5" stroke-linejoin="round"/>';
+        } else {
+            svg += '<circle cx="50" cy="50" r="44" fill="rgba(255,255,255,0.04)" stroke="rgba(255,255,255,0.22)" stroke-width="2.5" stroke-dasharray="5 5"/>';
+        }
+
+        if (def.nombre) {
+            const taille = def.nombre >= 100 ? 26 : 32;
+            svg += '<text x="50" y="58" text-anchor="middle" font-family="Bricolage Grotesque, sans-serif" font-weight="800" font-size="' +
+                taille + '" fill="' + encre + '"' + contour + '>' + def.nombre + '</text>';
+        } else {
+            svg += '<g transform="translate(32 22) scale(1.5)" fill="none" stroke="' + encre +
+                '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' + DESSINS[def.dessin] + '</g>';
+        }
+
+        svg += '<text x="50" y="76" text-anchor="middle" font-family="Outfit, sans-serif" font-weight="600" font-size="10" letter-spacing="1.2" fill="' +
+            encre + '"' + contour + '>' + def.mot + '</text></svg>';
+
+        return svg;
+    }
+
+    function stickerParId(id) {
+        return TEXTES.stickers.liste.filter(function (def) {
+            return def.id === id;
+        })[0];
+    }
+
+    // La liste des autocollants gagnes, d'apres les donnees.
+    function stickersDebloques() {
+        const gagnes = {};
+        const serie = meilleureSerieJours();
+        const envies = (JSON.parse(localStorage.getItem("historiqueEnvies")) || []).length;
+        const journal = lireJournal();
+
+        TEXTES.stickers.liste.forEach(function (def) {
+            if (def.nombre && serie >= def.nombre) {
+                gagnes[def.id] = true;
+            }
+        });
+
+        if (envies >= 1) gagnes.envie1 = true;
+        if (envies >= 10) gagnes.envie10 = true;
+        if (Object.keys(journal).length > 0) gagnes.moment1 = true;
+        if (localStorage.getItem("derniereSauvegarde")) gagnes.abri = true;
+        if (serieApresEcart() >= 3) gagnes.toujours = true;
+
+        return gagnes;
+    }
+
+    function afficherCollection() {
+        const gagnes = stickersDebloques();
+        const liste = document.getElementById("collection");
+        const total = TEXTES.stickers.liste.length;
+        const nombre = Object.keys(gagnes).length;
+
+        liste.innerHTML = "";
+
+        TEXTES.stickers.liste.forEach(function (def) {
+            const debloque = Boolean(gagnes[def.id]);
+            const element = document.createElement("li");
+            element.className = "stickerCase" + (debloque ? " debloque" : "");
+
+            const dessin = document.createElement("div");
+            dessin.className = "stickerDessin";
+            dessin.innerHTML = dessinerSticker(def, debloque);
+
+            const nom = document.createElement("span");
+            nom.className = "stickerNom";
+            nom.textContent = def.nom;
+
+            element.appendChild(dessin);
+            element.appendChild(nom);
+
+            if (!debloque) {
+                const indice = document.createElement("span");
+                indice.className = "stickerIndice";
+                indice.textContent = def.indice;
+                element.appendChild(indice);
+            }
+
+            liste.appendChild(element);
+        });
+
+        document.getElementById("collectionCompte").textContent =
+            texteAvec(TEXTES.stickers.compte, { n: nombre, total: total });
+        document.getElementById("collectionVide").textContent =
+            nombre === 0 ? TEXTES.vides.collection : "";
+
+        // Le dernier palier gagne s'affiche a cote du compteur.
+        const paliers = TEXTES.stickers.liste.filter(function (def) {
+            return def.nombre && gagnes[def.id];
+        });
+
+        document.getElementById("heroSticker").innerHTML = paliers.length
+            ? dessinerSticker(paliers[paliers.length - 1], true)
+            : "";
+    }
+
+    // Un autocollant gagne en dehors des paliers (premiere envie, premiere
+    // note, sauvegarde) a droit a un petit message calme, pas a une fete :
+    // il peut tomber en pleine envie.
+    function verifierStickers() {
+        const gagnes = Object.keys(stickersDebloques());
+        const brut = localStorage.getItem("stickersVus");
+
+        // Premiere fois apres la mise a jour : tout ce qui est deja gagne est
+        // considere comme vu. Pas de pluie de messages pour les anciens.
+        if (brut === null) {
+            localStorage.setItem("stickersVus", JSON.stringify(gagnes));
+            return;
+        }
+
+        const vus = JSON.parse(brut) || [];
+        const nouveaux = gagnes.filter(function (id) {
+            return vus.indexOf(id) === -1;
+        });
+
+        if (nouveaux.length === 0) {
+            return;
+        }
+
+        localStorage.setItem("stickersVus", JSON.stringify(vus.concat(nouveaux)));
+
+        // Les paliers ont deja leur fete : on ne les annonce pas deux fois.
+        const aAnnoncer = nouveaux.filter(function (id) {
+            return !stickerParId(id).nombre;
+        });
+
+        if (aAnnoncer.length > 0) {
+            montrerToast(stickerParId(aAnnoncer[0]));
+        }
+    }
+
+    let minuterieToast = null;
+
+    function montrerToast(def) {
+        const toast = document.getElementById("toast");
+
+        document.getElementById("toastSticker").innerHTML = dessinerSticker(def, true);
+        document.getElementById("toastTexte").textContent =
+            texteAvec(TEXTES.nouveauSticker, { nom: def.nom });
+
+        toast.classList.add("visible");
+        clearTimeout(minuterieToast);
+        minuterieToast = setTimeout(function () {
+            toast.classList.remove("visible");
+        }, 3200);
+    }
+
+    // ---------- La fete ----------
+
+    const COULEURS_CONFETTIS = ["#46B377", "#F0883E", "#E9FFF1", "#7DDBA5", "#FF6FA5", "#D7F25C"];
+
+    // Les confettis restent sur les bords (gauche, droite) : jamais sur le texte.
+    function lancerConfettis() {
+        const zone = document.getElementById("feteConfettis");
+        let html = "";
+
+        for (let i = 0; i < 22; i++) {
+            const couleur = COULEURS_CONFETTIS[i % COULEURS_CONFETTIS.length];
+            const gauche = i % 2 ? 2 + ((i * 7) % 9) : 88 + ((i * 7) % 8);
+
+            html += '<i style="left:' + gauche + '%;top:' + (4 + ((i * 23) % 70)) +
+                '%;background:' + couleur + ';transform:rotate(' + (i * 33) +
+                'deg);animation-delay:' + ((i % 7) * 60) + 'ms"></i>';
+        }
+
+        zone.innerHTML = html;
+    }
+
+    let minuterieFete = null;
+    let feteEnAttente = null;
+
+    function montrerFete(fete) {
+        // Pendant l'ecran d'accueil, la fete attend qu'il se ferme : sinon
+        // elle passerait derriere, sans que personne la voie.
+        if (document.getElementById("accueilOverlay").style.display === "flex") {
+            feteEnAttente = fete;
+            return;
+        }
+
+        const carte = document.getElementById("fete");
+
+        document.getElementById("feteTitre").textContent = fete.titre;
+        document.getElementById("feteTexte").textContent = fete.texte;
+        document.getElementById("feteSticker").innerHTML = fete.sticker
+            ? dessinerSticker(fete.sticker, true)
+            : "";
+
+        lancerConfettis();
+
+        // On retire puis on remet : l'animation repart a chaque fete.
+        carte.classList.remove("visible");
+        void carte.offsetWidth;
+        carte.classList.add("visible");
+
+        clearTimeout(minuterieFete);
+        minuterieFete = setTimeout(fermerFete, 2900);
+    }
+
+    function fermerFete() {
+        clearTimeout(minuterieFete);
+        document.getElementById("fete").classList.remove("visible");
+    }
 
     function feter(jours) {
         const fetes = JSON.parse(localStorage.getItem("paliersFetes")) || [];
@@ -2812,47 +3642,168 @@ afficherAccueilSiBesoin();
             return;
         }
 
+        localStorage.setItem("paliersFetes", JSON.stringify(fetes.concat(nouveaux)));
+
         // On ne fete que le plus haut, mais on marque tous les autres comme vus :
         // quelqu'un qui revient apres trois semaines n'a pas besoin de trois pancartes.
         const palier = Math.max.apply(null, nouveaux);
-        const fete = CELEBRATIONS[palier] || {
-            titre: "Objectif atteint",
-            texte: "Tu t'étais donné " + palier + " jours. Tu y es."
-        };
 
-        document.getElementById("feteTitre").textContent = fete.titre;
-        document.getElementById("feteTexte").textContent = fete.texte;
-        document.getElementById("fete").style.display = "block";
-
-        localStorage.setItem("paliersFetes", JSON.stringify(fetes.concat(nouveaux)));
-    }
-
-    // Le compte a rebours vers l'objectif, s'il y en a un.
-    function afficherObjectif(jours) {
-        const objectif = parseFloat(localStorage.getItem("objectifJours"));
-        const zone = document.getElementById("objectifZone");
-
-        if (!objectif) {
-            zone.style.display = "none";
+        // Les paliers de 1 et 3 jours sont arrives avec cette version. Une
+        // personne deja a 40 jours ne doit pas recevoir une fete « 3 jours » :
+        // un palier plus bas qu'un palier deja fete passe en silence.
+        if (fetes.length > 0 && palier < Math.max.apply(null, fetes)) {
             return;
         }
 
-        const restants = Math.max(objectif - jours, 0);
-        const avance = Math.min(jours / objectif, 1);
+        const fete = CELEBRATIONS[palier] || {
+            titre: TEXTES.objectifFete.titre,
+            texte: texteAvec(TEXTES.objectifFete.texte, { n: palier })
+        };
 
-        zone.style.display = "block";
-        document.getElementById("objectifJauge").style.width = (avance * 100) + "%";
+        // L'autocollant du palier, ou celui du plus haut palier gagne quand
+        // c'est l'objectif personnel qui est atteint.
+        const stickers = TEXTES.stickers.liste.filter(function (def) {
+            return def.nombre && def.nombre <= palier;
+        });
 
-        let texte;
-        if (restants === 0) {
-            texte = "Objectif atteint : " + objectif + " jours.";
-        } else if (restants === 1) {
-            texte = "Plus qu'un jour sur " + objectif + ".";
+        montrerFete({
+            titre: fete.titre,
+            texte: fete.texte,
+            sticker: stickers.length ? stickers[stickers.length - 1] : null
+        });
+    }
+
+    // Les paliers vers lesquels l'anneau et la barre avancent.
+    function prochainPalier(jours) {
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        const paliers = Object.keys(CELEBRATIONS).map(Number);
+
+        if (objectif) {
+            paliers.push(objectif);
+        }
+
+        const suivants = paliers.filter(function (palier) {
+            return palier > jours;
+        });
+
+        return suivants.length ? Math.min.apply(null, suivants) : null;
+    }
+
+    // L'anneau autour du chiffre et la barre hachuree : le chemin jusqu'au
+    // prochain palier. Et sous la barre, l'objectif personnel s'il y en a un.
+    function afficherObjectif(jours) {
+        const objectif = parseFloat(localStorage.getItem("objectifJours"));
+        const suivant = prochainPalier(jours);
+        const avance = suivant ? Math.min(Math.max(jours, 0) / suivant, 1) : 1;
+
+        document.getElementById("anneau").style.setProperty("--avance", (avance * 100) + "%");
+        document.getElementById("palierPlein").style.width = (avance * 100) + "%";
+
+        if (suivant) {
+            document.getElementById("palierTexte").textContent = suivant === 1
+                ? TEXTES.compteur.prochainPalierUn
+                : texteAvec(TEXTES.compteur.prochainPalier, { n: suivant });
+            document.getElementById("palierCompte").textContent = Math.max(jours, 0) + "/" + suivant;
+            document.getElementById("palierBarre").setAttribute("aria-label", Math.max(jours, 0) + " jours sur " + suivant);
         } else {
-            texte = "Plus que " + restants + " jours sur " + objectif + ".";
+            document.getElementById("palierTexte").textContent = TEXTES.compteur.tousPaliers;
+            document.getElementById("palierCompte").textContent = "";
+            document.getElementById("palierBarre").setAttribute("aria-label", "Tous les paliers passés");
+        }
+
+        let texte = "";
+
+        if (objectif) {
+            const restants = Math.max(objectif - jours, 0);
+
+            if (restants === 0) {
+                texte = texteAvec(TEXTES.compteur.objectifAtteint, { n: objectif });
+            } else if (restants === 1) {
+                texte = texteAvec(TEXTES.compteur.objectifUnJour, { n: objectif });
+            } else {
+                texte = texteAvec(TEXTES.compteur.objectifReste, { n: objectif, reste: restants });
+            }
         }
 
         document.getElementById("objectifLigne").textContent = texte;
+    }
+
+    // Le chiffre change : il rebondit. Au chargement aussi, une fois.
+    function poserCompteur(nombre) {
+        const compteur = document.getElementById("compteur");
+        const texte = String(nombre);
+
+        compteur.dataset.chiffres = String(Math.min(Math.max(texte.length, 1), 4));
+
+        if (compteur.textContent === texte && compteur.classList.contains("rebond")) {
+            return;
+        }
+
+        compteur.textContent = texte;
+        compteur.classList.remove("rebond");
+        void compteur.offsetWidth;
+        compteur.classList.add("rebond");
+    }
+
+    // La bande de la semaine, du lundi au dimanche.
+    const LETTRES_JOURS = ["L", "M", "M", "J", "V", "S", "D"];
+
+    function afficherSemaine(jours) {
+        const liste = document.getElementById("semaine");
+        const dateArret = localStorage.getItem("dateArret");
+        const debut = dateDebut();
+        const joursEcarts = (JSON.parse(localStorage.getItem("historiqueEcarts")) || [])
+            .map(function (horodatage) {
+                return dateLocale(new Date(horodatage));
+            });
+
+        const aujourdhui = new Date();
+        const rang = (aujourdhui.getDay() + 6) % 7;
+
+        liste.innerHTML = "";
+
+        for (let i = 0; i < 7; i++) {
+            const jour = new Date(aujourdhui);
+            jour.setDate(jour.getDate() - rang + i);
+            const jourTexte = dateLocale(jour);
+
+            let etat = "avenir";
+            let contenu = "";
+            let dit = "à venir";
+
+            if (i === rang) {
+                etat = "auj";
+                contenu = jours >= 0 ? String(jours) : "·";
+                dit = "aujourd'hui";
+            } else if (i < rang) {
+                if (joursEcarts.indexOf(jourTexte) !== -1) {
+                    etat = "doux";
+                    contenu = "·";
+                    dit = "jour d'écart";
+                } else if (dateArret && debut && jourTexte >= debut && dateArret <= dateDuJour()) {
+                    etat = "tenu";
+                    contenu = "✓";
+                    dit = "tenu";
+                } else {
+                    etat = "vide";
+                    dit = "pas encore commencé";
+                }
+            }
+
+            const element = document.createElement("li");
+            const lettre = document.createElement("small");
+            lettre.textContent = LETTRES_JOURS[i];
+            lettre.setAttribute("aria-hidden", "true");
+
+            const rond = document.createElement("span");
+            rond.className = "rond " + etat;
+            rond.textContent = contenu;
+            rond.setAttribute("aria-label", jourEnTexte(jourTexte) + " : " + dit);
+
+            element.appendChild(lettre);
+            element.appendChild(rond);
+            liste.appendChild(element);
+        }
     }
 
     function afficherArgent(jours) {
@@ -2902,13 +3853,13 @@ afficherAccueilSiBesoin();
 
     // La plus longue suite de jours sans consommer. Les bornes sont le debut,
     // chaque ecart, et aujourd'hui : la plus grande distance entre deux bornes.
-    function afficherEcarts() {
+    // Les longueurs de toutes les series, dans l'ordre. La premiere part du
+    // debut ; chacune des suivantes part d'un ecart.
+    function longueursDesSeries() {
         const debut = dateDebut();
-        const champ = document.getElementById("meilleureSerie");
 
         if (!debut) {
-            champ.textContent = "0";
-            return;
+            return [];
         }
 
         const ecarts = (JSON.parse(localStorage.getItem("historiqueEcarts")) || [])
@@ -2918,24 +3869,34 @@ afficherAccueilSiBesoin();
             .sort();
 
         const bornes = [debut].concat(ecarts, [dateDuJour()]);
-        let meilleure = 0;
+        const longueurs = [];
 
         for (let i = 1; i < bornes.length; i++) {
-            const longueur = ecartEnJours(bornes[i - 1], bornes[i]);
-
-            if (longueur > meilleure) {
-                meilleure = longueur;
-            }
+            longueurs.push(ecartEnJours(bornes[i - 1], bornes[i]));
         }
 
-        champ.textContent = meilleure;
+        return longueurs;
+    }
+
+    function meilleureSerieJours() {
+        return Math.max.apply(null, [0].concat(longueursDesSeries()));
+    }
+
+    // La plus longue serie tenue APRES un ecart : c'est l'autocollant
+    // « Toujours là ». Il ne se perd pas si un autre ecart arrive ensuite.
+    function serieApresEcart() {
+        return Math.max.apply(null, [0].concat(longueursDesSeries().slice(1)));
+    }
+
+    function afficherEcarts() {
+        document.getElementById("meilleureSerie").textContent = meilleureSerieJours();
     }
 
     // Deux etats possibles : avant le jour J, et apres. Tout ce qui sert a
     // suivre une journee n'a pas de sens tant qu'on n'a pas commence.
     function basculerMode(preparation) {
         const avant = ["preparationCarte"];
-        const apres = ["stats", "actions", "bilanCarte"];
+        const apres = ["stats", "actions", "bilanCarte", "astuceCarte", "palierCarte"];
 
         for (let i = 0; i < avant.length; i++) {
             document.getElementById(avant[i]).style.display =
@@ -2966,28 +3927,34 @@ afficherAccueilSiBesoin();
             const restants = Math.abs(jours);
 
             basculerMode(true);
-            document.getElementById("compteur").textContent = restants;
+            poserCompteur(restants);
             document.getElementById("heroLabel").textContent =
-                restants === 1 ? "jour avant ton jour zéro" : "jours avant ton jour zéro";
-            document.getElementById("objectifZone").style.display = "none";
-            document.getElementById("fete").style.display = "none";
+                restants === 1 ? TEXTES.compteur.avantUn : TEXTES.compteur.avantPlusieurs;
+            document.getElementById("anneau").style.setProperty("--avance", "0%");
+            fermerFete();
 
             // Le plan reste affiche : savoir ce qui arrive fait partie de la
             // preparation. Toutes les etapes sont a venir.
             afficherPlan(jours);
+            afficherSemaine(jours);
+            afficherCollection();
             deposerEtat(-restants);
             return;
         }
 
         basculerMode(false);
-        document.getElementById("heroLabel").textContent = "jours sans consommation";
-        document.getElementById("compteur").textContent = jours;
+        document.getElementById("heroLabel").textContent =
+            jours === 1 ? TEXTES.compteur.un : TEXTES.compteur.plusieurs;
+        poserCompteur(jours);
         afficherArgent(jours);
         afficherObjectif(jours);
         afficherPlan(jours);
+        afficherSemaine(jours);
+        afficherCollection();
         majPastille(jours);
         deposerEtat(jours);
         feter(jours);
+        verifierStickers();
     }
 
     // La cle PUBLIQUE VAPID. Elle est faite pour etre lue par tout le monde :
@@ -3277,8 +4244,12 @@ afficherAccueilSiBesoin();
     // force a s'arreter pile sur un ecran. On ne s'occupe que du reste :
     // suivre ou on en est, et allumer le bon onglet en bas.
 
+    // Cinq ecrans : Aujourd'hui, Carnet, Reperes, Collection, Reglages. Les
+    // quatre premiers sont dans la barre du bas ; les Reglages s'ouvrent par
+    // le bouton en haut a droite (ou en glissant jusqu'au bout).
     const conteneurOnglets = document.getElementById("onglets");
     const boutonsOnglets = document.querySelectorAll(".ongletBouton");
+    const ECRAN_REGLAGES = 4;
 
     let ongletActuel = 0;
 
@@ -3286,8 +4257,17 @@ afficherAccueilSiBesoin();
         ongletActuel = index;
 
         for (let i = 0; i < boutonsOnglets.length; i++) {
-            boutonsOnglets[i].classList.toggle("actif", i === index);
+            const choisi = parseInt(boutonsOnglets[i].dataset.panneau, 10) === index;
+            boutonsOnglets[i].classList.toggle("actif", choisi);
+
+            if (choisi) {
+                boutonsOnglets[i].setAttribute("aria-current", "page");
+            } else {
+                boutonsOnglets[i].removeAttribute("aria-current");
+            }
         }
+
+        document.getElementById("btnReglages").classList.toggle("actif", index === ECRAN_REGLAGES);
     }
 
     function allerAOnglet(index, douceur) {
@@ -3306,6 +4286,18 @@ afficherAccueilSiBesoin();
             allerAOnglet(parseInt(this.dataset.panneau, 10));
         });
     }
+
+    document.getElementById("btnReglages").addEventListener("click", function () {
+        allerAOnglet(ECRAN_REGLAGES);
+    });
+
+    // Le bouton rond du milieu : la meme chose que « Resister a l'envie »,
+    // accessible de n'importe quel ecran. On revient sur Aujourd'hui pour
+    // que l'astuce s'affiche sous les yeux.
+    document.getElementById("ongletResister").addEventListener("click", function () {
+        allerAOnglet(0);
+        resisterEnvie();
+    });
 
     // Le doigt peut changer d'ecran sans passer par la barre du bas. On
     // ecoute donc le defilement pour rester d'accord avec ce qui est affiche.
@@ -3464,9 +4456,17 @@ afficherAccueilSiBesoin();
     remplirReglages();
 
     if (!dateSauvegardee) {
+        poserCompteur(0);
+        document.getElementById("heroLabel").textContent = TEXTES.compteur.plusieurs;
         afficherObjectif(0);
         afficherPlan(0);
+        afficherSemaine(-1);
+        afficherCollection();
     }
+
+    // L'autocollant d'exemple de l'ecran de presentation.
+    document.getElementById("introSticker").innerHTML =
+        dessinerSticker(stickerParId("j7"), true);
 
     const boutonsNiveau = document.querySelectorAll(".niveau");
     for (let i = 0; i < boutonsNiveau.length; i++) {
@@ -3492,7 +4492,7 @@ afficherAccueilSiBesoin();
     document.getElementById("btnBilan").addEventListener("click", function () {
         if (!niveauChoisi) {
             document.getElementById("bilanMessage").textContent =
-                "Choisis d'abord facile, moyen ou difficile.";
+                TEXTES.bilan.choisirNiveau;
             return;
         }
 
@@ -3514,13 +4514,15 @@ afficherAccueilSiBesoin();
         // On vide le formulaire : le moment suivant sera peut-etre different.
         document.getElementById("bilanNote").value = "";
         marquerNiveau(null);
-        document.getElementById("bilanMessage").textContent = "Noté.";
+        document.getElementById("bilanMessage").textContent = TEXTES.bilan.note;
 
         afficherBilan();
         afficherCarnet();
         afficherBilanPeriode();
         afficherDepuisDebut();
         afficherConseilHeure();
+        afficherCollection();
+        verifierStickers();
 
         // Le service worker doit savoir que la journee est notee : sinon la
         // notification de ce soir redemanderait une note deja faite.
@@ -3533,18 +4535,39 @@ afficherAccueilSiBesoin();
         }
     });
 
-    document.getElementById("btnEnvie").addEventListener("click", function () {
-    const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
-    historiqueEnvies.push(new Date().toISOString());
-    localStorage.setItem("historiqueEnvies", JSON.stringify(historiqueEnvies));
+    // Une envie tenue : on la compte, et on donne une astuce. En plein
+    // moment d'envie, rien ne bouge a l'ecran : juste une phrase calme.
+    function resisterEnvie() {
+        // Avant le jour J, il n'y a rien a compter.
+        if (document.getElementById("actions").style.display === "none") {
+            return;
+        }
 
-    const numero = Math.floor(Math.random() * astucesEnvie.length);
-    document.getElementById("astuceDuMoment").textContent = astucesEnvie[numero];
-    document.getElementById("messageEcart").textContent = "";
+        const historiqueEnvies = JSON.parse(localStorage.getItem("historiqueEnvies")) || [];
+        historiqueEnvies.push(new Date().toISOString());
+        localStorage.setItem("historiqueEnvies", JSON.stringify(historiqueEnvies));
 
-    afficherEnvies();
-    afficherBilan();
-    });
+        const numero = Math.floor(Math.random() * astucesEnvie.length);
+        document.getElementById("astuceDuMoment").textContent = astucesEnvie[numero];
+        document.getElementById("messageEcart").textContent = "";
+
+        afficherEnvies();
+        afficherBilan();
+        afficherCollection();
+        verifierStickers();
+
+        // L'astuce doit etre sous les yeux, pas cachee sous la barre du bas.
+        const panneauJour = document.getElementById("panJour");
+        const astuce = document.getElementById("astuceDuMoment");
+        const haut = astuce.getBoundingClientRect().top - panneauJour.getBoundingClientRect().top;
+
+        panneauJour.scrollTo({
+            top: Math.max(panneauJour.scrollTop + haut - panneauJour.clientHeight / 3, 0),
+            behavior: "smooth"
+        });
+    }
+
+    document.getElementById("btnEnvie").addEventListener("click", resisterEnvie);
 
     // Un reglage se prend en compte des qu'on quitte le champ. Pas de bouton
     // « Enregistrer » : un reglage qu'on croit enregistre et qui ne l'est pas,
@@ -3568,8 +4591,8 @@ afficherAccueilSiBesoin();
         afficherDepuisDebut();
 
         confirmerReglage(valeurInput > dateDuJour()
-            ? "C'est noté. L'app t'attend jusque-là."
-            : "Date d'arrêt enregistrée.");
+            ? TEXTES.reglages.dateFuture
+            : TEXTES.reglages.date);
     });
     
     document.getElementById("pasDObjectifInput").addEventListener("change", function () {
@@ -3638,6 +4661,12 @@ afficherAccueilSiBesoin();
     function fermerAccueil() {
         document.getElementById("accueilOverlay").style.display = "none";
         afficherEtatNotifications();
+
+        if (feteEnAttente) {
+            const fete = feteEnAttente;
+            feteEnAttente = null;
+            montrerFete(fete);
+        }
     }
 
     document.getElementById("btnPlusTard").addEventListener("click", fermerAccueil);
@@ -3676,7 +4705,7 @@ afficherAccueilSiBesoin();
             afficherPlan(0);
         }
 
-        confirmerReglage(valeur === "" ? "Objectif retiré." : "Objectif enregistré.");
+        confirmerReglage(valeur === "" ? TEXTES.reglages.objectifRetire : TEXTES.reglages.objectif);
     });
 
     document.getElementById("depenseInput").addEventListener("change", function () {
@@ -3688,7 +4717,7 @@ afficherAccueilSiBesoin();
             afficherJours(new Date(dateSauvegardee + "T12:00:00"));
         }
 
-        confirmerReglage("Dépense enregistrée.");
+        confirmerReglage(TEXTES.reglages.depense);
     });
 
     let joursEnArriere = 0;
@@ -3758,7 +4787,7 @@ afficherAccueilSiBesoin();
 
         // Un ecart remet les paliers a zero : on les refetera en les repassant.
         localStorage.setItem("paliersFetes", JSON.stringify([]));
-        document.getElementById("fete").style.display = "none";
+        fermerFete();
 
         const numeroMessage = Math.floor(Math.random() * messagesEcart.length);
         document.getElementById("messageEcart").textContent = messagesEcart[numeroMessage];
@@ -3775,8 +4804,13 @@ afficherAccueilSiBesoin();
         remplirReglages();
     });
 
-    document.getElementById("btnFeteFermer").addEventListener("click", function () {
-        document.getElementById("fete").style.display = "none";
+    // La fete se ferme d'un toucher, n'importe ou sur la carte.
+    document.getElementById("fete").addEventListener("click", fermerFete);
+
+    document.addEventListener("keydown", function (evenement) {
+        if (evenement.key === "Escape") {
+            fermerFete();
+        }
     });
 
     // Toutes les cles qu'on emporte d'un appareil a l'autre.
@@ -3785,7 +4819,7 @@ afficherAccueilSiBesoin();
         "prenom", "motivation", "objectifJours", "pasDObjectif", "compteCree",
         "journal", "notesEcarts", "paliersFetes", "dateDebut",
         "avantDernierEcart", "derniereSauvegarde", "pastille", "heureMatin", "heureSoir",
-        "installReporte"
+        "installReporte", "stickersVus"
     ];
 
     // iOS exige que la demande parte d'un vrai clic. Un appel au chargement
@@ -3797,7 +4831,7 @@ afficherAccueilSiBesoin();
 
         navigator.serviceWorker.ready.then(function (inscription) {
             inscription.showNotification("Jour Zéro", {
-                body: "Voilà à quoi ressemblera ton rappel.",
+                body: TEXTES.notifications.test,
                 icon: "icone-192.png",
                 badge: "icone-192.png"
             });
@@ -3811,7 +4845,7 @@ afficherAccueilSiBesoin();
             afficherEtatNotifications();
 
             if (reponse === "granted") {
-                message.textContent = "C'est bon. Ton rappel arrivera à l'heure choisie.";
+                message.textContent = TEXTES.reglages.notifOk;
                 abonnerAuxRappels().catch(function () {});
             }
         });
@@ -3843,7 +4877,7 @@ afficherAccueilSiBesoin();
         localStorage.setItem("modeAvance", actif ? "non" : "oui");
         afficherModeAvance();
 
-        allerAOnglet(3);
+        allerAOnglet(4);
     });
 
     // L'heure choisie est locale. Le serveur, lui, ne connait que l'heure de
@@ -3969,11 +5003,11 @@ afficherAccueilSiBesoin();
         const heures = heuresRappelUTC();
 
         if (heures.length === 0) {
-            message.textContent = "Aucun rappel : tu ne recevras plus rien.";
+            message.textContent = TEXTES.reglages.aucunRappel;
         } else if (heures.length === 1) {
-            message.textContent = "Un rappel par jour.";
+            message.textContent = TEXTES.reglages.unRappel;
         } else {
-            message.textContent = "Deux rappels par jour, matin et soir.";
+            message.textContent = TEXTES.reglages.deuxRappels;
         }
 
         message.className = "";
@@ -4056,9 +5090,11 @@ afficherAccueilSiBesoin();
 
         localStorage.setItem("derniereSauvegarde", dateDuJour());
         afficherRappelSauvegarde();
+        afficherCollection();
+        verifierStickers();
 
         document.getElementById("messageSauvegarde").textContent =
-            "Ton code est prêt et déjà sélectionné. Copie-le maintenant (⌘C sur Mac, appui long puis Copier sur téléphone) et envoie-le-toi.";
+            TEXTES.reglages.exportPret;
     });
 
     document.getElementById("btnImporter").addEventListener("click", function () {
@@ -4066,7 +5102,7 @@ afficherAccueilSiBesoin();
         const message = document.getElementById("messageSauvegarde");
 
         if (!zone.value.trim()) {
-            message.textContent = "Le cadre est vide. Colle d'abord le code que tu t'es envoyé.";
+            message.textContent = TEXTES.reglages.importVide;
             return;
         }
 
@@ -4075,11 +5111,11 @@ afficherAccueilSiBesoin();
         try {
             donnees = JSON.parse(zone.value);
         } catch (erreur) {
-            message.textContent = "Ce code n'est pas lisible. Vérifie que tu l'as copié en entier.";
+            message.textContent = TEXTES.reglages.importIllisible;
             return;
         }
 
-        const confirmation = confirm("Remplacer les données de cet appareil par celles du code ? Ce qui est sur cet appareil sera perdu.");
+        const confirmation = confirm(TEXTES.reglages.importConfirmer);
 
         if (!confirmation) {
             return;
@@ -4091,7 +5127,7 @@ afficherAccueilSiBesoin();
             }
         });
 
-        message.textContent = "Données importées. La page se recharge.";
+        message.textContent = TEXTES.reglages.importOk;
         setTimeout(function () { location.reload(); }, 900);
     });
 

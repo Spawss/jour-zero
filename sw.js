@@ -11,31 +11,110 @@
 const RANGEMENT_ETAT = "jour-zero-etat";
 const ADRESSE_ETAT = "./etat.json";
 
-// Le matin, on ne demande rien : la journée n'a pas eu lieu. On lance.
-const MATIN = [
-    "Une journée de plus commence. Une seule à la fois.",
-    "Aujourd'hui aussi, c'est jouable.",
-    "Le plus dur est souvent le soir. Tu le sais, c'est déjà ça.",
-    "Rien à faire de spécial. Juste ne pas commencer.",
-    "Si une envie monte aujourd'hui, tu as un bouton pour ça."
+// Les textes des notifications viennent du meme fichier que ceux de l'app.
+importScripts("textes.js");
+
+const MATIN = TEXTES.notifications.matin;
+const ASTUCES = TEXTES.notifications.astuces;
+
+// ---------- L'app hors ligne ----------
+//
+// La page, ses textes, ses polices et ses images sont gardes sur le
+// telephone. Changer le numero de version force le telechargement de tout
+// ce qui suit a la prochaine ouverture ; l'ancienne copie est alors effacee.
+// Le rangement de l'etat (RANGEMENT_ETAT) n'est jamais touche : c'est lui qui
+// permet de composer les notifications.
+const VERSION_APP = "jour-zero-app-v2";
+const FICHIERS_APP = [
+    "./",
+    "index.html",
+    "textes.js",
+    "manifest.json",
+    "jour-zero-mark.svg",
+    "jour-zero-banniere.svg",
+    "icone-180.png",
+    "icone-192.png",
+    "icone-512.png",
+    "fonts/bricolage-grotesque-800.woff2",
+    "fonts/outfit-400.woff2",
+    "fonts/outfit-600.woff2",
+    "fonts/dm-mono-500.woff2"
 ];
 
-// Les mêmes conseils que dans l'app, pour les jours où tu as déjà noté.
-const ASTUCES = [
-    "Une envie dure rarement plus d'un quart d'heure.",
-    "Change de pièce, change de rue. L'envie est souvent accrochée à un endroit.",
-    "Occupe tes mains. Ça marche mieux que d'essayer de ne pas y penser.",
-    "Avoir envie n'est pas avoir craqué.",
-    "Sors marcher dix minutes. L'envie tiendra rarement le trajet."
-];
-
-self.addEventListener("install", function () {
+self.addEventListener("install", function (evenement) {
     // On prend la main tout de suite au lieu d'attendre la fermeture des pages.
     self.skipWaiting();
+
+    // Un fichier qui manque ne doit pas empecher les autres d'etre gardes :
+    // on les range un par un plutot qu'avec addAll, qui echoue en bloc.
+    evenement.waitUntil(
+        caches.open(VERSION_APP).then(function (rangement) {
+            return Promise.all(FICHIERS_APP.map(function (fichier) {
+                return rangement.add(new Request(fichier, { cache: "reload" })).catch(function () {});
+            }));
+        })
+    );
 });
 
 self.addEventListener("activate", function (evenement) {
-    evenement.waitUntil(self.clients.claim());
+    evenement.waitUntil(
+        caches.keys().then(function (noms) {
+            return Promise.all(noms.map(function (nom) {
+                if (nom.indexOf("jour-zero-app-") === 0 && nom !== VERSION_APP) {
+                    return caches.delete(nom);
+                }
+            }));
+        }).then(function () {
+            return self.clients.claim();
+        })
+    );
+});
+
+// La page et les textes : le reseau d'abord, pour recevoir les mises a jour,
+// la copie gardee si on est hors ligne. Les polices et images : la copie
+// d'abord, elles ne changent pas. Rien de ce qui part vers le serveur de
+// rappels ne passe par ici.
+self.addEventListener("fetch", function (evenement) {
+    const requete = evenement.request;
+
+    if (requete.method !== "GET" || new URL(requete.url).origin !== self.location.origin) {
+        return;
+    }
+
+    const page = requete.mode === "navigate" || /\.(html|js|json)$/.test(new URL(requete.url).pathname);
+
+    if (page) {
+        evenement.respondWith(
+            fetch(requete).then(function (reponse) {
+                if (reponse.ok) {
+                    const copie = reponse.clone();
+                    caches.open(VERSION_APP).then(function (rangement) {
+                        rangement.put(requete, copie);
+                    });
+                }
+                return reponse;
+            }).catch(function () {
+                return caches.match(requete, { ignoreSearch: true }).then(function (garde) {
+                    return garde || caches.match("./", { ignoreSearch: true });
+                });
+            })
+        );
+        return;
+    }
+
+    evenement.respondWith(
+        caches.match(requete, { ignoreSearch: true }).then(function (garde) {
+            return garde || fetch(requete).then(function (reponse) {
+                if (reponse.ok) {
+                    const copie = reponse.clone();
+                    caches.open(VERSION_APP).then(function (rangement) {
+                        rangement.put(requete, copie);
+                    });
+                }
+                return reponse;
+            });
+        })
+    );
 });
 
 // Ce que la page a laissé pour nous : son compteur et sa dernière note.
@@ -68,7 +147,7 @@ function composer(etat) {
     if (!etat) {
         return {
             titre: "Jour Zéro",
-            corps: matin ? auHasard(MATIN) : "Comment s'est passée ta journée ?"
+            corps: matin ? auHasard(MATIN) : TEXTES.notifications.soir
         };
     }
 
@@ -78,10 +157,12 @@ function composer(etat) {
         const restants = Math.abs(etat.jours);
 
         return {
-            titre: restants === 1 ? "Demain, jour zéro" : "Dans " + restants + " jours",
+            titre: restants === 1
+                ? TEXTES.notifications.demain
+                : texteAvec(TEXTES.notifications.dansNJours, { n: restants }),
             corps: restants === 1
-                ? "C'est demain. Tu as tout ce qu'il faut."
-                : "Ton jour zéro approche. Prépare-le, ça compte."
+                ? TEXTES.notifications.demainTexte
+                : TEXTES.notifications.dansNJoursTexte
         };
     }
 
@@ -96,7 +177,7 @@ function composer(etat) {
         return { titre: titre, corps: auHasard(ASTUCES) };
     }
 
-    return { titre: titre, corps: "Comment s'est passée ta journée ?" };
+    return { titre: titre, corps: TEXTES.notifications.soir };
 }
 
 // ATTENTION : si un push arrive et qu'aucune notification n'est affichée, iOS
