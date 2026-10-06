@@ -1,0 +1,80 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 360" width="720" height="360">
+  <title>Un chemin qui monte</title>
+  <defs>
+    <linearGradient id="ciel" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0B1A12"/>
+      <stop offset=".55" stop-color="#0E2618"/>
+      <stop offset="1" stop-color="#070B09"/>
+    </linearGradient>
+    <radialGradient id="lueurVerte" cx=".3" cy=".1" r=".7">
+      <stop offset="0" stop-color="#46B377" stop-opacity=".55"/>
+      <stop offset=".5" stop-color="#2F7D52" stop-opacity=".18"/>
+      <stop offset="1" stop-color="#2F7D52" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="lueurOrange" cx=".5" cy=".5" r=".5">
+      <stop offset="0" stop-color="#FFD7B3" stop-opacity=".95"/>
+      <stop offset=".25" stop-color="#F0883E" stop-opacity=".75"/>
+      <stop offset="1" stop-color="#F0883E" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="colline1" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#143524"/><stop offset="1" stop-color="#0A1610"/>
+    </linearGradient>
+    <linearGradient id="colline2" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#0F2419"/><stop offset="1" stop-color="#070B09"/>
+    </linearGradient>
+    <filter id="halo" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="grain"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .07 0"/></filter>
+  </defs>
+
+  <g id="fond">
+    <rect width="720" height="360" fill="url(#ciel)"/>
+    <rect width="720" height="360" fill="url(#lueurVerte)"/>
+    <circle cx="560" cy="88" r="150" fill="url(#lueurOrange)" opacity=".75"/>
+    <g fill="#E9FFF1" opacity=".55">
+      <circle cx="80" cy="40" r="1.2"/><circle cx="150" cy="78" r="1"/><circle cx="240" cy="30" r="1.4"/><circle cx="330" cy="62" r="1"/>
+      <circle cx="420" cy="26" r="1.2"/><circle cx="660" cy="40" r="1"/><circle cx="700" cy="110" r="1.2"/><circle cx="40" cy="120" r="1"/>
+    </g>
+  </g>
+
+  <g id="collines">
+    <path d="M0 230 Q120 170 230 200 T450 150 Q520 120 560 110 Q620 130 720 170 V360 H0z" fill="url(#colline1)"/>
+    <path d="M0 290 Q150 240 300 265 T560 230 Q650 225 720 250 V360 H0z" fill="url(#colline2)"/>
+  </g>
+
+  <g id="sommet">
+    <circle cx="560" cy="108" r="26" fill="#F0883E" opacity=".55" filter="url(#halo)"/>
+    <path d="M560 112 V72" stroke="#FFF6E5" stroke-width="3" stroke-linecap="round"/>
+    <path d="M561 73 L588 81 L561 90 Z" fill="#F0883E" stroke="#FFD7B3" stroke-width="1.5" stroke-linejoin="round"/>
+  </g>
+
+  <!-- Le chemin : des marches lumineuses, vertes en bas, orange en haut. -->
+  <g id="chemin">
+    <path d="M90 352 C180 330 260 318 300 292 S340 248 400 236 S470 200 490 170 S530 132 556 116" fill="none" stroke="#46B377" stroke-opacity=".18" stroke-width="22" stroke-linecap="round"/>
+    <g filter="url(#halo)" opacity=".9">
+      <rect x="100" y="340" width="44" height="10" rx="5" fill="#46B377"/>
+      <rect x="176" y="326" width="40" height="9" rx="4.5" fill="#46B377"/>
+      <rect x="244" y="308" width="36" height="9" rx="4.5" fill="#46B377"/>
+      <rect x="296" y="284" width="32" height="8" rx="4" fill="#7DDBA5"/>
+      <rect x="342" y="256" width="30" height="8" rx="4" fill="#7DDBA5"/>
+      <rect x="392" y="234" width="28" height="7" rx="3.5" fill="#B9D86B"/>
+      <rect x="440" y="210" width="24" height="7" rx="3.5" fill="#F5A25F"/>
+      <rect x="474" y="182" width="22" height="6" rx="3" fill="#F5A25F"/>
+      <rect x="500" y="156" width="20" height="6" rx="3" fill="#F0883E"/>
+      <rect x="524" y="132" width="18" height="5" rx="2.5" fill="#F0883E"/>
+    </g>
+    <g>
+      <rect x="100" y="340" width="44" height="10" rx="5" fill="#7DDBA5"/>
+      <rect x="176" y="326" width="40" height="9" rx="4.5" fill="#7DDBA5"/>
+      <rect x="244" y="308" width="36" height="9" rx="4.5" fill="#7DDBA5"/>
+      <rect x="296" y="284" width="32" height="8" rx="4" fill="#B8F5D2"/>
+      <rect x="342" y="256" width="30" height="8" rx="4" fill="#B8F5D2"/>
+      <rect x="392" y="234" width="28" height="7" rx="3.5" fill="#E4F7B0"/>
+      <rect x="440" y="210" width="24" height="7" rx="3.5" fill="#FFD7B3"/>
+      <rect x="474" y="182" width="22" height="6" rx="3" fill="#FFD7B3"/>
+      <rect x="500" y="156" width="20" height="6" rx="3" fill="#FFC08A"/>
+      <rect x="524" y="132" width="18" height="5" rx="2.5" fill="#FFC08A"/>
+    </g>
+  </g>
+
+  <rect width="720" height="360" filter="url(#grain)"/>
+</svg>

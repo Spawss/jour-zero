@@ -24,7 +24,7 @@ const ASTUCES = TEXTES.notifications.astuces;
 // ce qui suit a la prochaine ouverture ; l'ancienne copie est alors effacee.
 // Le rangement de l'etat (RANGEMENT_ETAT) n'est jamais touche : c'est lui qui
 // permet de composer les notifications.
-const VERSION_APP = "jour-zero-app-v3";
+const VERSION_APP = "jour-zero-app-v4";
 const FICHIERS_APP = [
     "./",
     "index.html",
@@ -41,7 +41,7 @@ const FICHIERS_APP = [
     "fonts/dm-mono-500.woff2",
     "images/ambiance-aujourdhui.webp",
     "images/ambiance-reperes.webp",
-    "images/ambiance-collection.webp",
+    "images/ambiance-progression.webp",
     "images/ambiance-reglages.webp",
     "images/ambiance-vide.webp"
 ];

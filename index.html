@@ -601,36 +601,30 @@
     }
 
     /* La pastille a cote du chiffre : ce qui reste avant la prochaine
-       etape (l'objectif, ou le prochain palier). Ronde, orange, bord creme
-       et ombre verte decalee, avec son propre petit anneau de progression. */
+       etape (l'objectif, ou le prochain palier). Un macaron orange en
+       etoile, bord creme, coeur sombre avec son anneau de progression
+       orange, ombre verte decalee. Elle flotte doucement. */
     #heroObjectif {
-        --avance: 0%;
         position: absolute;
-        right: 0;
-        top: 0;
-        width: 108px;
-        height: 108px;
-        border-radius: 50%;
+        right: -2px;
+        top: -6px;
+        width: 118px;
+        height: 118px;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        gap: 3px;
+        gap: 2px;
         text-align: center;
-        color: var(--orange-encre);
-        background: radial-gradient(circle at 35% 30%, var(--orange-clair), var(--orange) 70%);
-        border: 3px solid var(--creme);
-        box-shadow: 5px 6px 0 var(--vert), 0 16px 28px -12px rgba(0, 0, 0, 0.7);
         transform: rotate(8deg);
+        filter: drop-shadow(4px 5px 0 var(--vert)) drop-shadow(0 16px 18px rgba(0, 0, 0, 0.55));
     }
 
-    #pastilleAnneau {
+    .pastilleForme {
         position: absolute;
-        inset: 5px;
-        border-radius: 50%;
-        background: conic-gradient(var(--orange-encre) 0 var(--avance), rgba(35, 17, 10, 0.16) var(--avance) 100%);
-        -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4.5px));
-        mask: radial-gradient(farthest-side, transparent calc(100% - 5px), #000 calc(100% - 4.5px));
+        inset: 0;
+        width: 100%;
+        height: 100%;
     }
 
     #pastilleHaut,
@@ -645,6 +639,7 @@
         font-family: var(--police-chiffres);
         font-size: var(--t-moins2);
         font-weight: 500;
+        color: var(--orange-clair);
     }
 
     #pastilleChiffre {
@@ -654,6 +649,7 @@
         line-height: 0.9;
         letter-spacing: -0.02em;
         font-variant-numeric: tabular-nums;
+        color: #FFFFFF;
     }
 
     #pastilleChiffre[data-chiffres="3"] {
@@ -666,6 +662,7 @@
         font-size: var(--t-moins2);
         font-weight: 600;
         line-height: 1.1;
+        color: var(--creme);
     }
 
     #feteSticker svg,
@@ -1254,6 +1251,112 @@
         font-size: var(--t-moins1);
         color: var(--texte);
         margin: 8px 0 0;
+    }
+
+    /* Les petits titres de l'ecran Progression. */
+    .sousTitre {
+        font-size: var(--t-0);
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        color: var(--vert-pale);
+        margin: 4px 0 10px;
+    }
+
+    /* Le chemin des niveaux : une frise qui defile de cote, le niveau
+       actuel au centre. Passe en couleur, actuel en orange, a venir en gris. */
+    #chemin {
+        display: flex;
+        list-style: none;
+        margin: 0 -6px 18px;
+        padding: 10px 6px 6px;
+        overflow-x: auto;
+        scrollbar-width: none;
+        scroll-snap-type: x proximity;
+        -webkit-mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+        mask-image: linear-gradient(90deg, transparent, #000 9%, #000 91%, transparent);
+    }
+
+    #chemin::-webkit-scrollbar {
+        display: none;
+    }
+
+    .etapeChemin {
+        position: relative;
+        flex: 0 0 86px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+        scroll-snap-align: center;
+    }
+
+    /* Le trait qui relie un niveau au precedent. */
+    .etapeChemin + .etapeChemin::before {
+        content: "";
+        position: absolute;
+        z-index: 0;
+        top: 34px;
+        right: 50%;
+        width: 100%;
+        height: 5px;
+        border-radius: var(--pilule);
+        background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.18) 0 5px, transparent 5px 10px);
+    }
+
+    .etapeChemin.passe + .etapeChemin::before {
+        background: linear-gradient(90deg, var(--vert-clair), var(--vert-clair));
+    }
+
+    .etapeChemin.passe + .etapeChemin.actuel::before {
+        background: linear-gradient(90deg, var(--vert-clair), var(--orange));
+    }
+
+    .etapeMedaille {
+        position: relative;
+        z-index: 1;
+        width: 58px;
+        margin-top: 6px;
+    }
+
+    .etapeChemin.actuel .etapeMedaille {
+        width: 70px;
+        margin-top: 0;
+        margin-bottom: -6px;
+        filter: drop-shadow(0 0 12px rgba(240, 136, 62, 0.75));
+    }
+
+    .etapeChemin.avenir .etapeMedaille {
+        filter: grayscale(1);
+        opacity: 0.4;
+    }
+
+    .etapeNom {
+        font-size: var(--t-moins2);
+        font-weight: 600;
+        line-height: 1.2;
+        color: var(--texte2);
+    }
+
+    .etapeChemin.actuel .etapeNom {
+        color: var(--orange-pale);
+        font-size: var(--t-moins1);
+    }
+
+    /* Posee par-dessus, pour ne pas decaler la medaille et son trait. */
+    .etapeIci {
+        position: absolute;
+        z-index: 2;
+        top: -10px;
+        white-space: nowrap;
+        transform: rotate(-4deg);
+        font-family: var(--police-chiffres);
+        font-size: var(--t-moins2);
+        line-height: 1;
+        padding: 4px 7px;
+        border-radius: var(--pilule);
+        background-color: var(--orange);
+        color: var(--orange-encre);
     }
 
     #collectionCompte {
@@ -2090,6 +2193,10 @@
             animation: respire 3.6s ease-in-out infinite;
         }
 
+        #heroObjectif {
+            animation: flotte 4.8s ease-in-out infinite;
+        }
+
         #compteur.rebond {
             animation: rebond 0.9s cubic-bezier(0.2, 1.6, 0.4, 1) both;
         }
@@ -2122,6 +2229,11 @@
     @keyframes respire {
         0%, 100% { opacity: 0.55; transform: scale(1); }
         50% { opacity: 0.9; transform: scale(1.06); }
+    }
+
+    @keyframes flotte {
+        0%, 100% { transform: rotate(8deg) translateY(0); }
+        50% { transform: rotate(3deg) translateY(-4px); }
     }
 
     @keyframes rebond {
@@ -2178,9 +2290,9 @@
         }
 
         #heroObjectif {
-            width: 100px;
-            height: 100px;
-            right: -4px;
+            width: 106px;
+            height: 106px;
+            right: -6px;
         }
 
         #pastilleChiffre {
@@ -2259,7 +2371,17 @@
                 <p id="heroLabel"></p>
                 <p id="motivationLigne"></p>
                 <div id="heroObjectif" role="img">
-                    <span id="pastilleAnneau" aria-hidden="true"></span>
+                    <svg class="pastilleForme" viewBox="0 0 120 120" aria-hidden="true">
+                        <defs>
+                            <linearGradient id="pastilleDegrade" x1="0" y1="0" x2="1" y2="1"><stop offset="0" style="stop-color:var(--orange-clair)"/><stop offset=".55" style="stop-color:var(--orange)"/><stop offset="1" style="stop-color:var(--orange-fonce)"/></linearGradient>
+                            <radialGradient id="pastilleCoeur" cx=".5" cy=".35" r=".7"><stop offset="0" style="stop-color:var(--vert-nuit)"/><stop offset="1" style="stop-color:var(--fond)"/></radialGradient>
+                        </defs>
+                        <polygon points="60.0,2.0 70.2,8.5 82.2,6.4 89.2,16.3 101.0,19.0 103.7,30.8 113.6,37.8 111.5,49.8 118.0,60.0 111.5,70.2 113.6,82.2 103.7,89.2 101.0,101.0 89.2,103.7 82.2,113.6 70.2,111.5 60.0,118.0 49.8,111.5 37.8,113.6 30.8,103.7 19.0,101.0 16.3,89.2 6.4,82.2 8.5,70.2 2.0,60.0 8.5,49.8 6.4,37.8 16.3,30.8 19.0,19.0 30.8,16.3 37.8,6.4 49.8,8.5" fill="url(#pastilleDegrade)" style="stroke:var(--creme)" stroke-width="3" stroke-linejoin="round"/>
+                        <ellipse cx="38" cy="24" rx="24" ry="8" transform="rotate(-28 38 24)" fill="#FFFFFF" fill-opacity="0.32"/>
+                        <circle cx="60" cy="60" r="43" fill="url(#pastilleCoeur)" style="stroke:var(--orange-encre)" stroke-width="2"/>
+                        <circle cx="60" cy="60" r="39.5" fill="none" stroke="rgba(240, 136, 62, 0.22)" stroke-width="4"/>
+                        <circle id="pastilleProgres" cx="60" cy="60" r="39.5" fill="none" style="stroke:var(--orange)" stroke-width="4" stroke-linecap="round" pathLength="100" stroke-dasharray="0 100" transform="rotate(-90 60 60)"/>
+                    </svg>
                     <span id="pastilleHaut" aria-hidden="true"></span>
                     <strong id="pastilleChiffre" aria-hidden="true"></strong>
                     <span id="pastilleBas" aria-hidden="true"></span>
@@ -2373,9 +2495,9 @@
             </section>
         </section>
 
-        <section class="panneau" id="panCollection" aria-label="Collection">
+        <section class="panneau" id="panCollection" aria-label="Progression">
             <section class="carte" id="collectionCarte">
-                <img class="ambiance" src="images/ambiance-collection.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
+                <img class="ambiance" src="images/ambiance-progression.webp" width="720" height="360" alt="" loading="lazy" decoding="async">
                 <h2 id="collectionTitre"></h2>
                 <div id="niveauBandeau">
                     <span id="niveauMedaille" aria-hidden="true"></span>
@@ -2386,6 +2508,9 @@
                         <p id="niveauLigne"></p>
                     </div>
                 </div>
+                <h3 class="sousTitre" id="cheminTitre"></h3>
+                <ol id="chemin"></ol>
+                <h3 class="sousTitre" id="badgesTitre"></h3>
                 <p id="collectionCompte"></p>
                 <p id="collectionVide" class="explication"></p>
                 <ul id="collection"></ul>
@@ -2486,7 +2611,7 @@
         <button class="ongletBouton" data-panneau="1" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="6" height="6" rx="2"/><rect x="14" y="4" width="6" height="6" rx="2"/><rect x="4" y="14" width="6" height="6" rx="2"/><rect x="14" y="14" width="6" height="6" rx="2" fill="currentColor"/></svg><span>Carnet</span></button>
         <button id="ongletResister" type="button" aria-label="Résister à l'envie"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M8 12V6.5a1.5 1.5 0 0 1 3 0V11m0-5.5V4.5a1.5 1.5 0 0 1 3 0V11m0-5a1.5 1.5 0 0 1 3 0v6.5c0 4-2.5 7.5-6.5 7.5-3 0-4.6-1.7-5.8-4.3L4.3 14a1.5 1.5 0 0 1 2.6-1.5L8 14"/></svg></button>
         <button class="ongletBouton" data-panneau="2" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 20V6M5 6c3-2 5 2 8 0s5-2 6 0v8c-1-2-3-2-6 0s-5-2-8 0"/></svg><span>Repères</span></button>
-        <button class="ongletBouton" data-panneau="3" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5l1.3 2.8 3 .4-2.2 2.1.6 3-2.7-1.5-2.7 1.5.6-3-2.2-2.1 3-.4z"/></svg><span>Collection</span></button>
+        <button class="ongletBouton" data-panneau="3" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3.5 19.5h5v-5h5v-5h5v-5"/><path d="M15.5 4.5h3v3"/></svg><span>Progression</span></button>
     </nav>
 
 </div>
@@ -2571,7 +2696,7 @@
                 <div class="apercuVisuel">
                     <span class="miniSticker" id="introSticker"></span>
                 </div>
-                <p class="apercuTexte"><strong>Chaque palier a son autocollant.</strong> Un jour, trois, une semaine… La collection se remplit toute seule.</p>
+                <p class="apercuTexte"><strong>Chaque palier a son badge.</strong> Un jour, trois, une semaine… Tous les 5 badges, tu passes un niveau.</p>
             </div>
 
             <div class="apercuRang">
@@ -2665,6 +2790,8 @@
             ecartNoteLabel: TEXTES.ecartAvant,
             carnetAttenteTexte: TEXTES.vides.carnet,
             collectionTitre: TEXTES.stickers.titre,
+            cheminTitre: TEXTES.niveaux.chemin,
+            badgesTitre: TEXTES.stickers.badges,
             feteFermer: TEXTES.feteFermer
         };
 
@@ -3960,6 +4087,8 @@ afficherAccueilSiBesoin();
         document.getElementById("niveauLigne").textContent = ligne;
         document.getElementById("niveauBarre").setAttribute("aria-label", ligne);
 
+        afficherChemin(niveau);
+
         document.getElementById("collectionCompte").textContent =
             texteAvec(TEXTES.stickers.compte, { n: nombre, total: total });
         document.getElementById("collectionVide").textContent =
@@ -4003,6 +4132,50 @@ afficherAccueilSiBesoin();
 
             liste.appendChild(element);
         });
+    }
+
+    // Le chemin des niveaux, du premier au plus haut qu'on peut atteindre
+    // avec les badges existants (37 badges : jusqu'au niveau 7).
+    function afficherChemin(niveau) {
+        const chemin = document.getElementById("chemin");
+        const dernier = Math.max(niveauPour(TEXTES.stickers.liste.length), niveau);
+
+        chemin.innerHTML = "";
+
+        for (let n = 1; n <= dernier; n++) {
+            const etat = n < niveau ? "passe" : n === niveau ? "actuel" : "avenir";
+            const etape = document.createElement("li");
+            etape.className = "etapeChemin " + etat;
+            etape.setAttribute("aria-label", texteAvec(TEXTES.niveaux.cheminDit, {
+                n: n, nom: nomNiveau(n), etat: TEXTES.niveaux[etat]
+            }));
+
+            if (etat === "actuel") {
+                const ici = document.createElement("span");
+                ici.className = "etapeIci";
+                ici.textContent = TEXTES.niveaux.ici;
+                etape.appendChild(ici);
+            }
+
+            const medaille = document.createElement("div");
+            medaille.className = "etapeMedaille";
+            medaille.innerHTML = dessinerNiveau(n);
+
+            const nom = document.createElement("span");
+            nom.className = "etapeNom";
+            nom.textContent = nomNiveau(n);
+
+            etape.appendChild(medaille);
+            etape.appendChild(nom);
+            chemin.appendChild(etape);
+        }
+
+        // Le niveau actuel au milieu de la frise.
+        const actuel = chemin.querySelector(".actuel") || chemin.firstChild;
+
+        if (actuel) {
+            chemin.scrollLeft = actuel.offsetLeft - chemin.clientWidth / 2 + actuel.offsetWidth / 2;
+        }
     }
 
     // Une fois l'ecran Collection ouvert, les nouveaux badges sont « vus » :
@@ -4123,7 +4296,7 @@ afficherAccueilSiBesoin();
             document.getElementById("pastilleChiffre").textContent = "✓";
             document.getElementById("pastilleChiffre").dataset.chiffres = "1";
             document.getElementById("pastilleBas").textContent = TEXTES.pastille.fini;
-            pastille.style.setProperty("--avance", "100%");
+            document.getElementById("pastilleProgres").setAttribute("stroke-dasharray", "100 100");
             pastille.setAttribute("aria-label", TEXTES.pastille.ditFini);
             return;
         }
@@ -4134,7 +4307,7 @@ afficherAccueilSiBesoin();
         document.getElementById("pastilleChiffre").textContent = reste;
         document.getElementById("pastilleChiffre").dataset.chiffres = String(String(reste).length);
         document.getElementById("pastilleBas").textContent = reste === 1 ? TEXTES.pastille.restant : TEXTES.pastille.restants;
-        pastille.style.setProperty("--avance", (Math.max(jours, 0) / cible * 100) + "%");
+        document.getElementById("pastilleProgres").setAttribute("stroke-dasharray", (Math.max(jours, 0) / cible * 100) + " 100");
         pastille.setAttribute("aria-label", texteAvec(TEXTES.pastille.dit, { j: jours, cible: cible, reste: reste }));
     }
 

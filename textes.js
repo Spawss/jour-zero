@@ -117,7 +117,7 @@ const TEXTES = {
     },
     objectifFete: { titre: "Objectif atteint", texte: "Tu t'étais donné {n} jours. Tu y es." },
     feteFermer: "Touche pour fermer",
-    nouveauSticker: "Nouveau badge : {nom}. Il t'attend dans ta collection.",
+    nouveauSticker: "Nouveau badge : {nom}. Il t'attend dans ta progression.",
 
     // ---------- La collection de badges ----------
     // Chaque badge se gagne une fois et ne se perd plus. Les conditions
@@ -127,7 +127,8 @@ const TEXTES = {
     // Les 14 premiers identifiants ne doivent jamais changer : ils sont
     // deja ranges sur les telephones.
     stickers: {
-        titre: "Ta collection",
+        titre: "Ta progression",
+        badges: "Tes badges",
         compte: "{n} badges sur {total}",
         verrouille: "À débloquer",
         nouveau: "NEW",
@@ -186,15 +187,21 @@ const TEXTES = {
         titre: "Niveau {n}",
         avantSuivant: "{fait} / 5 badges avant le niveau\u00a0{suivant}",
         feteTitre: "Niveau {n} !",
-        feteTexte: "{nom}. Nouveau cadre pour tes badges : {cadre}."
+        feteTexte: "{nom}. Nouveau cadre pour tes badges : {cadre}.",
+        chemin: "Ton chemin",
+        ici: "Tu es ici",
+        cheminDit: "Niveau {n}, {nom} : {etat}",
+        passe: "passé",
+        actuel: "niveau actuel",
+        avenir: "à venir"
     },
 
     // ---------- La pastille a cote du compteur ----------
     // Elle montre ce qui reste, pas un chiffre fixe.
     pastille: {
         haut: "J{j}/{cible}",
-        restants: "jours restants",
-        restant: "jour restant",
+        restants: "restants",
+        restant: "restant",
         fini: "tout passé",
         dit: "Jour {j} sur {cible} : encore {reste} jours.",
         ditFini: "Tous les paliers sont passés."
